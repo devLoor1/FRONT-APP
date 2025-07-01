@@ -10,6 +10,7 @@ module.exports = function(api) {
         {
           root: ['./src'],
           alias: {
+            '~': './src',
             '@': './src',
             assets: './assets',
             mocks: './__mocks__',

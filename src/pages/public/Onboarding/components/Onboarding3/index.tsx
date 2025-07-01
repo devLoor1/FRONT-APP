@@ -3,8 +3,8 @@ import { Text, ScrollView, View } from 'react-native';
 import { useTheme } from '../../../../../context/MyThemeContext';
 import { useCustomStyles } from '../../style';
 import BtnIcon from '../../../../../components/BtnIcon';
-import ArrowForwad from '~/../assets/newSvgs/icons/arrow_forward.svg';
-import { Analytics } from '~/helpers/analytics';
+import ArrowForwad from '@/../assets/newSvgs/icons/arrow_forward.svg';
+import { Analytics } from '@/helpers/analytics';
 
 type Props = {
   setPage: React.Dispatch<React.SetStateAction<number>>;

@@ -4,8 +4,8 @@ import { Text, ScrollView, ImageBackground, View } from 'react-native';
 import { useTheme } from '../../../../../context/MyThemeContext';
 import { useCustomStyles } from '../../style';
 import BtnIcon from '../../../../../components/BtnIcon';
-import ArrowForwad from '~/../assets/newSvgs/icons/arrow_forward.svg';
-import { Analytics } from '~/helpers/analytics';
+import ArrowForwad from '@/../assets/newSvgs/icons/arrow_forward.svg';
+import { Analytics } from '@/helpers/analytics';
 
 type Props = {
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -25,8 +25,8 @@ export default function Onboarding1({ setPage }: Props) {
       <ImageBackground
         source={
           theme.dark
-            ? require('~/../assets/images/onboarding1-dark.png')
-            : require('~/../assets/images/onboarding1.png')
+            ? require('@/../assets/images/onboarding1-dark.png')
+            : require('@/../assets/images/onboarding1.png')
         }
         style={styles.backgroundImage}
         resizeMode="cover"

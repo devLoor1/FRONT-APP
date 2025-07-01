@@ -1,0 +1,25 @@
+{
+  "onboarding": {
+    "page1": {
+      "title": "Comece a investir",
+      "description": "Com a <highlight>Wealth Money</highlight>, você pode rentabilizar seus investimentos acima do mercado, com total transparência e segurança.\n\n<highlight>Tudo isso de forma gratuita.</highlight>"
+    },
+    "page2": {
+      "title": "Invista e ganhe",
+      "description": "A <highlight>Wealth Money</highlight> permite que você adquira cotas de investimento em empresas com total transparência e segurança. Isso garante que você tenha todas as informações necessárias para tomar decisões de investimento com segurança."
+    },
+    "page3": {
+      "title": "Crie sua Conta",
+      "description": "Criar uma conta na <highlight>Wealth Money</highlight> é simples, rápido e gratuito.\n\nSe preferir, conte com a nossa equipe de assessores para orientar em cada etapa do seu investimento.",
+      "title2": "100% Gratuito",
+      "description2": "Veja nossas oportunidades e invista na que mais se adéque ao seu perfil!"
+    },
+    "opportunities": {
+      "title": "Nossas Oportunidades",
+      "btn": {
+        "login": "Efetuar Login",
+        "createAccount": "Criar Conta"
+      }
+    }
+  }
+}

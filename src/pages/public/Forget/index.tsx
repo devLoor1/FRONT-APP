@@ -3,17 +3,17 @@ import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCustomStyles } from './style';
 import GeneralPage from './components/GeneralPage';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { GetIdentifier } from '~/services/register';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { GetIdentifier } from '@/services/register';
 import ConfirmEmailPage from './components/ConfirmEmail';
 import Password from './components/Password';
 import ConfirmationPage from './components/Confirmation';
-import { reset } from '~/redux/reducers/forget';
-import * as registerReset from '~/redux/reducers/register';
-import Snack from '~/components/Snack';
+import { reset } from '@/redux/reducers/forget';
+import * as registerReset from '@/redux/reducers/register';
+import Snack from '@/components/Snack';
 import { useNavigation } from '@react-navigation/native';
-import { PublicNavigation } from '~/models/routes/navigation.public';
-import Steps from '~/components/Steps';
+import { PublicNavigation } from '@/models/routes/navigation.public';
+import Steps from '@/components/Steps';
 
 export default function ForgetPage() {
   const dispatch = useAppDispatch();

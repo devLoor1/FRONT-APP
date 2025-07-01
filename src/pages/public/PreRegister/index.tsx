@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GeneralPage from './pages/GeneralPage';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { reset } from '~/redux/reducers/lead';
-import { LeadRequest } from '~/models/lead/lead.request';
-import LoadingComp from '~/components/Loading';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { reset } from '@/redux/reducers/lead';
+import { LeadRequest } from '@/models/lead/lead.request';
+import LoadingComp from '@/components/Loading';
 import * as Clipboard from 'expo-clipboard';
-import { GetLeadMissing } from '~/services/lead';
+import { GetLeadMissing } from '@/services/lead';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import ConfirmCellphonePage from './pages/ConfirmCellphone';
-import Snack from '~/components/Snack';
+import Snack from '@/components/Snack';
 import DataIntroduction from './pages/DataIntroduction';
 import PersonalData from './pages/PersonalData';
 import ConfirmEmailPage from './pages/ConfirmEmail';
@@ -19,8 +19,8 @@ import PasswordPage from './pages/Password';
 import EnableNotification from './pages/EnableNotification';
 import SuccessPage from './pages/Success';
 import { useCustomStyles } from './style';
-import ArrowIcon from '~/../assets/newSvgs/icons/arrow_back.svg';
-import { useTheme } from '~/context/MyThemeContext';
+import ArrowIcon from '@/../assets/newSvgs/icons/arrow_back.svg';
+import { useTheme } from '@/context/MyThemeContext';
 
 export default function LeadPages() {
   const styles = useCustomStyles();
@@ -145,7 +145,7 @@ export default function LeadPages() {
               <ArrowIcon 
                 color={ 
                   currentPage === 3 ||  currentPage === 6 ? 
-                  theme.dark ? theme.customColors.neutrals[900] : theme.customColors.neutrals[100] : theme.colors.text
+                  theme?.navigation?.dark ? theme?.customColors?.neutrals?.[900] || '#1A1A1A' : theme?.customColors?.neutrals?.[100] || '#F5F5F5' : theme?.navigation?.colors?.text || '#39393A'
                 }
               />
                

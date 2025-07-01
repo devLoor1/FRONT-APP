@@ -1,0 +1,34 @@
+export type OpportunitiePJResponse = {
+  idOpportunity: number;
+  idUser: number;
+  name: string;
+  dateFoundation: string;
+  cnpj?: string;
+  employeesNumber: number;
+  shareCapital: number;
+  cnae?: string;
+  secondaryCNAEs?: string[];
+  annualBilling: number;
+  valorCaptado: number;
+  valorTotalACaptar: number;
+  loanReason?: string;
+  taxaRetornoAM: number;
+  cdi: number;
+  prazo: number;
+  sectorDescription?: string;
+  marketSector: string;
+  city: string;
+  state: string;
+  urlImages?: string[];
+  spe: 0 | 1;
+  prospectoUrl?: string;
+  logoUrl: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  localizacaoUrl?: string;
+  websiteUrl?: string;
+  companyURLVideos: {
+    url: string;
+    urlThumbnail: string;
+  }[];
+};

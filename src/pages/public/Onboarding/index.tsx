@@ -8,7 +8,7 @@ import Opportunities from './components/Opportunities';
 import { useCustomStyles } from './style';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppDispatch } from '../../../redux/hooks';
-import { GetPublicOpportunities } from '~/services/onboarding';
+import { GetPublicOpportunities } from '@/services/onboarding';
 
 export default function OnboardingPages() {
   const dispatch = useAppDispatch();

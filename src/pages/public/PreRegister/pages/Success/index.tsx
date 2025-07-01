@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 import { useCustomStyles } from './style';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import BtnDefault from '~/components/BtnDefault';
-import NeedHelp from '~/components/NeedHelp';
-import { useTheme } from '~/context/MyThemeContext';
-import ShieldIcon from '~/../assets/newSvgs/icons/verified_user.svg';
+import BtnDefault from '@/components/BtnDefault';
+import NeedHelp from '@/components/NeedHelp';
+import { useTheme } from '@/context/MyThemeContext';
+import ShieldIcon from '@/../assets/newSvgs/icons/verified_user.svg';
 import LottieView from 'lottie-react-native';
-import { Analytics } from '~/helpers/analytics';
-import { Login } from '~/services/auth';
-import { useAppDispatch } from '~/redux/hooks';
+import { Analytics } from '@/helpers/analytics';
+import { Login } from '@/services/auth';
+import { useAppDispatch } from '@/redux/hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
@@ -21,7 +21,7 @@ export default function SuccessPage({ resetAll }: Props) {
   const styles = useCustomStyles();
   const nav = useNavigation();
   const { theme } = useTheme();
-  const animation = require('~/../assets/animations/Confetti.json');
+  const animation = require('@/../assets/animations/Confetti.json');
   const dispatch = useAppDispatch();
 
 

@@ -1,24 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Input from '~/components/Input';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { Analytics } from '~/helpers/analytics';
-import BtnDefault from '~/components/BtnDefault';
+import Input from '@/components/Input';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { Analytics } from '@/helpers/analytics';
+import BtnDefault from '@/components/BtnDefault';
 import * as Clipboard from 'expo-clipboard';
 import { Checkbox, HelperText } from 'react-native-paper';
 import { Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
-import { PublicNavigation } from '~/models/routes/navigation.public';
-import { LeadRequest } from '~/models/lead/lead.request';
-import { PostLead } from '~/services/lead';
-import BottomsheetTerms from '~/components/BottomsheetTerms';
-import { useAuth } from '~/context/auth';
-import { useTheme } from '~/context/MyThemeContext';
-import CommonClears from '~/helpers/clears/common.clear';
-import CommonValidators from '~/helpers/validators/common.validators';
+import { PublicNavigation } from '@/models/routes/navigation.public';
+import { LeadRequest } from '@/models/lead/lead.request';
+import { PostLead } from '@/services/lead';
+import BottomsheetTerms from '@/components/BottomsheetTerms';
+import { useAuth } from '@/context/auth';
+import { useTheme } from '@/context/MyThemeContext';
+import CommonClears from '@/helpers/clears/common.clear';
+import CommonValidators from '@/helpers/validators/common.validators';
 import { useCustomStyles } from '../../style';
-import BottomSheetTypeSendCell from '~/components/BottomSheetTypeSendCell';
-import { setIsWpp } from '~/redux/reducers/lead';
+import BottomSheetTypeSendCell from '@/components/BottomSheetTypeSendCell';
+import { setIsWpp } from '@/redux/reducers/lead';
 
 type GeneralProps = {
   setGeneralInfos: React.Dispatch<React.SetStateAction<LeadRequest>>;

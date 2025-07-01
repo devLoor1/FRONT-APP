@@ -1,8 +1,8 @@
 import { View, Text } from 'react-native';
 import React, { useEffect } from 'react';
-import BtnDefault from '~/components/BtnDefault';
+import BtnDefault from '@/components/BtnDefault';
 import { useCustomStyles } from '../../style';
-import { Analytics } from '~/helpers/analytics';
+import { Analytics } from '@/helpers/analytics';
 
 type Props = {
   setPage: React.Dispatch<React.SetStateAction<number>>;

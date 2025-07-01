@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import BtnDefault from '~/components/BtnDefault';
-import { Analytics } from '~/helpers/analytics';
+import BtnDefault from '@/components/BtnDefault';
+import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from './style';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View } from 'react-native';
@@ -15,14 +15,14 @@ type ConfirmationProps = {
 export default function ConfirmationPage({ confirmRegister }: ConfirmationProps) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  const animation = require('~/../assets/animations/lock-ok.json');
+  const animation = require('@/../assets/animations/lock-ok.json');
 
   useEffect(() => {
     Analytics({ pageName: 'EsqueceuSenhaSucesso' });
   }, []);
 
   return (
-    <LinearGradient colors={[theme.customColors.secondary[700], '#013A6A']} style={{ flex: 1 }}>
+    <LinearGradient colors={[theme?.customColors?.secondary?.[700] || '#013A6A', '#013A6A']} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={{ flexGrow: 1 }}>

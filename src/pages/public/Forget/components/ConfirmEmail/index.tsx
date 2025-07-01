@@ -5,16 +5,16 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import Snack from '~/components/Snack';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { SendIdentifier } from '~/services/register';
-import { Analytics } from '~/helpers/analytics';
+import Snack from '@/components/Snack';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { SendIdentifier } from '@/services/register';
+import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Platform, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import CommonMask from '~/helpers/masks';
-import CountdownTimer from '~/components/CountdownTimer';
+import CommonMask from '@/helpers/masks';
+import CountdownTimer from '@/components/CountdownTimer';
 
 type ConfirmPageProps = {
   email: string;

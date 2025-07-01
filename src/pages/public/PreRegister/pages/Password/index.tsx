@@ -1,10 +1,10 @@
 import { View, Text, BackHandler, Platform } from 'react-native';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import React, { useEffect, useState } from 'react';
-import { SendPassword } from '~/services/lead';
-import { Analytics } from '~/helpers/analytics';
-import PasswordComp from '~/components/Password';
-import BtnDefault from '~/components/BtnDefault';
+import { SendPassword } from '@/services/lead';
+import { Analytics } from '@/helpers/analytics';
+import PasswordComp from '@/components/Password';
+import BtnDefault from '@/components/BtnDefault';
 import { useCustomStyles } from '../../style';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';

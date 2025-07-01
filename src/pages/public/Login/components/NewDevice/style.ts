@@ -1,22 +1,22 @@
 import { StyleSheet } from 'react-native';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
     title: {
-      color: theme.customColors.baseWhite,
+      color: theme?.customColors?.baseWhite || '#FFFFFF',
       textAlign: 'center',
-      fontFamily: theme.fonts.bold,
+      fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold',
       fontSize: 28,
       marginBottom: 24,
       marginTop: 40,
     },
     desc: {
-      color: theme.customColors.baseWhite,
+      color: theme?.customColors?.baseWhite || '#FFFFFF',
       textAlign: 'center',
-      fontFamily: theme.fonts.regular,
+      fontFamily: theme?.fonts?.regular || 'NunitoSans_400Regular',
       fontSize: 14,
       marginHorizontal: 'auto',
       marginBottom: 24,
@@ -25,21 +25,21 @@ export const useCustomStyles = () => {
       flexDirection: 'row',
       alignItems: 'center',
       padding: 16,
-      backgroundColor: theme.dark ? theme.customColors.neutrals[700] : theme.customColors.baseWhite,
+      backgroundColor: theme?.navigation?.dark ? theme?.customColors?.neutrals?.[700] || '#404040' : theme?.customColors?.baseWhite || '#FFFFFF',
       borderRadius: 8,
       marginBottom: 16,
       gap: 16,
       height: 100,
     },
     optionDesc: {
-      color: theme.colors.text,
+      color: theme?.navigation?.colors?.text || '#39393A',
       fontSize: 14,
-      fontFamily: theme.fonts.regular,
+      fontFamily: theme?.fonts?.regular || 'NunitoSans_400Regular',
     },
     optionValue: {
-      color: theme.colors.text,
+      color: theme?.navigation?.colors?.text || '#39393A',
       fontSize: 14,
-      fontFamily: theme.fonts.bold,
+      fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold',
     },
     change: {
       flexDirection: 'row',
@@ -48,13 +48,13 @@ export const useCustomStyles = () => {
       marginBottom: 10,
     },
     changeTxt: {
-      color: theme.customColors.baseWhite,
-      fontFamily: theme.fonts.bold,
+      color: theme?.customColors?.baseWhite || '#FFFFFF',
+      fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold',
       fontSize: 14,
       marginLeft: 8,
     },
     cell: {
-      backgroundColor: theme.dark ? theme.customColors.neutrals[700] : theme.customColors.baseWhite,
+      backgroundColor: theme?.navigation?.dark ? theme?.customColors?.neutrals?.[700] || '#404040' : theme?.customColors?.baseWhite || '#FFFFFF',
       borderRadius: 12,
     },
     focusCell: {},
@@ -64,8 +64,8 @@ export const useCustomStyles = () => {
       height: 55,
       width: 44,
       lineHeight: 55,
-      fontFamily: theme.fonts.bold,
-      color: theme.dark ? theme.customColors.neutrals[200] : theme.colors.text,
+      fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold',
+      color: theme?.navigation?.dark ? theme?.customColors?.neutrals?.[200] || '#E0E0E0' : theme?.navigation?.colors?.text || '#39393A',
     },
     sendAgainRow: {
       flexDirection: 'row',
@@ -73,14 +73,14 @@ export const useCustomStyles = () => {
       marginBottom: 24,
     },
     timer: {
-      color: theme.customColors.baseWhite,
+      color: theme?.customColors?.baseWhite || '#FFFFFF',
       fontSize: 14,
-      fontFamily: theme.fonts.semiBold,
+      fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold',
     },
     sendAgainTxt: {
-      color: theme.customColors.baseWhite,
+      color: theme?.customColors?.baseWhite || '#FFFFFF',
       fontSize: 14,
-      fontFamily: theme.fonts.semiBold,
+      fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold',
     },
     loadingOverlay: {
       position: 'absolute',

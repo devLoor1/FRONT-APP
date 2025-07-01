@@ -2,27 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCustomStyles } from './style';
-import Input from '~/components/Input';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import CommonValidators from '~/helpers/validators/common.validators';
-import { Login } from '~/services/auth';
-import { PublicNavigation } from '~/models/routes/navigation.public';
-import { reset } from '~/redux/reducers/auth';
-import { Analytics, handleAnalyticsUserProfile } from '~/helpers/analytics';
-import Version from '~/helpers/version/version';
-import NeedHelp from '~/components/NeedHelp';
-import { useTheme } from '~/context/MyThemeContext';
-import LogoDark from '~/../assets/newSvgs/LogoEscuro.svg';
-import Logo from '~/../assets/newSvgs/LogoClaro.svg';
-import BtnDefault from '~/components/BtnDefault';
+import Input from '@/components/Input';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import CommonValidators from '@/helpers/validators/common.validators';
+import { Login } from '@/services/auth';
+import { PublicNavigation } from '@/models/routes/navigation.public';
+import { reset } from '@/redux/reducers/auth';
+import { Analytics, handleAnalyticsUserProfile } from '@/helpers/analytics';
+import Version from '@/helpers/version/version';
+import NeedHelp from '@/components/NeedHelp';
+import { useTheme } from '@/context/MyThemeContext';
+import LogoDark from '@/../assets/newSvgs/LogoEscuro.svg';
+import Logo from '@/../assets/newSvgs/LogoClaro.svg';
+import BtnDefault from '@/components/BtnDefault';
 import { TextInput } from 'react-native-paper';
-import Snack from '~/components/Snack';
-import EyeIcon from '~/../assets/newSvgs/icons/visibility.svg';
-import EyeOffIcon from '~/../assets/newSvgs/icons/visibility_off.svg';
+import Snack from '@/components/Snack';
+import EyeIcon from '@/../assets/newSvgs/icons/visibility.svg';
+import EyeOffIcon from '@/../assets/newSvgs/icons/visibility_off.svg';
 import { Dimensions } from 'react-native';
 
 export default function LoginContent() {
   const { theme } = useTheme();
+  
+
   const styles = useCustomStyles();
   const [hidePassword, setHidePassword] = useState(true);
   const [email, setEmail] = useState('');
@@ -80,9 +82,11 @@ export default function LoginContent() {
     <>
       <View style={styles.container}>
         <View style={{ paddingHorizontal: horizontalMargin }}>
-          <View style={styles.logo}>{theme.dark ?
-            <Logo width={maxLogoWidth} height={maxLogoWidth * 0.25} /> :
-            <LogoDark width={maxLogoWidth} height={maxLogoWidth * 0.25} />}
+          <View style={styles.logo}>
+            {theme?.navigation?.dark ?
+              <Logo width={maxLogoWidth} height={maxLogoWidth * 0.25} /> :
+              <LogoDark width={maxLogoWidth} height={maxLogoWidth * 0.25} />
+            }
           </View>
         </View>
         <Input
@@ -113,13 +117,13 @@ export default function LoginContent() {
                 hidePassword ? (
                   <EyeOffIcon
                     color={
-                      theme.dark ? theme.customColors.neutrals[400] : theme.customColors.baseBlack
+                      theme?.navigation?.dark ? theme?.customColors?.neutrals?.[400] || '#969595' : theme?.customColors?.baseBlack || '#000000'
                     }
                   />
                 ) : (
                   <EyeIcon
                     color={
-                      theme.dark ? theme.customColors.neutrals[400] : theme.customColors.baseBlack
+                      theme?.navigation?.dark ? theme?.customColors?.neutrals?.[400] || '#969595' : theme?.customColors?.baseBlack || '#000000'
                     }
                   />
                 )
@@ -154,7 +158,7 @@ export default function LoginContent() {
               Analytics({ eventName: 'HomeLogin_CriarConta' });
               nav.navigate('PreRegister' as never);
             }}>
-            <Text style={{ ...styles.registerTxt, fontFamily: theme.fonts.bold }}>Criar conta</Text>
+            <Text style={{ ...styles.registerTxt, fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold' }}>Criar conta</Text>
           </TouchableOpacity>
         </View>
         <View style={{ alignItems: 'center' }}>

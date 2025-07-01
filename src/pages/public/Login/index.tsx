@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import EnableAuthentication from './components/EnableAuthentication';
-import { useAuth } from '~/context/auth';
-import SecureStorage from '~/storages/secure-storage';
+import { useAuth } from '@/context/auth';
+import SecureStorage from '@/storages/secure-storage';
 import NewDevice from './components/NewDevice';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { reset } from '~/redux/reducers/auth';
+import { reset } from '@/redux/reducers/auth';
 import { ScrollView } from 'react-native-gesture-handler';
 import LoginContent from './components/LoginContent';
 import { KeyboardAvoidingView, Platform } from 'react-native';
-import { Analytics } from '~/helpers/analytics';
+// import { Analytics } from '@/helpers/analytics';
 
 function LoginPage() {
   const refRBSheetAuth = useRef<RBSheet>(null);
@@ -32,7 +32,7 @@ function LoginPage() {
   }
 
   useEffect(() => {
-    Analytics({ pageName: 'HomeLogin' });
+    // Analytics({ pageName: 'HomeLogin' });
     getStorage();
   }, []);
 

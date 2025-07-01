@@ -2,12 +2,12 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import BottomSheet from '../../../../../components/BottomSheet';
 import { useCustomStyles } from './style';
-import { useTheme } from '~/context/MyThemeContext';
-import LockOpen from '~/../assets/newSvgs/icons/lock_open.svg';
-import Finger from '~/../assets/newSvgs/icons/Biometria.svg';
-import SecureStorage from '~/storages/secure-storage';
-import { useAuth } from '~/context/auth';
-import { Analytics } from '~/helpers/analytics';
+import { useTheme } from '@/context/MyThemeContext';
+import LockOpen from '@/../assets/newSvgs/icons/lock_open.svg';
+import Finger from '@/../assets/newSvgs/icons/Biometria.svg';
+import SecureStorage from '@/storages/secure-storage';
+import { useAuth } from '@/context/auth';
+import { Analytics } from '@/helpers/analytics';
 
 type Props = {
   refRBSheet: any;

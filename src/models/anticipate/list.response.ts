@@ -1,0 +1,21 @@
+export type ListResponse = {
+  idAppliedInvestment: number;
+  idOpportunity: number;
+  idProposal: number;
+  idUserBorrower: number;
+  codeOpportunity: string;
+  rating: string;
+  ratingCor: string;
+  ratingClassificacao: string;
+  valorTotalInvestido: number;
+  valorTotalRecebido: number;
+  valorTotalReceber: number;
+  valorLucroBrutoEsperado: number;
+  qtdCotasInvestidas: number;
+  qtdParcelasPagas: number;
+  prazo: number;
+  dataCompra: string;
+  idStatus: number;
+  idStatusAnticipation: 1000 | 1500 | 2000;
+  urlClickSign?: string;
+}[];

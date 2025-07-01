@@ -5,17 +5,17 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { GetIdentifierLead, SendIdentifierCellphone } from '~/services/lead';
-import CommonMask from '~/helpers/masks';
-import { useTheme } from '~/context/MyThemeContext';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { GetIdentifierLead, SendIdentifierCellphone } from '@/services/lead';
+import CommonMask from '@/helpers/masks';
+import { useTheme } from '@/context/MyThemeContext';
 import { Platform, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useCustomStyles } from '../../style';
-import { Analytics } from '~/helpers/analytics';
-import CountdownTimer from '~/components/CountdownTimer';
-import PhoneIcon from '~/../assets/newSvgs/icons/call.svg';
-import WhatsappIcon from '~/../assets/newSvgs/icons/whatsapp_logo.svg';
-import { setIsWpp } from '~/redux/reducers/lead';
+import { Analytics } from '@/helpers/analytics';
+import CountdownTimer from '@/components/CountdownTimer';
+import PhoneIcon from '@/../assets/newSvgs/icons/call.svg';
+import WhatsappIcon from '@/../assets/newSvgs/icons/whatsapp_logo.svg';
+import { setIsWpp } from '@/redux/reducers/lead';
 
 type ConfirmPageProps = {
   cellphone: string;

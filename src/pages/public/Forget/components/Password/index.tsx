@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { SendNewPassword } from '~/services/forget';
-import Snack from '~/components/Snack';
-import { Analytics } from '~/helpers/analytics';
-import BtnDefault from '~/components/BtnDefault';
-import PasswordComp from '~/components/Password';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { SendNewPassword } from '@/services/forget';
+import Snack from '@/components/Snack';
+import { Analytics } from '@/helpers/analytics';
+import BtnDefault from '@/components/BtnDefault';
+import PasswordComp from '@/components/Password';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View } from 'react-native';
 import { useCustomStyles } from '../../style';

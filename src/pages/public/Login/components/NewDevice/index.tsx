@@ -16,17 +16,17 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { useTheme } from '~/context/MyThemeContext';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import Snack from '~/components/Snack';
-import { GetNewDeviceCode, PostNewDeviceCode } from '~/services/auth';
-import { NewcellRequest } from '~/models/auth/newphone.request';
-import Envelope from '~/../assets/newSvgs/icons/mail.svg';
-import Phone from '~/../assets/newSvgs/icons/call.svg';
-import WhatsappIcon from '~/../assets/newSvgs/icons/whatsapp_logo.svg';
-import ArrowIcon from '~/../assets/newSvgs/icons/keyboard_arrow_right.svg';
-import { Analytics } from '~/helpers/analytics';
-import CountdownTimer from '~/components/CountdownTimer';
+import { useTheme } from '@/context/MyThemeContext';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import Snack from '@/components/Snack';
+import { GetNewDeviceCode, PostNewDeviceCode } from '@/services/auth';
+import { NewcellRequest } from '@/models/auth/newphone.request';
+import Envelope from '@/../assets/newSvgs/icons/mail.svg';
+import Phone from '@/../assets/newSvgs/icons/call.svg';
+import WhatsappIcon from '@/../assets/newSvgs/icons/whatsapp_logo.svg';
+import ArrowIcon from '@/../assets/newSvgs/icons/keyboard_arrow_right.svg';
+import { Analytics } from '@/helpers/analytics';
+import CountdownTimer from '@/components/CountdownTimer';
 
 type Props = {
   refRBSheet: any;
@@ -50,6 +50,8 @@ export default function RegisterNewPhone({
   const [error, setError] = useState('');
   const styles = useCustomStyles();
   const { theme } = useTheme();
+  
+
   const [value, setValue] = useState('');
   const [isWpp, setIsWpp] = useState(false)
   const [canResend, setCanResend] = useState(false);
@@ -163,6 +165,14 @@ export default function RegisterNewPhone({
     }
   }, [requestError]);
 
+  useEffect(() => {
+    if (newDevicePage === 1) {
+      Analytics({ pageName: 'NovoDevice' });
+    } else if (newDevicePage === 2) {
+      Analytics({ pageName: 'NovoDeviceSMS' });
+    }
+  }, [newDevicePage]);
+
   const ButtonChangeMethod = () => {
     if (reason === 'ChangeDeviceEmail') {
       return (
@@ -180,7 +190,7 @@ export default function RegisterNewPhone({
               return getCode('ChangeDeviceCell');
             }}>
             <>
-              <Phone color={theme.customColors.baseWhite} width={18} height={18} />
+              <Phone color={theme?.customColors?.baseWhite || '#FFFFFF'} width={18} height={18} />
               <Text style={styles.changeTxt}>Trocar para SMS</Text>
             </>
           </TouchableOpacity>
@@ -197,7 +207,7 @@ export default function RegisterNewPhone({
               return getCode('ChangeDeviceCell', true);
             }}>
             <>
-              <WhatsappIcon color={theme.customColors.baseWhite} width={18} height={18} />
+              <WhatsappIcon color={theme?.customColors?.baseWhite || '#FFFFFF'} width={18} height={18} />
               <Text style={styles.changeTxt}>Trocar para Whatsapp</Text>
             </>
           </TouchableOpacity>
@@ -219,10 +229,10 @@ export default function RegisterNewPhone({
             setShowSnack(true);
             return getCode('ChangeDeviceEmail');
           }}>
-          <>
-            <Envelope color={theme.customColors.baseWhite} width={18} height={18} />
-            <Text style={styles.changeTxt}>Trocar para E-mail</Text>
-          </>
+                      <>
+              <Envelope color={theme?.customColors?.baseWhite || '#FFFFFF'} width={18} height={18} />
+              <Text style={styles.changeTxt}>Trocar para E-mail</Text>
+            </>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.change, { marginBottom: 30 }]}
@@ -236,10 +246,10 @@ export default function RegisterNewPhone({
             setShowSnack(true);
             return getCode('ChangeDeviceCell', !isWpp);
           }}>
-          <>
-            <WhatsappIcon color={theme.customColors.baseWhite} width={18} height={18} />
-            <Text style={styles.changeTxt}>{isWpp ? 'Tocar para SMS' : 'Trocar para Whatsapp'}</Text>
-          </>
+                      <>
+              <WhatsappIcon color={theme?.customColors?.baseWhite || '#FFFFFF'} width={18} height={18} />
+              <Text style={styles.changeTxt}>{isWpp ? 'Tocar para SMS' : 'Trocar para Whatsapp'}</Text>
+            </>
         </TouchableOpacity>
       </>
     );
@@ -259,13 +269,11 @@ export default function RegisterNewPhone({
       )}
       {newDevicePage === 1 && (
         <>
-          {Analytics({ pageName: 'NovoDevice' })}
-
           <View>
             <Text style={styles.title}>Registar novo dispositivo</Text>
             <Text style={styles.desc}>
               Para confirmar essa ação, precisamos da{' '}
-              <Text style={{ fontFamily: theme.fonts.bold }}>sua autenticação</Text>. Como deseja
+              <Text style={{ fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold' }}>sua autenticação</Text>. Como deseja
               continuar?
             </Text>
             <TouchableOpacity
@@ -274,11 +282,11 @@ export default function RegisterNewPhone({
                 getCode('ChangeDeviceEmail');
               }}
               style={styles.option}>
-              <Envelope color={theme.colors.text} width={18} height={18} />
+              <Envelope color={theme?.navigation?.colors?.text || '#39393A'} width={18} height={18} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.optionDesc}>Enviar código de confirmação para o seu Email</Text>
               </View>
-              <ArrowIcon color={theme.colors.text} />
+              <ArrowIcon color={theme?.navigation?.colors?.text || '#39393A'} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -286,11 +294,11 @@ export default function RegisterNewPhone({
                 getCode('ChangeDeviceCell');
               }}
               style={styles.option}>
-              <Phone color={theme.colors.text} width={18} height={18} />
+              <Phone color={theme?.navigation?.colors?.text || '#39393A'} width={18} height={18} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.optionDesc}>Enviar código de confirmação via SMS</Text>
               </View>
-              <ArrowIcon color={theme.colors.text} />
+              <ArrowIcon color={theme?.navigation?.colors?.text || '#39393A'} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -298,18 +306,17 @@ export default function RegisterNewPhone({
                 getCode('ChangeDeviceCell', true);
               }}
               style={styles.option}>
-              <WhatsappIcon color={theme.colors.text} width={18} height={18} />
+              <WhatsappIcon color={theme?.navigation?.colors?.text || '#39393A'} width={18} height={18} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.optionDesc}>Enviar código de confirmação via Whatsapp</Text>
               </View>
-              <ArrowIcon color={theme.colors.text} />
+              <ArrowIcon color={theme?.navigation?.colors?.text || '#39393A'} />
             </TouchableOpacity>
           </View>
         </>
       )}
       {newDevicePage === 2 && (
         <>
-          {Analytics({ pageName: 'NovoDeviceSMS' })}
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flexGrow: 1 }}>
@@ -320,7 +327,7 @@ export default function RegisterNewPhone({
                 </Text>
                 <Text style={{ ...styles.desc }}>
                   Digite abaixo o{' '}
-                  <Text style={{ fontFamily: theme.fonts.bold }}>código de 6 dígitos</Text> que
+                  <Text style={{ fontFamily: theme?.fonts?.bold || 'NunitoSans_700Bold' }}>código de 6 dígitos</Text> que
                   enviamos{' '}
                   {getSubtitleCode()}
                 </Text>
@@ -369,7 +376,7 @@ export default function RegisterNewPhone({
                     <Text
                       style={[
                         styles.sendAgainTxt,
-                        !canResend && { color: theme.customColors.neutrals[500] },
+                        !canResend && { color: theme?.customColors?.neutrals?.[500] || '#6B6B6B' },
                       ]}>
                       {' '}
                       Enviar novamente

@@ -6,13 +6,13 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { useTheme } from '~/context/MyThemeContext';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import CommonMask from '~/helpers/masks';
-import { GetIdentifierLead, SendIdentifierEmail } from '~/services/lead';
-import { Analytics } from '~/helpers/analytics';
+import { useTheme } from '@/context/MyThemeContext';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import CommonMask from '@/helpers/masks';
+import { GetIdentifierLead, SendIdentifierEmail } from '@/services/lead';
+import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
-import CountdownTimer from '~/components/CountdownTimer';
+import CountdownTimer from '@/components/CountdownTimer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {

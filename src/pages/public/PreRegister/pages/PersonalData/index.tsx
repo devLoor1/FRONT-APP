@@ -1,16 +1,16 @@
 import { View, Text, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '~/context/MyThemeContext';
-import Input from '~/components/Input';
-import BtnDefault from '~/components/BtnDefault';
-import { LeadRequest } from '~/models/lead/lead.request';
-import CommonValidators from '~/helpers/validators/common.validators';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { PostLead } from '~/services/lead';
-import { useAuth } from '~/context/auth';
-import CommonClears from '~/helpers/clears/common.clear';
+import { useTheme } from '@/context/MyThemeContext';
+import Input from '@/components/Input';
+import BtnDefault from '@/components/BtnDefault';
+import { LeadRequest } from '@/models/lead/lead.request';
+import CommonValidators from '@/helpers/validators/common.validators';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { PostLead } from '@/services/lead';
+import { useAuth } from '@/context/auth';
+import CommonClears from '@/helpers/clears/common.clear';
 import { HelperText } from 'react-native-paper';
-import { Analytics } from '~/helpers/analytics';
+import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
 
 type Props = {

@@ -1,0 +1,25 @@
+{
+  "onboarding": {
+    "page1": {
+      "title": "Start investing",
+      "description": "With <highlight>Wealth Money</highlight>, you can make your investments more profitable than the market, with total transparency and security.\n\n<highlight>All this for free.</highlight>"
+    },
+    "page2": {
+      "title": "Invest and earn",
+      "description": "<highlight>Wealth Money</highlight> allows you to purchase investment shares in companies with complete transparency and security. This ensures that you have all the information you need to make safe investment decisions."
+    },
+    "page3": {
+      "title": "Create your Account",
+      "description": "Creating an account with <highlight>Wealth Money</highlight> is simple, quick and free.\n\nIf you prefer, you can count on our team of advisors to guide you through each stage of your investment.",
+      "title2": "100% Free",
+      "description2": "See our opportunities and invest in the one that best suits your profile!"
+    },
+    "opportunities": {
+      "title": "Our Opportunities",
+      "btn": {
+        "login": "Login",
+        "createAccount": "Create Account"
+      }
+    }
+  }
+}

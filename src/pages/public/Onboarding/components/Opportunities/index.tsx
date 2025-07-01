@@ -6,11 +6,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../../../../../redux/hooks';
 import CommonMask from '../../../../../helpers/masks';
 import CommonStorage from '../../../../../storages/common-storage';
-import WarrantyIcon from '~/../assets/newSvgs/icons/new_releases.svg';
-import RepurchaseIcon from '~/../assets/newSvgs/icons/stars.svg';
-import HasPropertyIcon from '~/../assets/newSvgs/icons/home.svg';
-import { useTheme } from '~/context/MyThemeContext';
-import { Analytics } from '~/helpers/analytics';
+import WarrantyIcon from '@/../assets/newSvgs/icons/new_releases.svg';
+import RepurchaseIcon from '@/../assets/newSvgs/icons/stars.svg';
+import HasPropertyIcon from '@/../assets/newSvgs/icons/home.svg';
+import { useTheme } from '@/context/MyThemeContext';
+import { Analytics } from '@/helpers/analytics';
 
 export default function Opportunities() {
   const { theme } = useTheme();
