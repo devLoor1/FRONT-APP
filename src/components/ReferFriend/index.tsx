@@ -33,7 +33,7 @@ export default function ReferFriend({ refRBSheet }: Props) {
   const shareCode = async () => {
     Analytics({ eventName: 'IndicacaoShare_CompartilharCodigo' });
     Share.share({
-      message: `Conheça a Wealth Money e aproveite as melhores oportunidades. Diversifique seus investimentos com o P2P Lending e alcance rentabilidades atrativas.\n\nAbra sua conta em apenas 3 minutos, use o código ${code} e ganhe 1% de cashback durante 1 mês!\n\nhttps://wealthmoney-dynamic-link.web.app/?invite=${code}`,
+      message: `Conheça a Wealth Money e aproveite as melhores oportunidades. Diversifique seus investimentos com o P2P Lending e alcance rentabilidades atrativas.\n\nAbra sua conta em apenas 3 minutos, use o código ${code} e ganhe 1% de cashback durante 1 mês!\n\nhttps://Loor-dynamic-link.web.app/?invite=${code}`,
     });
   };
 

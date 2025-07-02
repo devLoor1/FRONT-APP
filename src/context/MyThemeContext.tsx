@@ -74,7 +74,7 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
   );
 
   const linking: LinkingOptions<RootStackParamList> = {
-    prefixes: [url, 'wealthmoney://'],
+    prefixes: [url, 'Loor://'],
     config: {
       screens: {
         Tabs: {

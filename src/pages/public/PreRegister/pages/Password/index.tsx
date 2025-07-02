@@ -1,21 +1,27 @@
 import { View, Text, BackHandler, Platform } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import React, { useEffect, useState } from 'react';
-import { SendPassword } from '@/services/lead';
 import { Analytics } from '@/helpers/analytics';
 import PasswordComp from '@/components/Password';
 import BtnDefault from '@/components/BtnDefault';
 import { useCustomStyles } from '../../style';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RegisterRequest } from '@/models/new/auth/register.request';
+import { PostRegister } from '@/services/new/register';
 
-export default function Password() {
+type Props = {
+  readonly registerPayload: RegisterRequest;
+  readonly onPress: () => void;
+};
+
+export default function Password({ registerPayload, onPress }: Props) {
   const dispatch = useAppDispatch();
   const styles = useCustomStyles();
 
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const { hash, loadingConfirm } = useAppSelector(state => state.lead);
+  const { loadingConfirm } = useAppSelector(state => state.lead);
   const [isValidPassword, setIsValidPassword] = useState(false);
   const navigation = useNavigation();
 
@@ -34,20 +40,17 @@ export default function Password() {
     };
   }, []);
 
-
-
-  async function onClickPassword() {
-    if (isValidPassword && hash && hash.hash) {
-
+  async function onSubmit() {
+    if (isValidPassword) {
       await AsyncStorage.setItem('userPasswordLogin', password);
 
-      await dispatch(
-        SendPassword({
-          hash: hash.hash,
-          password,
-          passwordConfirm,
-        })
-      );
+      try {
+        await dispatch(PostRegister(registerPayload));
+
+        onPress();
+      } catch (error) {
+        console.error('Erro ao persistir dados:', error);
+      }
     }
   }
 
@@ -74,7 +77,7 @@ export default function Password() {
         loading={loadingConfirm}
         onPress={() => {
           Analytics({ eventName: 'CadastroDefinirSenha_Continuar' });
-          onClickPassword();
+          onSubmit();
         }}
         disabled={!isValidPassword}
       />

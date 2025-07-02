@@ -8,7 +8,7 @@ import * as Updates from 'expo-updates';
 import Debug from '@/helpers/debug';
 
 const api = axios.create({
-  baseURL: Constants.expoConfig?.extra?.env.baseUrl,
+  baseURL: Constants?.expoConfig?.extra?.env?.baseUrl || 'https://sua-url-padrao.com',
   headers: {
     'device-info': deviceData,
     'app-version': [

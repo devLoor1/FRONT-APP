@@ -35,7 +35,7 @@ const customColors = {
     1000: '#065050',
   },
   secondary: {
-    default: '#015AA5',
+    default: '#0525CE',
     100: '#D4EBFF',
     200: '#AAD8FE',
     300: '#7FC4FE',
@@ -86,6 +86,8 @@ export interface AppTheme {
   navigation: NavigationTheme;
   customColors: Colors;
   fonts: typeof fonts;
+  dark: boolean;
+  colors: typeof DefaultTheme.colors;
 }
 
 export const lightTheme: AppTheme = {
@@ -108,6 +110,8 @@ export const lightTheme: AppTheme = {
     desc: customColors.neutrals[700],
   },
   fonts,
+  dark: false,
+  colors: DefaultTheme.colors,
 };
 
 export const darkTheme: AppTheme = {
@@ -130,4 +134,6 @@ export const darkTheme: AppTheme = {
     desc: customColors.neutrals[200],
   },
   fonts,
+  dark: true,
+  colors: DarkTheme.colors,
 }; 

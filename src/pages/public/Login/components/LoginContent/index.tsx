@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCustomStyles } from './style';
 import Input from '@/components/Input';
@@ -12,14 +12,13 @@ import { Analytics, handleAnalyticsUserProfile } from '@/helpers/analytics';
 import Version from '@/helpers/version/version';
 import NeedHelp from '@/components/NeedHelp';
 import { useTheme } from '@/context/MyThemeContext';
-import LogoDark from '@/../assets/newSvgs/LogoEscuro.svg';
 import Logo from '@/../assets/newSvgs/LogoClaro.svg';
+import LogoDark from '@/../assets/newSvgs/LogoEscuro.svg';
 import BtnDefault from '@/components/BtnDefault';
 import { TextInput } from 'react-native-paper';
 import Snack from '@/components/Snack';
 import EyeIcon from '@/../assets/newSvgs/icons/visibility.svg';
 import EyeOffIcon from '@/../assets/newSvgs/icons/visibility_off.svg';
-import { Dimensions } from 'react-native';
 
 export default function LoginContent() {
   const { theme } = useTheme();
@@ -42,7 +41,7 @@ export default function LoginContent() {
   const isFormValid = emailValidator.status && passwordValidator.status;
 
   const screenWidth = Dimensions.get('window').width;
-  const horizontalMargin = 50;
+  const horizontalMargin = 100;
   const maxLogoWidth = screenWidth - horizontalMargin * 2;
 
   async function handleSingIn() {
@@ -83,10 +82,7 @@ export default function LoginContent() {
       <View style={styles.container}>
         <View style={{ paddingHorizontal: horizontalMargin }}>
           <View style={styles.logo}>
-            {theme?.navigation?.dark ?
-              <Logo width={maxLogoWidth} height={maxLogoWidth * 0.25} /> :
-              <LogoDark width={maxLogoWidth} height={maxLogoWidth * 0.25} />
-            }
+            <Logo width={maxLogoWidth} height={maxLogoWidth * 0.25} /> 
           </View>
         </View>
         <Input

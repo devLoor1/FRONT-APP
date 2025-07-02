@@ -36,7 +36,7 @@ export const useCustomStyles = () => {
     rowInputs: {
       flexDirection: 'row',
       gap: 16,
-      marginBottom: 40,
+      marginBottom: 16,
     },
     descInput: {
       fontSize: 12,

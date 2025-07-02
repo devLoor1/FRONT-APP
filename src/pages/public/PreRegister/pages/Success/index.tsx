@@ -69,7 +69,7 @@ export default function SuccessPage({ resetAll }: Props) {
           <View style={{ flexGrow: 1 }}>
             <Text style={styles.title}>Você está quase lá!</Text>
             <Text style={{ ...styles.desc, fontSize: 18 }}>
-              Seu acesso está liberado, e nesse momento estamos analisando seus dados para abertura
+              Seu cadastro foi realizado com sucesso, e nesse momento estamos analisando seus dados para abertura
               de conta.
             </Text>
             <Text style={{ ...styles.desc, fontFamily: theme.fonts.regular }}>

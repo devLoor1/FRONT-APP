@@ -60,9 +60,9 @@ async function handleAnalyticsUserProfile(action: string, data: any = null) {
 
     // Create notification channel (Android)
     if (Constants.expoConfig?.extra?.env.production) {
-      await Notifications.setNotificationChannelAsync('WealthMoneyChanel', {
-        name: 'WealthMoney Channel Notification',
-        description: 'Canal de Push Notifications utilizado pela WealthMoney',
+      await Notifications.setNotificationChannelAsync('LoorChanel', {
+        name: 'Loor Channel Notification',
+        description: 'Canal de Push Notifications utilizado pela Loor',
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',

@@ -1,17 +1,17 @@
 {
   "expo": {
     "name": "Loor",
-    "slug": "Loor",
+    "slug": "loor",
     "version": "1.0.0",
     "scheme": "loor",
     "orientation": "portrait",
-    "icon": "./assets/icons/icon.png",
+    "icon": "./assets/icons/icon-loor-v2.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-loor.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F8F9FB"
     },
     "ios": {
       "supportsTablet": true
@@ -29,6 +29,7 @@
     "plugins": [
       "expo-secure-store",
       "expo-notifications"
-    ]
+    ],
+    "owner": "wise-money"
   }
 }

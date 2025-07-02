@@ -3,17 +3,40 @@ import React, { ReactNode } from 'react';
 import { useTheme } from '@/context/MyThemeContext';
 
 type Props = {
-  label: string;
-  onPress?: ((event: GestureResponderEvent) => void) | undefined;
-  white?: boolean;
-  disabled?: boolean;
-  marginBottom?: number;
-  icon?: ReactNode;
-  style?: any;
-  labelStyle?: TextStyle;
-  loading?: boolean;
-  bg?: string;
+  readonly label: string;
+  readonly onPress: ((event: GestureResponderEvent) => void) | undefined;
+  readonly white?: boolean;
+  readonly disabled?: boolean;
+  readonly marginBottom?: number;
+  readonly icon?: ReactNode;
+  readonly style?: any;
+  readonly labelStyle?: TextStyle;
+  readonly loading?: boolean;
+  readonly bg?: string;
 };
+
+function getBackgroundColor({ bg, white, theme }: { bg?: string; white?: boolean; theme: any }) {
+  if (bg) return bg;
+  if (white) return theme?.navigation?.dark
+    ? theme?.customColors?.baseBlack ?? '#000000'
+    : theme?.customColors?.baseWhite ?? '#FFFFFF';
+  return theme?.customColors?.secondary?.default ?? '#007AFF';
+}
+
+function getBorderColor({ bg, white, theme }: { bg?: string; white?: boolean; theme: any }) {
+  if (bg) return bg;
+  if (white) return theme?.navigation?.dark
+    ? theme?.customColors?.baseWhite ?? '#FFFFFF'
+    : theme?.customColors?.secondary?.default ?? '#007AFF';
+  return theme?.customColors?.secondary?.default ?? '#007AFF';
+}
+
+function getTextColor({ white, theme }: { white?: boolean; theme: any }) {
+  if (white) return theme?.navigation?.dark
+    ? theme?.customColors?.baseWhite ?? '#FFFFFF'
+    : theme?.customColors?.secondary?.default ?? '#007AFF';
+  return theme?.customColors?.baseWhite ?? '#FFFFFF';
+}
 
 export default function BtnDefault({
   label,
@@ -32,24 +55,12 @@ export default function BtnDefault({
   const styles = StyleSheet.create({
     btn: {
       height: 45,
-      backgroundColor: bg
-        ? bg
-        : white
-        ? theme?.navigation?.dark
-          ? theme?.customColors?.baseBlack || '#000000'
-          : theme?.customColors?.baseWhite || '#FFFFFF'
-        : theme?.customColors?.secondary?.default || '#007AFF',
+      backgroundColor: getBackgroundColor({ bg, white, theme }),
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 100,
       borderWidth: 1,
-      borderColor: bg
-        ? bg
-        : false || white
-        ? theme?.navigation?.dark
-          ? theme?.customColors?.baseWhite || '#FFFFFF'
-          : theme?.customColors?.secondary?.default || '#007AFF'
-        : theme?.customColors?.secondary?.default || '#007AFF',
+      borderColor: getBorderColor({ bg, white, theme }),
       opacity: disabled ? 0.6 : 1,
       marginBottom: marginBottom,
       flexDirection: icon ? 'row' : 'column',
@@ -58,17 +69,13 @@ export default function BtnDefault({
     txt: {
       fontSize: 14,
       fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold',
-      color: white
-        ? theme?.navigation?.dark
-          ? theme?.customColors?.baseWhite || '#FFFFFF'
-          : theme?.customColors?.secondary?.default || '#007AFF'
-        : theme?.customColors?.baseWhite || '#FFFFFF',
+      color: getTextColor({ white, theme }),
     },
   });
 
   return (
     <TouchableOpacity onPress={onPress} style={[styles.btn, style]} disabled={loading || disabled}>
-      {icon && icon}
+      {icon}
       <Text style={[styles.txt, labelStyle]}>{label}</Text>
     </TouchableOpacity>
   );

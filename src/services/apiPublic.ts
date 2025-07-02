@@ -5,7 +5,7 @@ import * as Updates from 'expo-updates';
 import Debug from '@/helpers/debug';
 
 const apiPublic = axios.create({
-  baseURL: Constants.expoConfig?.extra?.env.baseUrl,
+  baseURL: Constants?.expoConfig?.extra?.env?.baseUrl || 'https://sua-url-padrao.com',
   headers: {
     'device-info': deviceData,
     'app-version': [
@@ -14,7 +14,7 @@ const apiPublic = axios.create({
       Constants.expoConfig?.extra?.version,
     ].join(' - '),
     'Content-Type': 'application/json',
-    Authorization: Constants.expoConfig?.extra?.env.basicAuth,
+    Authorization: Constants?.expoConfig?.extra?.env?.basicAuth || '',
   },
 });
 

@@ -95,7 +95,7 @@ export default function Select({
         height={height / 2}
         background={theme.dark ? theme.colors.background : '#FFFFFF'}>
         <View style={styles.bottomSheetContainer}>
-          <Text style={styles.title}>{label}</Text>
+          <Text style={styles.title}>{label ? label : placeholder}</Text>
           {withSearch && (
             <View>
               <Searchbar

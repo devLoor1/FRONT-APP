@@ -71,7 +71,7 @@ export default function BottomsheetTerms({ refRBSheet }: authProps) {
     <BottomSheet refRBSheet={refRBSheet} height={440} draggable={false}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => refRBSheet?.current?.close()} style={styles.btnClose}>
-          <CloseIcon color={theme.colors.text} width={24} height={24} />
+          <CloseIcon color={theme.navigation.colors.text} width={24} height={24} />
         </TouchableOpacity>
         <View style={styles.logo}>
           {theme.dark ? <Logo width={150} /> : <LogoWhite width={150} />}
@@ -79,7 +79,7 @@ export default function BottomsheetTerms({ refRBSheet }: authProps) {
         <Text style={styles.title}>Termos e condições</Text>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <TouchableOpacity activeOpacity={1}>
-            <Text style={styles.desc}>{publicTerms && publicTerms.termText}</Text>
+            <Text style={styles.desc}>{publicTerms?.termText ?? ''}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

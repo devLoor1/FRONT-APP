@@ -14,7 +14,7 @@ import {
 import Constants from 'expo-constants';
 
 const deviceData = JSON.stringify({
-  isDevice: Constants.expoConfig?.extra?.env.production ? isDevice : true,
+  isDevice: Constants?.expoConfig?.extra?.env?.production === true ? isDevice : true,
   brand,
   manufacturer,
   modelName,

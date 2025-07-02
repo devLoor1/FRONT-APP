@@ -14,10 +14,10 @@ export const injectStore = (_store: RootStateOrAny) => {
 };
 
 export const apiRefresh = axios.create({
-  baseURL: Constants.expoConfig?.extra?.env.baseUrl,
+  baseURL: Constants?.expoConfig?.extra?.env?.baseUrl || 'https://sua-url-padrao.com',
   headers: {
     'device-info': deviceData,
-    Authorization: Constants.expoConfig?.extra?.env.basicAuth,
+    Authorization: Constants?.expoConfig?.extra?.env?.basicAuth || '',
   },
 });
 
