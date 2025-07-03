@@ -1,10 +1,11 @@
-import api from '../api';
-import Debug from '@/helpers/debug';
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import LogRocketHelper from '@/helpers/logRocket';
-import { RegisterRequest } from '@/models/new/auth/register.request';
+import api from "../api";
+import Debug from "@/helpers/debug";
+import LogRocketHelper from "@/helpers/logRocket";
+import { RegisterRequest } from "@/models/new/auth/register.request";
 
-export const PostRegister = createAsyncThunk('PostRegister', async (request: RegisterRequest) => {
+type RegisterResponse = { message: string; data: { token: string } };
+
+export const postRegister = async (request: RegisterRequest) => {
   let body = { ...request };
 
   if (request.full_name && request.email) {
@@ -17,14 +18,11 @@ export const PostRegister = createAsyncThunk('PostRegister', async (request: Reg
       name: request.full_name,
     });
   }
-  
-  const response = await api
-    .patch(`/auth/investor/register`, body)
-    .then((r: any) => {
-      return r.data;
-    })
-    .catch((error: any) => {
-      return error.response.data;
-    });
-  return response;
-});
+
+  const response = await api.post<RegisterResponse>(
+    `/auth/investor/register`,
+    body
+  );
+
+  return response.data;
+};

@@ -1,46 +1,47 @@
-import axios from 'axios';
-import Constants from 'expo-constants';
-import deviceData from '@/helpers/deviceData';
-import refreshToken from '@/helpers/refreshToken';
-import AuthStorage from '@/storages/auth-storage';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import * as Updates from 'expo-updates';
-import Debug from '@/helpers/debug';
+import axios from "axios";
+import Constants from "expo-constants";
+import deviceData from "@/helpers/deviceData";
+import refreshToken from "@/helpers/refreshToken";
+import AuthStorage from "@/storages/auth-storage";
+import createAuthRefreshInterceptor from "axios-auth-refresh";
+import * as Updates from "expo-updates";
+import Debug from "@/helpers/debug";
 
 const api = axios.create({
-  baseURL: Constants?.expoConfig?.extra?.env?.baseUrl || 'https://sua-url-padrao.com',
+  baseURL:
+    Constants?.expoConfig?.extra?.env?.baseUrl || "https://sua-url-padrao.com",
   headers: {
-    'device-info': deviceData,
-    'app-version': [
+    "device-info": deviceData,
+    "app-version": [
       Updates.channel,
       Constants.expoConfig?.extra?.env?.env,
       Constants.expoConfig?.extra?.version,
-    ].join(' - '),
-    'Content-Type': 'application/json',
+    ].join(" - "),
+    "Content-Type": "application/json",
   },
 });
 
 createAuthRefreshInterceptor(api, refreshToken);
 
 api.interceptors.response.use(
-  config => {
+  (config) => {
     return config;
   },
-  error => {
+  (error) => {
     Debug.Capture(error);
     return Promise.reject(error);
   }
 );
 
 api.interceptors.request.use(
-  async config => {
+  async (config) => {
     const token = await AuthStorage.GetPrivateToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );
