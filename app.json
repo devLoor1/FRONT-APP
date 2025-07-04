@@ -14,21 +14,28 @@
       "backgroundColor": "#F8F9FB"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.loor"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/icon-adaptive.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "br.com.loor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store",
-      "expo-notifications"
+      "expo-notifications",
+      "@logrocket/react-native",
+      [
+        "expo-build-properties",
+        { "android": { "minSdkVersion": 25, "ndkVersion": "27.2.12479018" } }
+      ]
     ],
     "owner": "wise-money"
   }
