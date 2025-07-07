@@ -1,67 +1,72 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { DebitResponse } from '@/models/investiment/debit.response';
-import { SummaryResponse } from '@/models/investiment/summary.response';
-import api from './api';
-import { ReceivedInterestGraphResponse } from '@/models/investiment/receivedInterestGraph.response';
-import { WalletResponse } from '@/models/investiment/wallet.response';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { DebitResponse } from "@/models/investiment/debit.response";
+import { SummaryResponse } from "@/models/investiment/summary.response";
+import api from "./api";
+import { ReceivedInterestGraphResponse } from "@/models/investiment/receivedInterestGraph.response";
+import { WalletResponse } from "@/models/investiment/wallet.response";
 
-export const GetDebitSummary = createAsyncThunk('wallet/debitSummary', async () => {
-  const response = await api
-    .get(`/investment/invest/bad/debit/v3`)
-    .then((r): DebitResponse => r.data)
-    .catch(error => {
-      return error.response.data;
-    });
-  return response;
-});
+export const GetDebitSummary = createAsyncThunk(
+  "wallet/debitSummary",
+  async () => {
+    const response = await api
+      .get(`/investment/invest/bad/debit/v3`)
+      .then((r): DebitResponse => r.data)
+      .catch((error) => {
+        return error.response.data;
+      });
+    return response;
+  }
+);
 
-export const GetSummary = createAsyncThunk('wallet/summary', async () => {
+export const GetSummary = createAsyncThunk("wallet/summary", async () => {
   const response = await api
     .get(`/investment/calc/resume/wallet`)
     .then((r): SummaryResponse => r.data)
-    .catch(error => {
+    .catch((error) => {
       return error.response.data;
     });
   return response;
 });
 
-export const GetWalletResume = createAsyncThunk('wallet/resume', async () => {
-  const response = await api
-    .get(`/investment/calc/resume/wallet`)
-    .then((r): WalletResponse => r.data)
-    .catch(error => {
-      return error.response.data;
-    });
-  return response;
-});
+export const getWalletResume = async () => {
+  const response = await api.get<WalletResponse>("/investors/home");
 
-export const GetInterestReceivedGraph = createAsyncThunk('wallet/received', async () => {
-  const response = await api
-    .get(`/investment/calc/graph/received`)
-    .then((r): ReceivedInterestGraphResponse[] => r.data)
-    .catch(error => {
-      return error.response.data;
-    });
-  return response;
-});
+  return response.data.data;
+};
 
-export const GetQtdInvestments = createAsyncThunk('wallet/investment', async () => {
-  const response = await api
-    .get(`investment/calc/quantity/investment`)
-    .then((r): number => r.data)
-    .catch(error => {
-      return error.response.data;
-    });
-  return response;
-});
+export const GetInterestReceivedGraph = createAsyncThunk(
+  "wallet/received",
+  async () => {
+    const response = await api
+      .get(`/investment/calc/graph/received`)
+      .then((r): ReceivedInterestGraphResponse[] => r.data)
+      .catch((error) => {
+        return error.response.data;
+      });
+    return response;
+  }
+);
+
+export const GetQtdInvestments = createAsyncThunk(
+  "wallet/investment",
+  async () => {
+    const response = await api
+      .get(`investment/calc/quantity/investment`)
+      .then((r): number => r.data)
+      .catch((error) => {
+        return error.response.data;
+      });
+    return response;
+  }
+);
 
 export const GetContractPDF = createAsyncThunk(
-  'wallet/pdf',
+  "wallet/pdf",
   async (id: number) => {
     const response = await api
       .get(`/investment/invest/link/cccb/${id}`)
       .then((r): string => r.data.url)
-      .catch(error => {
+      .catch((error) => {
         return error.response.data;
       });
 

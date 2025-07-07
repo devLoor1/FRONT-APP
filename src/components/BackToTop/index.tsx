@@ -1,14 +1,20 @@
-import React from 'react';
-import { FlatList, ScrollView, StyleSheet, TouchableOpacity, SectionList } from 'react-native';
-import { useTheme } from '@/context/MyThemeContext';
-import ArrowIcon from '@/../assets/newSvgs/icons/arrow_upward_alt.svg';
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Portal } from 'react-native-paper';
-import { useIsFocused } from '@react-navigation/native';
+import React from "react";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  SectionList,
+} from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
+import ArrowIcon from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
+import Animated, { ZoomIn, ZoomOut } from "react-native-reanimated";
+import { Portal } from "react-native-paper";
+import { useIsFocused } from "@react-navigation/native";
 
 type BackPageType = {
   listRef?: React.RefObject<FlatList<any> | SectionList<any>>;
-  scrollRef?: React.RefObject<ScrollView>;
+  scrollRef?: React.RefObject<ScrollView | null>;
   mb?: number;
 };
 
@@ -28,15 +34,15 @@ export default function BackToTop({ listRef, scrollRef, mb }: BackPageType) {
 
   const styles = StyleSheet.create({
     toUpBtn: {
-      position: 'absolute',
+      position: "absolute",
       right: 36,
       bottom: mb ?? 8,
       width: 36,
       height: 36,
       borderRadius: 36,
       backgroundColor: theme.customColors.secondary.default,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
   });
 
@@ -48,7 +54,8 @@ export default function BackToTop({ listRef, scrollRef, mb }: BackPageType) {
         entering={ZoomIn.duration(100)}
         exiting={ZoomOut.duration(100)}
         style={styles.toUpBtn}
-        onPress={moveToTop}>
+        onPress={moveToTop}
+      >
         <ArrowIcon color={theme.customColors.baseWhite} />
       </AnimatedPressable>
     </Portal>

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '~/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
@@ -11,9 +11,9 @@ export const useCustomStyles = () => {
       gap: 16,
     },
     titleContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     title: {
       color: theme.colors.text,
@@ -21,13 +21,13 @@ export const useCustomStyles = () => {
       fontFamily: theme.fonts.bold,
     },
     head: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     row: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     totTitle: {
       marginRight: 8,
@@ -49,8 +49,8 @@ export const useCustomStyles = () => {
         : theme.customColors.neutrals[100],
     },
     promoBalanaceTitleContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
     },
     promoBalanaceTitle: {
@@ -63,10 +63,12 @@ export const useCustomStyles = () => {
       fontFamily: theme.fonts.bold,
       fontSize: 12,
       lineHeight: 18,
-      color: theme.dark ? theme.customColors.secondary[600] : theme.customColors.secondary.default,
+      color: theme.dark
+        ? theme.customColors.secondary[600]
+        : theme.customColors.secondary.default,
     },
     nav: {
-      flexDirection: 'row',
+      flexDirection: "row",
       paddingHorizontal: 16,
       flexGrow: 1,
       gap: 16,
@@ -79,14 +81,14 @@ export const useCustomStyles = () => {
       backgroundColor: theme.dark
         ? theme.customColors.neutrals[800]
         : theme.customColors.neutrals[100],
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginHorizontal: 'auto',
+      alignItems: "center",
+      justifyContent: "center",
+      marginHorizontal: "auto",
     },
     navTxt: {
       color: theme.colors.text,
       marginTop: 8,
-      textAlign: 'center',
+      textAlign: "center",
       fontSize: 10,
       lineHeight: 16,
       fontFamily: theme.fonts.regular,

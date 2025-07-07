@@ -15,18 +15,11 @@ export const login = async (request: AuthRequest) => {
     "/auth/investor/login",
     request
   );
-  // .then((r): AuthResponse => {
   const { token } = response.data.data;
   api.defaults.headers.Authorization = `Bearer ${token}`;
 
   handleAnalyticsUserProfile("sigIn", { Identity: token });
   return response.data;
-
-  // .catch((error) => {
-  //   Debug.Capture(error);
-  //   return error.response.data;
-  // });
-  // return response;
 };
 
 export const GetNewDeviceCode = createAsyncThunk(

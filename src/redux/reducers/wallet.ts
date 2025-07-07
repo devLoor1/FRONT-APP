@@ -1,15 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { DebitResponse } from '@/models/investiment/debit.response';
-import { ReceivedInterestGraphResponse } from '@/models/investiment/receivedInterestGraph.response';
-import { SummaryResponse } from '@/models/investiment/summary.response';
-import { WalletResponse } from '@/models/investiment/wallet.response';
+import { createSlice } from "@reduxjs/toolkit";
+import { DebitResponse } from "@/models/investiment/debit.response";
+import { ReceivedInterestGraphResponse } from "@/models/investiment/receivedInterestGraph.response";
+import { SummaryResponse } from "@/models/investiment/summary.response";
+import { WalletResponse } from "@/models/investiment/wallet.response";
 import {
   GetDebitSummary,
   GetSummary,
   GetInterestReceivedGraph,
-  GetWalletResume,
-  GetQtdInvestments
-} from '@/services/wallet';
+  getWalletResume,
+  GetQtdInvestments,
+} from "@/services/wallet";
 
 const initialState = {
   summary: <SummaryResponse | null>null,
@@ -26,14 +26,14 @@ const initialState = {
 };
 
 const walletSlice = createSlice({
-  name: 'wallet',
+  name: "wallet",
   initialState,
   reducers: {
     reset: () => initialState,
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(GetSummary.pending, state => {
+      .addCase(GetSummary.pending, (state) => {
         state.loadingSummary = true;
         state.summary = null;
       })
@@ -47,11 +47,11 @@ const walletSlice = createSlice({
           }
         }
       })
-      .addCase(GetWalletResume.pending, state => {
+      /*  .addCase(getWalletResume.pending, (state) => {
         state.loadingResume = true;
         state.resume = null;
       })
-      .addCase(GetWalletResume.fulfilled, (state, { payload }) => {
+      .addCase(getWalletResume.fulfilled, (state, { payload }) => {
         state.loadingResume = false;
         if (payload) {
           if (payload.message) {
@@ -60,8 +60,8 @@ const walletSlice = createSlice({
             state.resume = payload;
           }
         }
-      })
-      .addCase(GetDebitSummary.pending, state => {
+      }) */
+      .addCase(GetDebitSummary.pending, (state) => {
         state.loadingDebit = true;
         state.debit = null;
       })
@@ -75,7 +75,7 @@ const walletSlice = createSlice({
           }
         }
       })
-      .addCase(GetInterestReceivedGraph.pending, state => {
+      .addCase(GetInterestReceivedGraph.pending, (state) => {
         state.loadingGraph = true;
         state.graph = null;
       })
@@ -89,7 +89,7 @@ const walletSlice = createSlice({
           }
         }
       })
-      .addCase(GetQtdInvestments.pending, state => {
+      .addCase(GetQtdInvestments.pending, (state) => {
         state.loadingInvestments = true;
         state.qtdInvestments = null;
       })
