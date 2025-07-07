@@ -43,6 +43,11 @@ export default function BackToTop({ listRef, scrollRef, mb }: BackPageType) {
       backgroundColor: theme.customColors.secondary.default,
       alignItems: "center",
       justifyContent: "center",
+      elevation: 3,
+      shadowColor: "rgba(0, 0, 0, 1)",
+      shadowOffset: { width: -1, height: 3 },
+      shadowRadius: 36,
+      shadowOpacity: 0.15,
     },
   });
 

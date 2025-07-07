@@ -22,7 +22,7 @@ import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
 import ReferIcon from "@/../assets/newSvgs/icons/featured_seasonal_and_gifts.svg";
 import Banner from "./components/Banner";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { GetOpportunities } from "@/services/opportunities";
+import { getOpportunities } from "@/services/opportunities";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import CommonMask from "@/helpers/masks";
 import { GetCodeRecommendation } from "@/services/recommendation";
@@ -47,9 +47,9 @@ export default function WalletPage() {
   const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { summary, loadingGraph } = useAppSelector((state) => state.wallet);
-  const { listOpportunities, loadingList } = useAppSelector(
-    (state) => state.opportunities
-  );
+  // const { listOpportunities, loadingList } = useAppSelector(
+  //   (state) => state.opportunities
+  // );
   const { highlightsList } = useAppSelector((state) => state.faq);
   const refPage = useRef<ScrollView>(null);
   const [showToUp, setShowToUp] = useState(false);
@@ -66,6 +66,11 @@ export default function WalletPage() {
     queryFn: getWalletResume,
   });
 
+  const { data: listOpportunities, isLoading: loadingList } = useQuery({
+    queryKey: [getOpportunities.name],
+    queryFn: () => getOpportunities({ page: 1, limit: 1 }),
+  });
+
   function getAll() {
     Promise.all([
       dispatch(GetUserStatus(deviceToken)),
@@ -76,7 +81,7 @@ export default function WalletPage() {
       dispatch(GetDebitWealth()),
       dispatch(GetPaymentMethodAvailable()),
       dispatch(GetFAQHightlights({ pageSize: 2 })),
-      dispatch(GetOpportunities({ pageNumber: 1, pageSize: 3 })),
+      // dispatch(getOpportunities({ page: 1, limit: 3 })),
       dispatch(GetCodeRecommendation()),
     ]);
   }
@@ -180,36 +185,25 @@ export default function WalletPage() {
 
             <FlatList
               scrollEnabled={false}
-              data={listOpportunities}
+              data={listOpportunities?.data}
               contentContainerStyle={{ gap: 8 }}
+              keyExtractor={(item) => String(item.id)}
               ListHeaderComponent={
                 <View style={[styles.titleContainer, { marginBottom: 0 }]}>
                   <Text style={styles.titleOpportunity}>
                     Oportunidades disponíveis
                   </Text>
-                  {/* <TouchableOpacity onPress={() => setShowModal(true)}>
-                    <InfoIcon color={theme.customColors.hyperlink} width={12} height={12} />
-                  </TouchableOpacity> */}
+                  <TouchableOpacity onPress={() => setShowModal(true)}>
+                    <InfoIcon
+                      color={theme.customColors.hyperlink}
+                      width={12}
+                      height={12}
+                    />
+                  </TouchableOpacity>
                 </View>
               }
               renderItem={({ item }) => (
-                <OpportunityNewCard
-                  key={item.idOpportunity}
-                  logo={item.urlLogo ? item.urlLogo : null}
-                  title={item.name || ""}
-                  risk={`${item.rating}`}
-                  type={item.hasCashback ? "CASHBACK" : "OPPORTUNITY"}
-                  cashback={item.cashback}
-                  returnRate={`${CommonMask.percent(
-                    item.annualReceiveRate.toString()
-                  )}% a.a.`}
-                  modality={item.paymentTypeDescription}
-                  white
-                  hasPropertyGuarantee={item.hasPropertyGuarantee}
-                  hasRepurchase={item.hasRepurchase}
-                  hasWarranty={item.hasWarranty}
-                  opportunity={item}
-                />
+                <OpportunityNewCard white opportunity={item} />
               )}
               ListFooterComponent={
                 <TouchableOpacity
@@ -224,7 +218,7 @@ export default function WalletPage() {
               }
             />
 
-            {userStatus?.status === "Aprovado" && (
+            {loginData.personal_information_filled === 1 && (
               <View>
                 <TouchableOpacity
                   style={styles.btnProfile}
@@ -255,7 +249,7 @@ export default function WalletPage() {
               </View>
             )}
 
-            <News />
+            {/* <News /> */}
           </View>
         </ScrollView>
       )}

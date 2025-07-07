@@ -1,6 +1,6 @@
 export type OpportunitiesRequest = {
-  pageNumber?: number;
-  pageSize?: number;
+  page?: number;
+  limit?: number;
   opportunityInvested?: boolean;
   codeOpportunity?: string;
   shortOrder?: string;

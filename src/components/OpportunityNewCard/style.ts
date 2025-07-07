@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
@@ -14,12 +14,17 @@ export const useCustomStyles = () => {
       gap: 16,
     },
     cardWhite: {
-      backgroundColor: theme.dark ? theme.customColors.neutrals[800] : '#fff',
+      backgroundColor: theme.dark ? theme.customColors.neutrals[800] : "#fff",
       borderRadius: 8,
       padding: 16,
       gap: 16,
       borderWidth: theme.dark ? 0 : 1,
       borderColor: theme.customColors.neutrals[100],
+    },
+    modality: {
+      fontFamily: theme.fonts.regular,
+      color: theme.colors.text,
+      textTransform: "capitalize",
     },
     title: {
       fontSize: 18,
@@ -27,28 +32,85 @@ export const useCustomStyles = () => {
       color: theme.colors.text,
       marginBottom: -8,
       flex: 1,
-      flexWrap: 'wrap',
+      flexWrap: "wrap",
     },
     header: {
       gap: 16,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    progressTitle: {
+      color: theme.colors.text,
+      fontSize: 12,
+      fontFamily: theme.fonts.bold,
+      marginBottom: 4,
+    },
+    progress: {
+      borderRadius: 100,
+      height: 10,
+      backgroundColor: theme.dark
+        ? theme.customColors.neutrals[700]
+        : theme.customColors.neutrals[100],
+      overflow: "hidden",
+      position: "relative",
+    },
+    progressFill: {
+      height: 10,
+      backgroundColor: theme.customColors.secondary.default,
+      borderRadius: 100,
+      position: "absolute",
+      inset: 0,
+    },
+    legendContainer: {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "row",
+    },
+    legendTitleContainer: {
+      flex: 1,
+      gap: 4,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    legendDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 12,
+    },
+    valueContent: {
+      height: 38,
+      borderRadius: 8,
+      backgroundColor: theme.colors.primary,
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      justifyContent: "space-between",
+    },
+    valueTitle: {
+      color: "#fff",
+      fontSize: 12,
+      fontFamily: theme.fonts.regular,
+    },
+    value: {
+      color: "#fff",
+      fontSize: 12,
+      fontFamily: theme.fonts.bold,
     },
     riskContainer: {
       // minWidth: 48,
-      justifyContent: 'center',
+      justifyContent: "center",
     },
     riskValue: {
       fontSize: 12,
       fontFamily: theme.fonts.bold,
       color: theme.customColors.primary.default,
-      textAlign: 'center',
+      textAlign: "center",
     },
     tags: {
       paddingHorizontal: 16,
     },
     icons: {
-      flexDirection: 'row',
+      flexDirection: "row",
       minWidth: 64,
       gap: 8,
     },
@@ -56,8 +118,8 @@ export const useCustomStyles = () => {
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 4,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
     typeText: {
       fontSize: 10,
@@ -66,21 +128,21 @@ export const useCustomStyles = () => {
     },
     content: {
       // flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: "space-between",
       // paddingTop: 16,
       // borderTopColor: theme.dark
       //   ? theme.customColors.neutrals[700]
       //   : theme.customColors.neutrals[200],
       // borderTopWidth: 1,
-      gap: 8,
+      gap: 16,
     },
     item: {
-      flexDirection: 'row',
+      flexDirection: "row",
       // flexBasis: '33.33%',
       flexGrow: 0,
       flexShrink: 0,
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     itemBorderRight: {
       borderRightWidth: 1,
@@ -88,26 +150,28 @@ export const useCustomStyles = () => {
         ? theme.customColors.neutrals[700]
         : theme.customColors.neutrals[200],
     },
-    itemContainer: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    itemContainer: { flexDirection: "row", alignItems: "center", gap: 4 },
     itemTitle: {
       fontSize: 10,
-      color: theme.dark ? theme.customColors.neutrals[400] : theme.customColors.neutrals[500],
-      fontFamily: theme.fonts.bold,
+      color: theme.dark
+        ? theme.customColors.neutrals[400]
+        : theme.customColors.neutrals[500],
+      fontFamily: theme.fonts.semiBold,
     },
     itemValue: {
       fontSize: 12,
       fontFamily: theme.fonts.bold,
       color: theme.colors.text,
-      textAlign: 'center',
+      textAlign: "center",
     },
     footer: {
       gap: 16,
-      flexDirection: 'row',
+      flexDirection: "row",
     },
     buttonRight: {
-      flexDirection: 'row-reverse',
+      flexDirection: "row-reverse",
       borderWidth: 0,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
     },
     buttonRightLabel: { color: theme.colors.text },
     buttonLeft: {
@@ -115,7 +179,7 @@ export const useCustomStyles = () => {
     },
     favoriteContainer: {
       flex: 1,
-      alignItems: 'flex-end',
+      alignItems: "flex-end",
       marginRight: -12,
     },
 
@@ -131,9 +195,9 @@ export const useCustomStyles = () => {
       height: 50,
       borderRadius: 50,
       backgroundColor: theme.customColors.neutrals.default,
-      marginRight: 15,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
     },
   });
 };

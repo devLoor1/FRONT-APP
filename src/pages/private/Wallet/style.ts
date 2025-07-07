@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '~/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
@@ -10,8 +10,8 @@ export const useCustomStyles = () => {
       flex: 1,
     },
     titleContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginBottom: 8,
       gap: 8,
     },
@@ -22,7 +22,7 @@ export const useCustomStyles = () => {
     },
     moreTxt: {
       color: theme.customColors.hyperlink,
-      textAlign: 'center',
+      textAlign: "center",
       fontSize: 14,
       fontFamily: theme.fonts.regular,
     },
@@ -30,8 +30,8 @@ export const useCustomStyles = () => {
       backgroundColor: theme.customColors.secondary.default,
       height: 44,
       borderRadius: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 16,
       gap: 16,
       marginBottom: 16,
@@ -44,17 +44,19 @@ export const useCustomStyles = () => {
       flex: 1,
     },
     btnIndicate: {
-      backgroundColor: theme.dark ? theme.customColors.neutrals[800] : theme.customColors.baseBlack,
-      height: 56,
+      backgroundColor: theme.dark
+        ? theme.customColors.neutrals[800]
+        : theme.customColors.baseBlack,
+      height: 44,
       borderRadius: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 16,
       gap: 16,
     },
     btnIcon: {
       width: 24,
-      alignItems: 'center',
+      alignItems: "center",
     },
   });
 };
