@@ -1,20 +1,26 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
 const SecureStorage = {
   SetLoginBiometry({ checked }: { checked: boolean }) {
-    SecureStore.setItemAsync('WiseInvestorSecure_loginBiometry', checked.toString());
+    SecureStore.setItemAsync(
+      "LoorInvestorSecure_loginBiometry",
+      checked.toString()
+    );
   },
 
   GetLoginBiometry(): Promise<string | null> {
-    return SecureStore.getItemAsync('WiseInvestorSecure_loginBiometry');
+    return SecureStore.getItemAsync("LoorInvestorSecure_loginBiometry");
   },
 
   SetInvestBiometry({ checked }: { checked: boolean }) {
-    SecureStore.setItemAsync('WiseInvestorSecure_investBiometry', checked.toString());
+    SecureStore.setItemAsync(
+      "LoorInvestorSecure_investBiometry",
+      checked.toString()
+    );
   },
 
   GetInvestBiometry(): Promise<string | null> {
-    return SecureStore.getItemAsync('WiseInvestorSecure_investBiometry');
+    return SecureStore.getItemAsync("LoorInvestorSecure_investBiometry");
   },
 };
 

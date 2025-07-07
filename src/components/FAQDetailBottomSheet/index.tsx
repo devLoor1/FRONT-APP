@@ -1,14 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ImageBackground, ActivityIndicator, Dimensions, StatusBar } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import WebView from 'react-native-webview';
-import BottomSheet from '../BottomSheet';
-import { useCustomStyles } from './style';
-import BtnIcon from '../BtnIcon';
-import { useTheme } from '@/context/MyThemeContext';
-import CloseIcon from '@/../assets/newSvgs/icons/close_small.svg';
-import { useAppSelector } from '@/redux/hooks';
-import { Analytics } from '@/helpers/analytics';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  ImageBackground,
+  ActivityIndicator,
+  Dimensions,
+  StatusBar,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+// import WebView from 'react-native-webview';
+import BottomSheet from "../BottomSheet";
+import { useCustomStyles } from "./style";
+import BtnIcon from "../BtnIcon";
+import { useTheme } from "@/context/MyThemeContext";
+import CloseIcon from "@/../assets/newSvgs/icons/close_small.svg";
+import { useAppSelector } from "@/redux/hooks";
+import { Analytics } from "@/helpers/analytics";
 
 type Props = {
   refRBSheet: any;
@@ -19,28 +30,41 @@ export default function FAQDetailBottomSheet({ refRBSheet }: Props) {
   const insets = useSafeAreaInsets();
   const styles = useCustomStyles(insets);
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
-  const { newsItem, loading } = useAppSelector(state => state.faq);
+  const { newsItem, loading } = useAppSelector((state) => state.faq);
 
-  const fullHeight = Dimensions.get('screen').height - (StatusBar.currentHeight || 0);
-
+  const fullHeight =
+    Dimensions.get("screen").height - (StatusBar.currentHeight || 0);
 
   useEffect(() => {
-    Analytics({ pageName: 'MeuPerfilFAQ_DetailCard' })
-  }, [])
+    Analytics({ pageName: "MeuPerfilFAQ_DetailCard" });
+  }, []);
 
   return (
     <BottomSheet
       refRBSheet={refRBSheet}
       height={fullHeight}
-      background={theme.dark ? theme.customColors.neutrals[800] : theme.customColors.neutrals[100]}
+      background={
+        theme.dark
+          ? theme.customColors.neutrals[800]
+          : theme.customColors.neutrals[100]
+      }
       onClose={() => setScrollEnabled(false)}
       onOpen={() => setScrollEnabled(true)}
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           {loading ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator color={theme.customColors.secondary.default} size="large" />
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator
+                color={theme.customColors.secondary.default}
+                size="large"
+              />
             </View>
           ) : (
             <>
@@ -53,7 +77,7 @@ export default function FAQDetailBottomSheet({ refRBSheet }: Props) {
                 <BtnIcon
                   style={{
                     top: 8,
-                    position: 'absolute',
+                    position: "absolute",
                     zIndex: 10,
                     left: 0,
                   }}
@@ -62,7 +86,11 @@ export default function FAQDetailBottomSheet({ refRBSheet }: Props) {
                   bgColor={theme.customColors.baseBlack}
                   onPress={() => refRBSheet.current?.close()}
                 >
-                  <CloseIcon color={theme.customColors.baseWhite} width={24} height={24} />
+                  <CloseIcon
+                    color={theme.customColors.baseWhite}
+                    width={24}
+                    height={24}
+                  />
                 </BtnIcon>
               </View>
 
@@ -72,7 +100,7 @@ export default function FAQDetailBottomSheet({ refRBSheet }: Props) {
                 scrollEnabled={scrollEnabled}
               >
                 <Text style={styles.title}>{newsItem?.title}</Text>
-                {newsItem && (
+                {/* {newsItem && (
                   <WebView
                     pointerEvents="box-none"
                     style={{
@@ -98,7 +126,7 @@ export default function FAQDetailBottomSheet({ refRBSheet }: Props) {
                       `,
                     }}
                   />
-                )}
+                )} */}
               </ScrollView>
             </>
           )}

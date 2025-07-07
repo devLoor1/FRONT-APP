@@ -1,20 +1,26 @@
-import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { GetUserPicture, GetUserStatus } from '@/services/user';
-import { GetPublicTerms, GetPublicToken, GetRisks } from '@/services/common';
-import { reset } from '@/redux/reducers/user';
-import * as resetAuth from '@/redux/reducers/auth';
-import { setUser as setAuthUser } from '@/redux/reducers/user';
-import { hasAuth } from '@/helpers/auth/biometry';
-import { ValidateBiometric } from '@/services/authBiometric';
-import { resetBiometric } from '@/redux/reducers/authBiometric';
-import DoBiometryValidation from '@/helpers/auth/doBiometry';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { GetUserPicture, GetUserStatus } from "@/services/user";
+import { GetPublicTerms, GetPublicToken, GetRisks } from "@/services/common";
+import { reset } from "@/redux/reducers/user";
+import * as resetAuth from "@/redux/reducers/auth";
+import { setUser as setAuthUser } from "@/redux/reducers/user";
+import { hasAuth } from "@/helpers/auth/biometry";
+import { ValidateBiometric } from "@/services/authBiometric";
+import { resetBiometric } from "@/redux/reducers/authBiometric";
+import DoBiometryValidation from "@/helpers/auth/doBiometry";
 // import SecureStorage from '@/storages/secure-storage';
-import { GetProfileStatus } from '@/services/investorProfile';
-import { UserType } from '@/models/types/User';
-import { Platform } from 'react-native';
-import { handleAnalyticsUserProfile } from '@/helpers/analytics';
+import { GetProfileStatus } from "@/services/investorProfile";
+import { UserType } from "@/models/types/User";
+import { Platform } from "react-native";
+import { handleAnalyticsUserProfile } from "@/helpers/analytics";
 // import * as SecureStore from 'expo-secure-store';
 
 interface AuthContextData {
@@ -32,16 +38,20 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
-  const [loadingSignIn, setloadingSignIn] = useState('');
+  const [loadingSignIn, setloadingSignIn] = useState("");
   const [enableAuth, setEnableAuth] = useState(false);
-  const [logoutMsg, setLogoutMsg] = useState('');
-  const [deviceToken, setDeviceToken] = useState<string>('');
+  const [logoutMsg, setLogoutMsg] = useState("");
+  const [deviceToken, setDeviceToken] = useState<string>("");
   const dispatch = useAppDispatch();
-  const { userStatus, userStatusError, user: _user } = useAppSelector(state => state.user);
-  const { succesBiometry } = useAppSelector(state => state.authBiometric);
+  const {
+    userStatus,
+    userStatusError,
+    user: _user,
+  } = useAppSelector((state) => state.user);
+  const { succesBiometry } = useAppSelector((state) => state.authBiometric);
 
   async function onSignIn() {
-    setloadingSignIn('Carregando perfil...');
+    setloadingSignIn("Carregando perfil...");
     await dispatch(GetUserStatus(deviceToken));
     await dispatch(GetProfileStatus());
     await dispatch(GetUserPicture());
@@ -56,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
     );
     await dispatch(GetPublicToken());
-    setloadingSignIn('');
+    setloadingSignIn("");
   }
 
   function onSignOut() {
@@ -68,14 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logged: false,
       })
     );
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       AsyncStorage.getAllKeys()
         .then(AsyncStorage.multiRemove)
         .then(() => {
           clearStates();
         });
     }
-    handleAnalyticsUserProfile('signOut', {})
+    handleAnalyticsUserProfile("signOut", {});
   }
 
   useEffect(() => {
@@ -85,14 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setAuthUser({
             name: userStatus.valueFields.name,
             email: userStatus.valueFields.email,
-            cellphone: userStatus.valueFields.cellphone || '',
+            cellphone: userStatus.valueFields.cellphone || "",
             balance: userStatus.valueFields.balance || null,
             balanceBonus: userStatus.valueFields.balanceBonus || 0,
-            balanceTot: userStatus.valueFields.balanceBonus + userStatus.valueFields.balance || 0,
+            balanceTot:
+              userStatus.valueFields.balanceBonus +
+                userStatus.valueFields.balance || 0,
             logged: true,
           })
         );
-        await setloadingSignIn('');
+        await setloadingSignIn("");
       })();
     }
   }, [userStatus]);
@@ -105,20 +117,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (userStatusError) {
       onSignOut();
-      setloadingSignIn('');
+      setloadingSignIn("");
     }
   }, [userStatusError]);
 
   useEffect(() => {
     // onSingOut();
-    // SecureStore.deleteItemAsync('WiseInvestorSecure_investBiometry');
-    // SecureStore.deleteItemAsync('WiseInvestorSecure_loginBiometry');
+    // SecureStore.deleteItemAsync('LoorInvestorSecure_investBiometry');
+    // SecureStore.deleteItemAsync('LoorInvestorSecure_loginBiometry');
     (async () => {
-      try {
+      /* try {
         await dispatch(GetPublicToken());
         await dispatch(GetRisks());
         await dispatch(GetPublicTerms());
-        await setloadingSignIn('Carregando fontes...');
+        await setloadingSignIn("Carregando fontes...");
         const auth = await hasAuth();
         const verifyAuth = await DoBiometryValidation();
 
@@ -127,13 +139,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (verifyAuth === true) {
-          await setloadingSignIn('Carregando perfil...');
+          await setloadingSignIn("Carregando perfil...");
           dispatch(
             ValidateBiometric({
-              authenticationType: 'FacialRecognition',
+              authenticationType: "FacialRecognition",
               isChangeBiometry: false,
-              operation: 'Login',
-              deviceToken
+              operation: "Login",
+              deviceToken,
             })
           );
         } else {
@@ -141,19 +153,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLogoutMsg(verifyAuth);
           }
           onSignOut();
-          setloadingSignIn('');
+          setloadingSignIn("");
         }
       } catch (error) {
-        console.log('Error', error);
+        console.log("Error", error);
         onSignOut();
-      }
+      } */
     })();
   }, []);
 
   useEffect(() => {
     if (logoutMsg) {
       setTimeout(() => {
-        setLogoutMsg('');
+        setLogoutMsg("");
       }, 3000);
     }
   }, [logoutMsg]);
@@ -176,7 +188,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logoutMsg,
         deviceToken,
         setDeviceToken,
-      }}>
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

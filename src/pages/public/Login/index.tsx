@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import EnableAuthentication from './components/EnableAuthentication';
-import { useAuth } from '@/context/auth';
-import SecureStorage from '@/storages/secure-storage';
-import NewDevice from './components/NewDevice';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { reset } from '@/redux/reducers/auth';
-import { ScrollView } from 'react-native-gesture-handler';
-import LoginContent from './components/LoginContent';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import EnableAuthentication from "./components/EnableAuthentication";
+import { useAuth } from "@/context/auth";
+import SecureStorage from "@/storages/secure-storage";
+import NewDevice from "./components/NewDevice";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { reset } from "@/redux/reducers/auth";
+import { ScrollView } from "react-native-gesture-handler";
+import LoginContent from "./components/LoginContent";
+import { KeyboardAvoidingView, Platform } from "react-native";
 // import { Analytics } from '@/helpers/analytics';
 
 function LoginPage() {
@@ -17,7 +17,7 @@ function LoginPage() {
   const refRBSheetNewDevice = useRef<RBSheet>(null);
   const [newDevicePage, setNewDevicePage] = useState(1);
   const [reopen, setReopen] = useState(false);
-  const { loginData } = useAppSelector(state => state.auth);
+  const { loginData } = useAppSelector((state) => state.auth);
   const [answerBiometry, setAnswerBiometry] = useState<boolean | null>(null);
   const { onSignIn, enableAuth, onSignOut } = useAuth();
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ function LoginPage() {
   async function getStorage() {
     if (enableAuth) {
       const activeBiometry = await SecureStorage.GetLoginBiometry();
-      setAnswerBiometry(activeBiometry ? activeBiometry === 'true' : null);
+      setAnswerBiometry(activeBiometry ? activeBiometry === "true" : null);
     } else {
       setAnswerBiometry(false);
     }
@@ -37,13 +37,13 @@ function LoginPage() {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    /*  (async () => {
       if (loginData) {
         getStorage();
         const activeBiometry = await SecureStorage.GetLoginBiometry();
         if (loginData.cryptoDeviceToken) {
           if (!reopen) {
-            setNewDevicePage(1)
+            setNewDevicePage(1);
           }
           refRBSheetNewDevice.current?.open();
         } else if (enableAuth && activeBiometry === null) {
@@ -57,21 +57,22 @@ function LoginPage() {
         // refRBSheetNewDevice.current?.close();
         // refRBSheetAuth.current?.close();
       }
-    })();
+    })(); */
   }, [loginData]);
 
   function onClose() {
-    if (!loginData || loginData?.cryptoDeviceToken || answerBiometry === null) {
-      onSignOut();
-      dispatch(reset());
-    }
+    // if (!loginData || loginData?.cryptoDeviceToken || answerBiometry === null) {
+    //   onSignOut();
+    //   dispatch(reset());
+    // }
     getStorage();
   }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flexGrow: 1 }}>
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flexGrow: 1 }}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
           <LoginContent />
