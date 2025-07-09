@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -22,7 +23,7 @@ import BalanceSmall from "@/components/BalanceSmall";
 import Card from "./components/Card";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TextInput } from "react-native-paper";
+import { Chip, TextInput } from "react-native-paper";
 import SearchIcon from "@/../assets/newSvgs/icons/search.svg";
 import FilterIcon from "@/../assets/newSvgs/icons/filter_list.svg";
 import FilterBottomSheet from "@/components/FilterBottomSheet";
@@ -34,6 +35,7 @@ import ArrowDownAltIcon from "@/../assets/newSvgs/icons/arrow_downward_alt.svg";
 import ArrowUpAltIcon from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
+import { getSegments } from "@/services/common";
 
 export default function OpportunitiesPage() {
   const dispatch = useAppDispatch();
@@ -53,6 +55,7 @@ export default function OpportunitiesPage() {
   const refPage = useRef<FlatList>(null);
 
   const [filter, setFilter] = useState<any>({});
+  const [segmentsFilter, setSegmentsFilter] = useState<number[]>([]);
   const [shortOrder, setShortOrder] = useState("");
   const [searchQuery, setSearchQuery] =
     useState<OpportunitiesRequest["searchQuery"]>("");
@@ -69,15 +72,12 @@ export default function OpportunitiesPage() {
     queryFn: getWalletResume,
   });
 
-  /* const {
-    data: listOpportunities,
-    isLoading: loadingList,
-    isFetching: isRefetchingList,
-    refetch: refetchList,
-  } = useQuery({
-    queryKey: [getOpportunities.name, { pageNumber }],
-    queryFn: () => getOpportunities({ page: pageNumber, limit: 10 }),
-  }); */
+  const {
+    data: segments,
+    isLoading: loadingSegments,
+    isRefetching: isRefetchingSegments,
+    refetch: refetchSegments,
+  } = useQuery({ queryKey: [getSegments.name], queryFn: getSegments });
 
   const {
     data: listOpportunities,
@@ -88,9 +88,15 @@ export default function OpportunitiesPage() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: [getOpportunities.name + "Infinite"],
+    queryKey: [getOpportunities.name + "Infinite", segmentsFilter, searchQuery],
     initialPageParam: 1,
-    queryFn: ({ pageParam: page = 1 }) => getOpportunities({ page, limit: 10 }),
+    queryFn: ({ pageParam: page = 1 }) =>
+      getOpportunities({
+        page,
+        limit: 10,
+        segments: segmentsFilter,
+        name: searchQuery,
+      }),
     getNextPageParam: (lastPage) => {
       if (lastPage.meta.current_page < lastPage.meta.last_page)
         return lastPage.meta.current_page + 1;
@@ -100,8 +106,9 @@ export default function OpportunitiesPage() {
   });
 
   const refreshing =
-    (isRefetchingList && !loadingList) ||
-    (isRefetchingResume && !loadingResume);
+    (!loadingSegments && isRefetchingSegments) ||
+    (!loadingList && isRefetchingList) ||
+    (!loadingResume && isRefetchingResume);
 
   const handleFilter = (filter: any) => {
     setFilter(filter);
@@ -159,32 +166,8 @@ export default function OpportunitiesPage() {
     onApply: handleFilter,
   };
 
-  /* async function getOpportunities(number = pageNumber) {
-    if (loadingList || requestError || !moreOpportunities) return;
-    dispatch(
-      GetOpportunities({
-        pageNumber: number,
-        pageSize,
-        opportunityInvested,
-        codeOpportunity,
-        shortOrder,
-        filter,
-        searchQuery,
-      })
-    );
-  } */
-
   useEffect(() => {
     Analytics({ pageName: "OportEntr" });
-    // dispatch(GetWalletResume());
-    // return () => {
-    //   setCodeOpportunity("");
-    //   setShortOrder("");
-    //   setPageNumber(1);
-    //   setData([]);
-    //   dispatch(reset());
-    //   // getOpportunities();
-    // };
   }, []);
 
   useEffect(() => {
@@ -197,19 +180,8 @@ export default function OpportunitiesPage() {
   }, [shortOrder, opportunityInvested, filter]);
 
   useEffect(() => {
-    /* if (listOpportunities && listOpportunities.data.length > 0) {
-      setData([...data, ...listOpportunities.data]);
-    } else if (listOpportunities && listOpportunities.data.length === 0) {
-      setData([]);
-    } */
     setData(listOpportunities?.pages.flatMap((page) => page.data) ?? []);
   }, [listOpportunities]);
-
-  // useEffect(() => {
-  //   dispatch(resetListOpportunities());
-  //   setData([]);
-  //   setPageNumber(1);
-  // }, [searchQuery]);
 
   function getTopScroll(e: any) {
     const offset = e.nativeEvent.contentOffset.y;
@@ -226,9 +198,18 @@ export default function OpportunitiesPage() {
     }
   }
 
+  function selectSegment(segmentId: number) {
+    setSegmentsFilter((pv) => {
+      if (pv.includes(segmentId)) return pv.filter((id) => id !== segmentId);
+
+      return [...pv, segmentId];
+    });
+  }
+
   const onRefresh = React.useCallback(async () => {
     setData([]);
     refetchResume();
+    refetchSegments();
     if (pageNumber === 1) refetchList();
     else setPageNumber(1);
   }, [pageNumber, refetchList, refetchResume]);
@@ -236,109 +217,106 @@ export default function OpportunitiesPage() {
   return (
     <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
       <HeaderPhoto analytics="OportEntr" />
-      {data && (
-        <FlatList<(typeof data)[0]>
-          data={data}
-          renderItem={({ item }) => (
-            <OpportunityNewCard white opportunity={item} />
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[theme.colors.primary]}
-            />
-          }
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingBottom: bottomTabBarHeight,
-            paddingHorizontal: 16,
-          }}
-          onEndReached={onEndReached}
-          onScroll={getTopScroll}
-          onEndReachedThreshold={0.1}
-          ListHeaderComponentStyle={{ paddingTop: 24 }}
-          ref={refPage}
-          ListHeaderComponent={
-            <>
-              <Text style={styles.title}>Oportunidades</Text>
-              <BalanceSmall resume={resume} />
-              <View style={styles.line} />
-              <View style={styles.actionsContainer}>
-                <TextInput
-                  onChangeText={debounce(onChangeSearch, 1000)}
-                  style={styles.searchInput}
-                  placeholder="Pesquisar"
-                  mode="flat"
-                  placeholderTextColor={theme.colors.text}
-                  activeOutlineColor={theme.colors.text}
-                  outlineColor={theme.customColors.neutrals[100]}
-                  underlineColor="transparent"
-                  selectionColor={theme.colors.text}
-                  activeUnderlineColor="transparent"
-                  theme={{
-                    roundness: 12,
-                    dark: theme.dark,
-                    colors: { text: theme.colors.text },
-                    fonts: { regular: { fontFamily: theme.fonts.semiBold } },
-                  }}
-                  left={
-                    <TextInput.Icon
-                      icon={() => (
-                        <SearchIcon
-                          color={theme.colors.text}
-                          width={24}
-                          height={24}
-                        />
-                      )}
-                    />
-                  }
-                />
 
-                <TouchableOpacity
-                  style={styles.filterItem}
-                  onPress={() => {
-                    if (filterSheetRef.current) {
-                      filterSheetRef.current.open();
-                    }
+      <FlatList<(typeof data)[0]>
+        data={data}
+        renderItem={({ item }) => (
+          <OpportunityNewCard white opportunity={item} />
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+          />
+        }
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: bottomTabBarHeight,
+          paddingHorizontal: 16,
+        }}
+        onEndReached={onEndReached}
+        onScroll={getTopScroll}
+        onEndReachedThreshold={0.1}
+        ListHeaderComponentStyle={{ paddingTop: 24 }}
+        ref={refPage}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Oportunidades</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ marginHorizontal: -16 }}
+              contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+            >
+              {segments?.map((segment) => (
+                <Chip
+                  key={segment.id}
+                  mode="outlined"
+                  style={{
+                    alignSelf: "flex-start",
+                    backgroundColor: "#FFFFFF",
                   }}
+                  textStyle={{ fontFamily: theme.fonts.regular }}
+                  selected={segmentsFilter.includes(segment.id)}
+                  onPress={selectSegment.bind(null, segment.id)}
                 >
-                  <FilterIcon
-                    width={24}
-                    height={24}
-                    color={
-                      theme.dark
-                        ? theme.customColors.neutrals[500]
-                        : theme.customColors.baseBlack
-                    }
+                  {segment.name}
+                </Chip>
+              ))}
+            </ScrollView>
+            <View style={styles.actionsContainer}>
+              <TextInput
+                onChangeText={debounce(onChangeSearch, 1000)}
+                style={styles.searchInput}
+                placeholder="Pesquisar"
+                mode="flat"
+                placeholderTextColor={theme.colors.text}
+                activeOutlineColor={theme.colors.text}
+                outlineColor={theme.customColors.neutrals[100]}
+                underlineColor="transparent"
+                selectionColor={theme.colors.text}
+                activeUnderlineColor="transparent"
+                theme={{
+                  roundness: 12,
+                  dark: theme.dark,
+                  colors: { text: theme.colors.text },
+                  fonts: { regular: { fontFamily: theme.fonts.semiBold } },
+                }}
+                left={
+                  <TextInput.Icon
+                    icon={() => (
+                      <SearchIcon
+                        color={theme.colors.text}
+                        width={24}
+                        height={24}
+                      />
+                    )}
                   />
-                </TouchableOpacity>
-              </View>
-            </>
-          }
-          ListFooterComponent={
-            loadingList || isFetchingNextPage ? (
-              <ActivityIndicator
-                size="large"
-                color={theme.customColors.secondary.default}
+                }
               />
-            ) : null
-          }
-          ListEmptyComponent={
-            !loadingList && !isRefetchingList && data.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                  Nenhuma oportunidade encontrada
-                </Text>
-              </View>
-            ) : null
-          }
-        />
-      )}
-
-      {/* BottomSheet Filtrar */}
-      <FilterBottomSheet refRBSheet={filterSheetRef} config={filterFields} />
+            </View>
+          </>
+        }
+        ListFooterComponent={
+          loadingList || isFetchingNextPage ? (
+            <ActivityIndicator
+              size="large"
+              color={theme.customColors.secondary.default}
+            />
+          ) : null
+        }
+        ListEmptyComponent={
+          !loadingList && !isRefetchingList && data.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                Nenhuma oportunidade encontrada
+              </Text>
+            </View>
+          ) : null
+        }
+      />
 
       {showToUp && <BackToTop listRef={refPage} mb={bottomTabBarHeight} />}
     </SafeAreaView>

@@ -7,4 +7,6 @@ export type OpportunitiesRequest = {
   filter?: string | Record<string, string | string[]>;
   searchQuery?: string;
   idOpportunity?: number;
+  segments?: number[];
+  name?: string;
 };

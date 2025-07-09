@@ -7,17 +7,8 @@ import { SendCodeRequest } from "@/models/opportunities/sendCode.request";
 import api from "./api";
 import AuthStorage from "@/storages/auth-storage";
 
-export const getOpportunities = async ({
-  page,
-  limit,
-  opportunityInvested,
-  codeOpportunity,
-  shortOrder,
-  filter,
-  searchQuery,
-  idOpportunity,
-}: OpportunitiesRequest) => {
-  let params = "";
+export const getOpportunities = async (params: OpportunitiesRequest) => {
+  /* let params = "";
   if (page) {
     params = `page=${page}&`;
   }
@@ -54,7 +45,7 @@ export const getOpportunities = async ({
 
   if (params.endsWith("&")) {
     params = params.slice(0, -1);
-  }
+  } */
 
   const response = await api.get<OpportunitiesResponse>(
     `/investors/opportunities`,

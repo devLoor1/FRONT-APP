@@ -1,9 +1,9 @@
-import { HomeTabsTypes } from './home';
-import { InvestTabsTypes } from './invest';
-import { InvestimentTabsTypes } from './investiment';
-import { OpportunitiesResponse } from '../opportunities/opportunities.response';
-import { InvestimentsResponse } from '../investiment/investiments.response';
-import { NavigatorScreenParams } from '@react-navigation/native';
+import { HomeTabsTypes } from "./home";
+import { InvestTabsTypes } from "./invest";
+import { InvestimentTabsTypes } from "./investiment";
+import { OpportunitiesResponse } from "../opportunities/opportunities.response";
+import { InvestimentsResponse } from "../investiment/investiments.response";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type RootStackParamList = {
   TermsPage: undefined;
@@ -31,7 +31,7 @@ export type RootStackParamList = {
   SettingsNotification: undefined;
   Register: undefined;
   Caf: {
-    routeConfig?: boolean
+    routeConfig?: boolean;
   };
   Refused: undefined;
   Profile: undefined;
@@ -41,8 +41,8 @@ export type RootStackParamList = {
     investment: InvestimentsResponse[0];
   };
   Invest: {
-    opportunity: OpportunitiesResponse[0];
-    quotasRoute?: number
+    opportunity: OpportunitiesResponse["data"][0]["id"];
+    quotasRoute?: number;
   };
   Tabs: NavigatorScreenParams<{
     HomeTabs: NavigatorScreenParams<HomeTabsTypes> | undefined;
@@ -50,7 +50,7 @@ export type RootStackParamList = {
     InvestmentTabs: NavigatorScreenParams<InvestimentTabsTypes> | undefined;
   }>;
   OpportunitiesDetail: {
-    opportunity: OpportunitiesResponse[0];
+    opportunityId: OpportunitiesResponse["data"][0]["id"];
     analytics?: string;
   };
   Profitability: undefined;

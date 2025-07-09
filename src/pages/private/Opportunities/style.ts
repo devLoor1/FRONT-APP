@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '~/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
@@ -25,19 +25,19 @@ export const useCustomStyles = () => {
     },
     actionsContainer: {
       gap: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 16
+      flexDirection: "row",
+      alignItems: "center",
+      marginVertical: 16,
     },
     searchInput: {
       flex: 1,
       height: 42,
-      backgroundColor: theme.dark ? theme.customColors.inputBg : '#fff',
+      backgroundColor: theme.dark ? theme.customColors.inputBg : "#fff",
       borderColor: theme.customColors.neutrals[100],
       borderWidth: theme.dark ? 0 : 1,
       borderRadius: 10,
       padding: 0,
-      textAlignVertical: 'center',
+      textAlignVertical: "center",
       fontSize: 14,
       fontFamily: theme.fonts.bold,
     },
@@ -46,17 +46,17 @@ export const useCustomStyles = () => {
       height: 42,
       borderRadius: 100,
       borderWidth: 1,
-      borderColor: theme.dark
-        ? '#FFFFFF'
-        : theme.customColors.neutrals.default,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.dark ? theme.customColors.neutrals[1000] : '#FFFFFF',
+      borderColor: theme.dark ? "#FFFFFF" : theme.customColors.neutrals.default,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.dark
+        ? theme.customColors.neutrals[1000]
+        : "#FFFFFF",
     },
     emptyContainer: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       paddingVertical: 60,
     },
     emptyText: {
@@ -64,7 +64,7 @@ export const useCustomStyles = () => {
       fontSize: 16,
       fontFamily: theme.fonts.bold,
       marginBottom: 8,
-      textAlign: 'center',
-    }
+      textAlign: "center",
+    },
   });
 };
