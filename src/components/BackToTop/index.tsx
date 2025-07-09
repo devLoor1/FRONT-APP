@@ -13,7 +13,7 @@ import { Portal } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 
 type BackPageType = {
-  listRef?: React.RefObject<FlatList<any> | SectionList<any>>;
+  listRef?: React.RefObject<FlatList<any> | SectionList<any> | null>;
   scrollRef?: React.RefObject<ScrollView | null>;
   mb?: number;
 };

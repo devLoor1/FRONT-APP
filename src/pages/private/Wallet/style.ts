@@ -28,11 +28,11 @@ export const useCustomStyles = () => {
     },
     btnProfile: {
       backgroundColor: theme.customColors.secondary.default,
-      height: 44,
       borderRadius: 8,
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 16,
+      paddingVertical: 10,
       gap: 16,
       marginBottom: 16,
       marginTop: 24,
@@ -47,11 +47,11 @@ export const useCustomStyles = () => {
       backgroundColor: theme.dark
         ? theme.customColors.neutrals[800]
         : theme.customColors.baseBlack,
-      height: 44,
       borderRadius: 8,
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 16,
+      paddingVertical: 10,
       gap: 16,
     },
     btnIcon: {

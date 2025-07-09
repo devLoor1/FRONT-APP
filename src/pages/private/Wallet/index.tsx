@@ -43,7 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function WalletPage() {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  const [refreshing, setRefreshing] = useState(false);
+  // const [refreshing, setRefreshing] = useState(false);
   const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { summary, loadingGraph } = useAppSelector((state) => state.wallet);
@@ -61,28 +61,42 @@ export default function WalletPage() {
   const { showBalance, toogleBalance } = useCommon();
   const { deviceToken } = useAuth();
 
-  const { data: resume, isLoading: loadingResume } = useQuery({
+  const {
+    data: resume,
+    isLoading: loadingResume,
+    isRefetching: isRefetchingResume,
+    refetch: refetchResume,
+  } = useQuery({
     queryKey: [getWalletResume.name],
     queryFn: getWalletResume,
   });
 
-  const { data: listOpportunities, isLoading: loadingList } = useQuery({
+  const {
+    data: listOpportunities,
+    isLoading: loadingList,
+    isRefetching: isRefetchingList,
+    refetch: refetchList,
+  } = useQuery({
     queryKey: [getOpportunities.name],
     queryFn: () => getOpportunities({ page: 1, limit: 1 }),
   });
 
+  const refreshing = isRefetchingList || isRefetchingResume;
+
   function getAll() {
     Promise.all([
-      dispatch(GetUserStatus(deviceToken)),
+      // dispatch(GetUserStatus(deviceToken)),
       // dispatch(getWalletResume()),
-      dispatch(GetInterestReceivedGraph()),
-      dispatch(GetResume()),
-      dispatch(GetDebit()),
-      dispatch(GetDebitWealth()),
-      dispatch(GetPaymentMethodAvailable()),
-      dispatch(GetFAQHightlights({ pageSize: 2 })),
+      // dispatch(GetInterestReceivedGraph()),
+      // dispatch(GetResume()),
+      // dispatch(GetDebit()),
+      // dispatch(GetDebitWealth()),
+      // dispatch(GetPaymentMethodAvailable()),
+      // dispatch(GetFAQHightlights({ pageSize: 2 })),
       // dispatch(getOpportunities({ page: 1, limit: 3 })),
-      dispatch(GetCodeRecommendation()),
+      // dispatch(GetCodeRecommendation()),
+      refetchResume(),
+      refetchList(),
     ]);
   }
 
@@ -105,12 +119,12 @@ export default function WalletPage() {
 
   useEffect(() => {
     if (summary || listOpportunities) {
-      setRefreshing(false);
+      // setRefreshing(false);
     }
   }, [summary, listOpportunities]);
 
   const onRefresh = useCallback(async () => {
-    setRefreshing(true);
+    // setRefreshing(true);
     getAll();
   }, []);
 
@@ -142,7 +156,11 @@ export default function WalletPage() {
           scrollEventThrottle={16}
           ref={refPage}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+            />
           }
         >
           <View style={styles.container}>
@@ -242,7 +260,7 @@ export default function WalletPage() {
                   <View style={styles.btnIcon}>
                     <ReferIcon color={theme.customColors.baseWhite} />
                   </View>
-                  <Text style={{ ...styles.btnTxt, fontSize: 16 }}>
+                  <Text style={{ ...styles.btnTxt }}>
                     Indique seus amigos e ganhe cashback
                   </Text>
                 </TouchableOpacity>

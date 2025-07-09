@@ -172,10 +172,12 @@ export const useCustomStyles = () => {
       flexDirection: "row-reverse",
       borderWidth: 0,
       backgroundColor: "transparent",
+      height: 36,
     },
     buttonRightLabel: { color: theme.colors.text },
     buttonLeft: {
       paddingHorizontal: 24,
+      height: 36,
     },
     favoriteContainer: {
       flex: 1,

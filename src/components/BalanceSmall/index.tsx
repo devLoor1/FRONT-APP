@@ -1,25 +1,30 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
-import { useCommon } from '../../context/CommonContext';
-import { useTheme } from '@/context/MyThemeContext';
-import ModalDefault from '../ModalDefault';
-import InfoIcon from '@/../assets/newSvgs/icons/info.svg';
-import EyeIcon from '@/../assets/newSvgs/icons/visibility.svg';
-import EyeOffIcon from '@/../assets/newSvgs/icons/visibility_off.svg';
-import BlurValues from '../BlurValues';
-import { useAppSelector } from '@/redux/hooks';
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { useCommon } from "../../context/CommonContext";
+import { useTheme } from "@/context/MyThemeContext";
+import ModalDefault from "../ModalDefault";
+import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
+import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
+import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
+import BlurValues from "../BlurValues";
+import { useAppSelector } from "@/redux/hooks";
+import { WalletResponse } from "@/models/investiment/wallet.response";
 
-export default function BalanceSmall() {
+export default function BalanceSmall({
+  resume,
+}: {
+  resume?: WalletResponse["data"];
+}) {
   const { toogleBalance, showBalance } = useCommon();
-  const { resume } = useAppSelector(state => state.wallet);
+  // const { resume } = useAppSelector((state) => state.wallet);
   const { theme } = useTheme();
   const [showModal, setShowModal] = useState(false);
 
   const styles = StyleSheet.create({
     head: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       marginBottom: 20,
       marginTop: 7,
       paddingVertical: 5,
@@ -31,8 +36,8 @@ export default function BalanceSmall() {
       // backgroundColor: theme.dark ? theme.customColors.neutrals[700] : '#FFFFFF',
     },
     rowHead: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
       marginBottom: 2,
     },
@@ -47,10 +52,10 @@ export default function BalanceSmall() {
       fontFamily: theme.fonts.bold,
     },
     valueRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
     },
   });
 
@@ -60,23 +65,38 @@ export default function BalanceSmall() {
         <View style={styles.rowHead}>
           <Text style={styles.totTitle}>Saldo disponível</Text>
           <TouchableOpacity onPress={() => setShowModal(true)}>
-            <InfoIcon width={12} height={12} color={theme.customColors.hyperlink} />
+            <InfoIcon
+              width={12}
+              height={12}
+              color={theme.customColors.hyperlink}
+            />
           </TouchableOpacity>
         </View>
-        <BlurValues value={resume?.availableBalance?.toFixed(2).toString() || '0'} />
+        <BlurValues
+          value={resume?.estimated_patrimony?.toFixed(2).toString() || "0"}
+        />
       </View>
       <View>
         <View
           style={{
             ...styles.rowHead,
-            justifyContent: 'space-between',
+            justifyContent: "space-between",
             marginTop: 2,
-          }}>
+          }}
+        >
           <TouchableOpacity onPress={toogleBalance}>
             {showBalance ? (
-              <EyeIcon width={24} height={24} color={theme.customColors.neutrals[500]} />
+              <EyeIcon
+                width={24}
+                height={24}
+                color={theme.customColors.neutrals[500]}
+              />
             ) : (
-              <EyeOffIcon width={24} height={24} color={theme.customColors.neutrals[500]} />
+              <EyeOffIcon
+                width={24}
+                height={24}
+                color={theme.customColors.neutrals[500]}
+              />
             )}
           </TouchableOpacity>
         </View>
