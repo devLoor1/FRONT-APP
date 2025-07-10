@@ -20,6 +20,7 @@ import Snack from "@/components/Snack";
 import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
 import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 export default function LoginContent() {
   const { theme } = useTheme();
@@ -43,7 +44,6 @@ export default function LoginContent() {
   const screenWidth = Dimensions.get("window").width;
   const horizontalMargin = 100;
   const maxLogoWidth = screenWidth - horizontalMargin * 2;
-
   const {
     mutateAsync: loginMutation,
     data,
@@ -59,9 +59,6 @@ export default function LoginContent() {
     setPasswordError(passwordValidator.error);
     if (isFormValid) {
       await loginMutation({ email: email.toLowerCase(), password });
-      // grantType: "password",
-      // scopes:
-      //   "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
     }
   }
 
@@ -191,7 +188,10 @@ export default function LoginContent() {
       <Text style={styles.version}>Versão {Version()}</Text>
       <Snack
         visible={showSnack}
-        txt={loginError?.message || ""}
+        txt={
+          (loginError as AxiosError<any>)?.response?.data?.errors?.[0]
+            .message || ""
+        }
         setShowSnack={setShowSnack}
         reset={reset}
       />

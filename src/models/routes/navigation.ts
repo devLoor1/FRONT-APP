@@ -41,7 +41,7 @@ export type RootStackParamList = {
     investment: InvestimentsResponse[0];
   };
   Invest: {
-    opportunity: OpportunitiesResponse["data"][0]["id"];
+    opportunityId: OpportunitiesResponse["data"][0]["id"];
     quotasRoute?: number;
   };
   Tabs: NavigatorScreenParams<{

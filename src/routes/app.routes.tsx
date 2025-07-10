@@ -3,31 +3,31 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import InvestorProfilePage from '~/pages/private/InvestorProfile';
 import Tabs from "./private/Tabs";
 import { RootStackParamList } from "@/models/routes/navigation";
-/* import ExcerptPage from '~/pages/private/Excerpt';
-import ContactPage from '~/pages/public/Contact';
-import FaqPage from '~/pages/private/Faq';
-import MenuPage from '~/pages/private/Menu';
-import DepositPage from '~/pages/private/Deposit';
-import WithdrawPage from '~/pages/private/Withdraw';
-import PixPage from '~/pages/private/Pix';
-import ResultsPage from '~/pages/private/Results';
-import EditAccountPage from '~/pages/private/EditAccount';
-import ChangePasswordPage from '~/pages/private/ChangePassword';
-import RemoveAccountPage from '~/pages/private/RemoveAccount';
-import SettingsAuthPage from '~/pages/private/SettingsAuth';
-import BillingCenterPage from '~/pages/private/BillingCenter';
-import SettingsNotificationPage from '~/pages/private/SettingsNotification';
-import RegisterPage from '~/pages/private/Register';
-import RefusedPage from '~/pages/private/Refused';
-import OpportunitiesDetailPage from '~/pages/private/OpportunitiesDetail';
-import { RootStackParamList } from '~/models/routes/navigation';
-import InvestPage from '~/pages/private/Invest';
-import ProfilePage from '~/pages/private/Profile';
-import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
-import ProfilePicturePage from '~/pages/private/ProfilePicture';
-import DailySummaryPage from '~/pages/private/DailySummary';
-import ProfitabilityPage from '~/pages/private/Profitability';
-import Caf from '~/pages/private/Register/pages/Caf'; */
+// import ExcerptPage from '~/pages/private/Excerpt';
+// import ContactPage from '~/pages/public/Contact';
+// import FaqPage from '~/pages/private/Faq';
+// import MenuPage from '~/pages/private/Menu';
+// import DepositPage from '~/pages/private/Deposit';
+// import WithdrawPage from '~/pages/private/Withdraw';
+// import PixPage from '~/pages/private/Pix';
+// import ResultsPage from '~/pages/private/Results';
+// import EditAccountPage from '~/pages/private/EditAccount';
+// import ChangePasswordPage from '~/pages/private/ChangePassword';
+// import RemoveAccountPage from '~/pages/private/RemoveAccount';
+// import SettingsAuthPage from '~/pages/private/SettingsAuth';
+// import BillingCenterPage from '~/pages/private/BillingCenter';
+// import SettingsNotificationPage from '~/pages/private/SettingsNotification';
+// import RegisterPage from '~/pages/private/Register';
+// import RefusedPage from '~/pages/private/Refused';
+import OpportunitiesDetailPage from "@/pages/private/OpportunitiesDetail";
+// import { RootStackParamList } from '~/models/routes/navigation';
+// import InvestPage from '~/pages/private/Invest';
+// import ProfilePage from '~/pages/private/Profile';
+// import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
+// import ProfilePicturePage from '~/pages/private/ProfilePicture';
+// import DailySummaryPage from '~/pages/private/DailySummary';
+// import ProfitabilityPage from '~/pages/private/Profitability';
+// import Caf from '~/pages/private/Register/pages/Caf';
 
 const MainStack = createNativeStackNavigator<RootStackParamList>();
 
@@ -48,12 +48,12 @@ export default function AppRoutes({
         name="Tabs"
         options={{ gestureEnabled: false }}
       />
-      {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} />
+      {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
       <MainStack.Screen
         name="OpportunitiesDetail"
         component={OpportunitiesDetailPage}
       />
-      <MainStack.Screen
+      {/* <MainStack.Screen
         name="InvestmentDetail"
         component={InvestmentDetailPage}
       />

@@ -6,47 +6,9 @@ import { OpportunitiesResponse } from "@/models/opportunities/opportunities.resp
 import { SendCodeRequest } from "@/models/opportunities/sendCode.request";
 import api from "./api";
 import AuthStorage from "@/storages/auth-storage";
+import { OpportunityDetailsResponse } from "@/models/opportunities/opportunityDetails.response";
 
 export const getOpportunities = async (params: OpportunitiesRequest) => {
-  /* let params = "";
-  if (page) {
-    params = `page=${page}&`;
-  }
-  if (limit) {
-    params = `${params}pageSize=${limit}&`;
-  }
-  if (opportunityInvested) {
-    params = `${params}opportunityInvested=${opportunityInvested}&`;
-  }
-  if (codeOpportunity) {
-    params = `${params}codeOpportunity=${codeOpportunity}&`;
-  }
-  if (shortOrder) {
-    params = `${params}shortOrder=${shortOrder}&`;
-  }
-  if (searchQuery?.trim()) {
-    params = `${params}SearchQuery=${encodeURIComponent(searchQuery.trim())}&`;
-  }
-  if (idOpportunity) {
-    params = `${params}idOpportunity=${idOpportunity}&`;
-  }
-  if (filter && typeof filter === "object") {
-    Object.keys(filter).forEach((key) => {
-      const value = filter[key];
-      if (Array.isArray(value)) {
-        value.forEach((item: string) => {
-          params = `${params}${key}=${item}&`;
-        });
-      } else {
-        params = `${params}${key}=${value}&`;
-      }
-    });
-  }
-
-  if (params.endsWith("&")) {
-    params = params.slice(0, -1);
-  } */
-
   const response = await api.get<OpportunitiesResponse>(
     `/investors/opportunities`,
     {
@@ -56,6 +18,14 @@ export const getOpportunities = async (params: OpportunitiesRequest) => {
   );
 
   return response.data;
+};
+
+export const getOpportunity = async (id: number) => {
+  const response = await api.get<OpportunityDetailsResponse>(
+    `/investors/opportunities/${id}`
+  );
+
+  return response.data.data;
 };
 
 export const GetCode = createAsyncThunk(
