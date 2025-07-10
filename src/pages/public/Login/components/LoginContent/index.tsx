@@ -188,10 +188,7 @@ export default function LoginContent() {
       <Text style={styles.version}>Versão {Version()}</Text>
       <Snack
         visible={showSnack}
-        txt={
-          (loginError as AxiosError<any>)?.response?.data?.errors?.[0]
-            .message || ""
-        }
+        txt={loginError?.response?.data?.errors?.[0].message || ""}
         setShowSnack={setShowSnack}
         reset={reset}
       />
