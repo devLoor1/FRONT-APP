@@ -164,8 +164,8 @@ export const useCustomStyles = () => {
     },
     progressFill: {
       height: 10,
-      backgroundColor: "#0FCBCC",
       position: "absolute",
+      borderRadius: 10,
     },
     valueContent: {
       height: 38,

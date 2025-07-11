@@ -318,7 +318,7 @@ export default function OpportunitiesPage() {
         }
       />
 
-      {showToUp && <BackToTop listRef={refPage} mb={bottomTabBarHeight} />}
+      {showToUp && <BackToTop listRef={refPage} mb={bottomTabBarHeight / 2} />}
     </SafeAreaView>
   );
 }
