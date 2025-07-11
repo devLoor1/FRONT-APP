@@ -34,9 +34,25 @@
       "@logrocket/react-native",
       [
         "expo-build-properties",
-        { "android": { "minSdkVersion": 25, "ndkVersion": "27.2.12479018" } }
+        {
+          "android": {
+            "minSdkVersion": 25,
+            "ndkVersion": "27.2.12479018"
+          }
+        }
       ]
     ],
-    "owner": "wise-money"
+    "owner": "wise-money",
+    "extra": {
+      "eas": {
+        "projectId": "865565b6-4613-401e-b399-0b28fc5bc42e"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/865565b6-4613-401e-b399-0b28fc5bc42e"
+    }
   }
 }
