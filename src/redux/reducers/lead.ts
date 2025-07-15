@@ -11,7 +11,7 @@ import {
 } from '@/services-old/lead';
 import { LeadResponse } from '@/models-old/lead/lead.response';
 import { InvestimentAmountResponse } from '@/models-old/lead/investimentAmount.response';
-import { AuthResponse } from '@/models-old/auth/auth.response';
+import { AuthResponse } from '@/models/auth/auth.response';
 import { LeadMissingResponse } from '@/models-old/lead/leadMissing.response';
 
 const initialState = {

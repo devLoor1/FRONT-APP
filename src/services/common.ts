@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import Constants from "expo-constants";
-import { AuthResponse } from "@/models-old/auth/auth.response";
+import { AuthResponse } from "@/models/auth/auth.response";
 import AuthStorage from "@/storages/auth-storage";
 import api from "./api";
-import { RisksResponse } from "@/models-old/auth/risks.response";
+import { RisksResponse } from "@/models/auth/risks.response";
 import { GetNewTemsResponse } from "@/models-old/terms/getNewTems.response";
 import apiPublic from "../services-old/apiPublic";
 import { AgreeRiskInvestRequest } from "@/models/auth/agreeRiskInvest.request";

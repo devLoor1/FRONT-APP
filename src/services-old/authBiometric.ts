@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api';
-import { validateBiometricRequest as BaseRequest } from '@/models-old/auth/validateBiometric.request';
+import { validateBiometricRequest as BaseRequest } from '@/models/auth/validateBiometric.request';
 
 type RequestWithToken = BaseRequest & { deviceToken: string };
 

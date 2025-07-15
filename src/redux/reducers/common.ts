@@ -7,12 +7,12 @@ import {
   GetPublicToken,
   GetRisks,
 } from '@/services/common';
-import { AuthResponse } from '@/models-old/auth/auth.response';
+import { AuthResponse } from '@/models/auth/auth.response';
 import AuthStorage from '@/storages/auth-storage';
-import { RisksResponse } from '@/models-old/auth/risks.response';
+import { RisksResponse } from '@/models/auth/risks.response';
 import { GetNewTemsResponse } from '@/models-old/terms/getNewTems.response';
-import { DailySummaryResponse } from '@/models-old/auth/dailySummary.response';
-import { ConfirmDailySummaryResponse } from '@/models-old/auth/confirmDailySummary.response';
+import { DailySummaryResponse } from '@/models/auth/dailySummary.response';
+import { ConfirmDailySummaryResponse } from '@/models/auth/confirmDailySummary.response';
 
 const initialState = {
   publicToken: <string | null>null,

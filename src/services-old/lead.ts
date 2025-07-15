@@ -6,7 +6,7 @@ import Debug from '@/helpers/debug';
 import { LeadRequest } from '@/models-old/lead/lead.request';
 import { LeadResponse } from '@/models-old/lead/lead.response';
 import { InvestimentAmountResponse } from '@/models-old/lead/investimentAmount.response';
-import { AuthResponse } from '@/models-old/auth/auth.response';
+import { AuthResponse } from '@/models/auth/auth.response';
 import { IdentifierLeadRequest } from '@/models-old/mfa/identifierLead.request';
 import { LeadMissingResponse } from '@/models-old/lead/leadMissing.response';
 import api from '../services/api';

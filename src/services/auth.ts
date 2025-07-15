@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AuthResponse } from "@/models-old/auth/auth.response";
+import { AuthResponse } from "@/models/auth/auth.response";
 import api from "./api";
-import { NewcellRequest } from "@/models-old/auth/newphone.request";
+import { NewcellRequest } from "@/models/auth/newphone.request";
 import apiPublic from "../services-old/apiPublic";
 import { MeResponse } from "@/models/user/me.response";
 
