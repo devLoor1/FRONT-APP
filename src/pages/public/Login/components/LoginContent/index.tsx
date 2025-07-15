@@ -5,7 +5,7 @@ import { useCustomStyles } from "./style";
 import Input from "@/components/Input";
 import { useAppDispatch } from "@/redux/hooks";
 import CommonValidators from "@/helpers/validators/common.validators";
-import { postLogin } from "@/services/login";
+import { postLogin } from "@/services/auth";
 import { PublicNavigation } from "@/models/routes/navigation.public";
 import { reset, setLoginData } from "@/redux/reducers/auth";
 import { Analytics, handleAnalyticsUserProfile } from "@/helpers/analytics";

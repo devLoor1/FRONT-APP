@@ -1,18 +1,17 @@
-import { View, Text, SafeAreaView, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useCustomStyles } from "./style";
+import { View, Text, SafeAreaView, Alert, ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import LottieView from "lottie-react-native";
 import BtnDefault from "@/components/BtnDefault";
-import NeedHelp from "@/components/NeedHelp";
 import { useTheme } from "@/context/MyThemeContext";
 import ShieldIcon from "@/../assets/newSvgs/icons/verified_user.svg";
-import LottieView from "lottie-react-native";
 import { Analytics } from "@/helpers/analytics";
-import { postLogin } from "@/services/login";
+import { postLogin } from "@/services/auth";
 import { useAppDispatch } from "@/redux/hooks";
 import { setLoginData } from "@/redux/reducers/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCustomStyles } from "./style";
 
 type Props = {
   resetAll(): void;

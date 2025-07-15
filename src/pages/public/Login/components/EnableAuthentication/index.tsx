@@ -1,24 +1,24 @@
-import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
-import BottomSheet from '../../../../../components/BottomSheet';
+import { View, Text, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCustomStyles } from './style';
 import { useTheme } from '@/context/MyThemeContext';
 import LockOpen from '@/../assets/newSvgs/icons/lock_open.svg';
 import Finger from '@/../assets/newSvgs/icons/Biometria.svg';
 import SecureStorage from '@/storages/secure-storage';
+import BottomSheet from '@/components/BottomSheet';
 import { useAuth } from '@/context/auth';
 import { Analytics } from '@/helpers/analytics';
 import { useAppDispatch } from '@/redux/hooks';
 import { setLoginData } from '@/redux/reducers/auth';
-import { postLogin } from '@/services/login';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { postLogin } from '@/services/auth';
 
 type Props = {
-  refRBSheet: any;
+  readonly refRBSheet: any;
   onClose(): void;
 };
 
-export default function EnableAuth({ refRBSheet, onClose }: Props) {
+export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
   const { onSignIn } = useAuth();

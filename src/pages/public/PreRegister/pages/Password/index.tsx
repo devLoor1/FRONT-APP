@@ -1,14 +1,14 @@
 import { View, Text, BackHandler, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { useMutation } from "@tanstack/react-query";
 
-import { Analytics } from "@/helpers/analytics";
 import PasswordComp from "@/components/Password";
 import BtnDefault from "@/components/BtnDefault";
+import { Analytics } from "@/helpers/analytics";
+import { postRegister } from "@/services/auth";
 import { RegisterRequest } from "@/models/auth/register.request";
-import { postRegister } from "@/services/register";
 import { useCustomStyles } from "../../style";
 
 type Props = {

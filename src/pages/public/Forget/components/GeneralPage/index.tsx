@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Input from "@/components/Input";
 import CommonValidators from "@/helpers/validators/common.validators";
 import { Analytics } from "@/helpers/analytics";
 import BtnDefault from "@/components/BtnDefault";
-import { ScrollView } from "react-native-gesture-handler";
-import { Text, View } from "react-native";
 import { useCustomStyles } from "../../style";
 import { useNavigation } from "@react-navigation/native";
-import { postRecover } from "@/services/recover";
+import { postRecover } from "@/services/auth";
 import { useMutation } from "@tanstack/react-query";
 import Snack from "@/components/Snack";
 import { reset } from "@/redux/reducers/forget";
