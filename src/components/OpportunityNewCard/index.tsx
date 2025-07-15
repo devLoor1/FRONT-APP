@@ -222,11 +222,10 @@ export default function OpportunityNewCard({
       <View style={styles.footer}>
         <BtnDefault
           label="Investir"
-          disabled
           style={styles.buttonLeft}
           onPress={() => {
             Analytics({ eventName: "HomeApp_OportunidadeSimular" });
-            refRBSheetSimulation.current.open();
+            nav.navigate("Invest", { opportunityId: opportunity.id });
           }}
         />
         <BtnDefault

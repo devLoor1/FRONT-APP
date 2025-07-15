@@ -21,6 +21,7 @@ export default function useCustomStyles() {
       color: theme.colors.text,
       fontFamily: theme.fonts.semiBold,
     },
+    required: { color: theme.customColors.error.default },
     formRowContainer: { flexDirection: "row", gap: 8, flex: 1 },
     checkbox: {
       flexDirection: "row-reverse",

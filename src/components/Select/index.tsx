@@ -40,6 +40,7 @@ type InputType = {
   marginBottom?: number;
   disabled?: boolean;
   onSelect?: (id: string) => void;
+  outlinedLabel?: boolean;
 };
 
 export default function Select({
@@ -57,6 +58,7 @@ export default function Select({
   marginBottom = 8,
   disabled = false,
   onSelect,
+  outlinedLabel = false,
 }: InputType) {
   const { theme } = useTheme();
   const [searchField, setSearchField] = useState("");
@@ -76,7 +78,7 @@ export default function Select({
 
   return (
     <View style={{ marginBottom: marginBottom }}>
-      {label && (
+      {label && !outlinedLabel && (
         <View style={styles.labelContainer}>
           <Text style={styles.label}>{label} </Text>
           {required && (
@@ -95,6 +97,7 @@ export default function Select({
           placeholder={placeholder}
           placeholderTextColor={theme.colors.text}
           mode="outlined"
+          label={outlinedLabel ? placeholder : undefined}
           editable={false}
           error={error}
           disabled={disabled}
@@ -115,6 +118,7 @@ export default function Select({
                   height={24}
                 />
               )}
+              disabled={disabled}
               onPress={() => btSheetRef.current?.open()}
             />
           }

@@ -7,6 +7,7 @@ import { SendCodeRequest } from "@/models/opportunities/sendCode.request";
 import api from "./api";
 import AuthStorage from "@/storages/auth-storage";
 import { OpportunityDetailsResponse } from "@/models/opportunities/opportunityDetails.response";
+import { OpportunityPix } from "@/models/opportunities/pix";
 
 export const getOpportunities = async (params: OpportunitiesRequest) => {
   const response = await api.get<OpportunitiesResponse>(
@@ -23,6 +24,14 @@ export const getOpportunities = async (params: OpportunitiesRequest) => {
 export const getOpportunity = async (id: number) => {
   const response = await api.get<OpportunityDetailsResponse>(
     `/investors/opportunities/${id}`
+  );
+
+  return response.data.data;
+};
+
+export const getOpportunityPix = async (id: number) => {
+  const response = await api.get<{ data: OpportunityPix }>(
+    `/investors/investments/opportunities/${id}/pix`
   );
 
   return response.data.data;

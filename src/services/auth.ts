@@ -2,13 +2,19 @@ import { handleAnalyticsUserProfile } from "@/helpers/analytics";
 import api from "./api";
 import Debug from "@/helpers/debug";
 import LogRocketHelper from "@/helpers/logRocket";
-import { AuthRequest, AuthResponse, RecoverRequest, RecoverResponse, RegisterRequest } from "@/models/auth";
+import {
+  AuthRequest,
+  AuthResponse,
+  RecoverRequest,
+  RecoverResponse,
+  RegisterRequest,
+} from "@/models/auth";
 import { MeResponse } from "@/models/user/me.response";
 import AuthStorage from "@/storages/auth-storage";
 import { formatPersonType, formatPhone } from "@/utils/formatters";
 
 export const getMe = async () => {
-  const response = await api.post<MeResponse>("/auth/investor/me");
+  const response = await api.get<MeResponse>("/auth/investor/me");
   return response.data.data;
 };
 
@@ -42,8 +48,8 @@ export const postLogin = async (request: AuthRequest) => {
 export const postRegister = async (request: RegisterRequest) => {
   let body = {
     ...request,
-    phone: formatPhone(request.phone || ''),
-    type: formatPersonType(request.type || '')
+    phone: formatPhone(request.phone || ""),
+    type: formatPersonType(request.type || ""),
   };
 
   if (request.full_name && request.email) {

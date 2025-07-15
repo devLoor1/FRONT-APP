@@ -108,7 +108,7 @@ export default function InvestPage({ route }: Props) {
       case "investment":
         return <InvestmentTab {...{ onNext, opportunityId, ...props }} />;
       case "personal_data":
-        return <PersonalDataTab {...{ onNext, ...props }} />;
+        return <PersonalDataTab {...{ onNext, opportunityId, ...props }} />;
       case "crowdfunding":
       case "summary":
       case "finish":

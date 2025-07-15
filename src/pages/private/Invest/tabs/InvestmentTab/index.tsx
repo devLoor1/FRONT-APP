@@ -306,7 +306,7 @@ const InvestmentTab: React.FC<
       <View style={styles.footer}>
         {!!loginData?.personal_information_filled && (
           <BtnDefault
-            label="Salvar e continuar"
+            label="Salvar e avançar"
             onPress={() => {
               if (
                 me?.investor_profile.title !==

@@ -1,6 +1,4 @@
-import React, {
-  forwardRef,
-} from 'react';
+import React, { forwardRef } from "react";
 import {
   DimensionValue,
   KeyboardTypeOptions,
@@ -12,32 +10,36 @@ import {
   TextInputFocusEventData,
   TextInputProps,
   View,
-} from 'react-native';
-import { HelperText, TextInput } from 'react-native-paper';
-import CommonMask from '../../helpers/masks';
-import { useTheme } from '@/context/MyThemeContext';
+} from "react-native";
+import { HelperText, TextInput } from "react-native-paper";
+import CommonMask from "../../helpers/masks";
+import { useTheme } from "@/context/MyThemeContext";
 
 type InputType = {
   placeholder?: string;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   keyboardType?: KeyboardTypeOptions | undefined;
-  autoComplete?: TextInputProps['autoComplete'];
-  textContentType?: TextInputProps['textContentType'];
-  autoCapitalize?: TextInputProps['autoCapitalize'];
+  autoComplete?: TextInputProps["autoComplete"];
+  textContentType?: TextInputProps["textContentType"];
+  autoCapitalize?: TextInputProps["autoCapitalize"];
   secureTextEntry?: boolean;
   right?: React.ReactElement | null;
   prefix?: React.ReactElement | null;
   error?: boolean;
   txtError?: string;
-  mask?: 'cpf' | 'cep' | 'phone' | 'currency' | 'date' | undefined;
+  mask?: "cpf" | "cep" | "phone" | "currency" | "date" | undefined;
   maxLength?: number;
   width?: DimensionValue;
   editable?: boolean;
   disabled?: boolean;
   multiline?: boolean;
-  onFocus?: ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) | undefined;
-  onPressOut?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;
+  onFocus?:
+    | ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void)
+    | undefined;
+  onPressOut?:
+    | ((e: NativeSyntheticEvent<NativeTouchEvent>) => void)
+    | undefined;
   border?: boolean;
   borderSolid?: boolean;
   borderColor?: string;
@@ -47,8 +49,9 @@ type InputType = {
   required?: boolean;
   txtCenter?: boolean;
   height?: number;
-  mode?: 'flat' | 'outlined';
+  mode?: "flat" | "outlined";
   onChangeText?: (((text: string) => void) & Function) | undefined;
+  outlinedLabel?: boolean;
 };
 
 const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
@@ -57,12 +60,12 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
     value,
     setValue,
     keyboardType = undefined,
-    autoComplete = 'off',
+    autoComplete = "off",
     secureTextEntry = false,
     right = null,
     prefix = null,
     error = false,
-    txtError = '',
+    txtError = "",
     mask,
     maxLength = 1000,
     width,
@@ -81,56 +84,57 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
     label,
     required,
     txtCenter,
-    mode = 'outlined',
+    mode = "outlined",
     onChangeText,
+    outlinedLabel = false,
   },
   ref
 ) => {
   const { theme } = useTheme();
-  
-
 
   const styles = StyleSheet.create({
     input: {
-      backgroundColor: bg ? bg : (theme?.customColors?.inputBg || '#EFEFEF'),
+      backgroundColor: bg ? bg : theme?.customColors?.inputBg || "#EFEFEF",
       fontSize: 14,
-      fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold',
-      width: width || 'auto',
+      fontFamily: theme?.fonts?.semiBold || "NunitoSans_600SemiBold",
+      width: width || "auto",
       borderWidth: border ? 1 : 0,
       borderRadius: 12,
-      borderStyle: borderSolid ? 'solid' : 'dashed',
-      borderColor: borderColor ? borderColor : (theme?.customColors?.neutrals?.[400] || '#969595'),
-      textAlign: txtCenter ? 'center' : 'left',
+      borderStyle: borderSolid ? "solid" : "dashed",
+      borderColor: borderColor
+        ? borderColor
+        : theme?.customColors?.neutrals?.[400] || "#969595",
+      textAlign: txtCenter ? "center" : "left",
     },
     labelContainer: {
-      flexDirection: 'row',
+      flexDirection: "row",
     },
     label: {
       color: theme?.navigation?.dark
-        ? (theme?.customColors?.neutrals?.[400] || '#969595')
-        : (theme?.customColors?.neutrals?.[700] || '#504F4F'),
+        ? theme?.customColors?.neutrals?.[400] || "#969595"
+        : theme?.customColors?.neutrals?.[700] || "#504F4F",
       marginBottom: 6,
-      fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold',
+      fontFamily: theme?.fonts?.semiBold || "NunitoSans_600SemiBold",
       fontSize: 14,
     },
   });
 
   function handleChange(txt: string) {
-    let maskValue = '';
+    let maskValue = "";
     switch (mask) {
-      case 'cpf':
+      case "cpf":
         maskValue = CommonMask.cpf(txt);
         break;
-      case 'cep':
+      case "cep":
         maskValue = CommonMask.cep(txt);
         break;
-      case 'phone':
+      case "phone":
         maskValue = CommonMask.phone(txt);
         break;
-      case 'currency':
+      case "currency":
         maskValue = CommonMask.currency(txt);
         break;
-      case 'date':
+      case "date":
         maskValue = CommonMask.date(txt);
         break;
       default:
@@ -142,11 +146,17 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
 
   return (
     <View style={{ marginBottom }}>
-      {label && (
+      {label && !outlinedLabel && (
         <View style={styles.labelContainer}>
           <Text style={styles.label}>{label}</Text>
           {required && (
-            <Text style={{ color: theme?.customColors?.error?.default || '#EE4848' }}>*</Text>
+            <Text
+              style={{
+                color: theme?.customColors?.error?.default || "#EE4848",
+              }}
+            >
+              *
+            </Text>
           )}
         </View>
       )}
@@ -154,13 +164,18 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         ref={ref}
         value={value}
         onChangeText={
-          onChangeText ? onChangeText : txt => (mask ? handleChange(txt) : setValue(txt))
+          onChangeText
+            ? onChangeText
+            : (txt) => (mask ? handleChange(txt) : setValue(txt))
         }
         mode={mode}
+        label={outlinedLabel ? label : undefined}
         autoComplete={autoComplete}
         keyboardType={keyboardType}
-        activeOutlineColor={border ? 'transparent' : (theme?.navigation?.colors?.text || '#39393A')}
-        placeholderTextColor={theme?.navigation?.colors?.text || '#39393A'}
+        activeOutlineColor={
+          border ? "transparent" : theme?.navigation?.colors?.text || "#39393A"
+        }
+        placeholderTextColor={theme?.navigation?.colors?.text || "#39393A"}
         secureTextEntry={secureTextEntry}
         outlineColor="transparent"
         placeholder={placeholder}
@@ -180,7 +195,9 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         style={styles.input}
         theme={{
           fonts: {
-            regular: { fontFamily: theme?.fonts?.semiBold || 'NunitoSans_600SemiBold' },
+            regular: {
+              fontFamily: theme?.fonts?.semiBold || "NunitoSans_600SemiBold",
+            },
           },
         }}
       />
@@ -188,7 +205,10 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         <HelperText
           type="error"
           visible={error}
-          theme={{ colors: { error: theme?.customColors?.error?.default || '#EE4848' } }}>
+          theme={{
+            colors: { error: theme?.customColors?.error?.default || "#EE4848" },
+          }}
+        >
           {txtError}
         </HelperText>
       )}
