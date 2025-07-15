@@ -1,5 +1,5 @@
 import { OpportunitiesResponse } from '@/models/opportunities/opportunities.response';
-import { UserType } from '@/models/types/User';
+import { UserType } from '@/models-old/types/User';
 
 type Props = {
   user: UserType | null;

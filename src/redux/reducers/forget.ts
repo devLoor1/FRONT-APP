@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { SendNewPassword } from '@/services/forget';
+import { SendNewPassword } from '@/services-old/forget';
 
 const initialState = {
   responseNewPassword: <boolean | null>null,

@@ -8,7 +8,7 @@ import BtnDefault from '@/components/BtnDefault';
 import CloseIcon from '@/../assets/newSvgs/icons/close_small.svg';
 import { RadioButton } from 'react-native-paper';
 import { useCustomStyles } from './style';
-import { PostExcerpstEmail } from '@/services/excerpt';
+import { PostExcerpstEmail } from '@/services-old/excerpt';
 import { useAppDispatch } from '@/redux/hooks';
 import { Analytics } from '@/helpers/analytics';
 

@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { DebitResponse } from "@/models/investiment/debit.response";
-import { ReceivedInterestGraphResponse } from "@/models/investiment/receivedInterestGraph.response";
-import { SummaryResponse } from "@/models/investiment/summary.response";
-import { WalletResponse } from "@/models/investiment/wallet.response";
+import { DebitResponse } from "@/models-old/investiment/debit.response";
+import { ReceivedInterestGraphResponse } from "@/models-old/investiment/receivedInterestGraph.response";
+import { SummaryResponse } from "@/models-old/investiment/summary.response";
+import { WalletResponse } from "@/models-old/investiment/wallet.response";
 import {
   GetDebitSummary,
   GetSummary,
   GetInterestReceivedGraph,
   getWalletResume,
   GetQtdInvestments,
-} from "@/services/wallet";
+} from "@/services-old/wallet";
 
 const initialState = {
   summary: <SummaryResponse | null>null,

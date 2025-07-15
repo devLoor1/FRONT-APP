@@ -10,7 +10,7 @@ import FAQIcon from '@/../assets/newSvgs/icons/help.svg';
 import HelpIcon from '@/../assets/newSvgs/icons/forum.svg';
 import { useAuth } from '@/context/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/models/routes/navigation';
+import { RootStackParamList } from '@/models-old/routes/navigation';
 import { Analytics } from '@/helpers/analytics';
 import { useAppSelector } from '@/redux/hooks';
 

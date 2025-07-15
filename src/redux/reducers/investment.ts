@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { InvestimentDetailResponse } from '@/models/investiment/investimentDetail.response';
-import { InvestimentsResponse } from '@/models/investiment/investiments.response';
-import { RatingResponse } from '@/models/investiment/rating.response';
-import { GetInvestimentDetail, GetInvestiments, GetRating } from '@/services/investment';
+import { InvestimentDetailResponse } from '@/models-old/investiment/investimentDetail.response';
+import { InvestimentsResponse } from '@/models-old/investiment/investiments.response';
+import { RatingResponse } from '@/models-old/investiment/rating.response';
+import { GetInvestimentDetail, GetInvestiments, GetRating } from '@/services-old/investment';
 
 const initialState = {
   rating: <RatingResponse | null>null,

@@ -10,7 +10,7 @@ import {
   RegisterNewPixKey,
   SendPix,
   VerifyBacen,
-} from '@/services/pix';
+} from '@/services-old/pix';
 
 const initialState = {
   statusSendPix: <SendPixResponse | null>null,

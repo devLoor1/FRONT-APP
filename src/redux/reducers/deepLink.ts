@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { DeepLinkResponse } from '@/models/deepLink/deepLink.response';
-import { PostDeepLink } from '@/services/deepLink';
+import { DeepLinkResponse } from '@/models-old/deepLink/deepLink.response';
+import { PostDeepLink } from '@/services-old/deepLink';
 import CommonStorage from '@/storages/common-storage';
 
 const initialState = {

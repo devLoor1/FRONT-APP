@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView } from "react-native";
-import React, { useEffect } from "react";
+import { View, Text, SafeAreaView, Alert, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useCustomStyles } from "./style";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,8 +9,9 @@ import { useTheme } from "@/context/MyThemeContext";
 import ShieldIcon from "@/../assets/newSvgs/icons/verified_user.svg";
 import LottieView from "lottie-react-native";
 import { Analytics } from "@/helpers/analytics";
-import { login } from "@/services/auth";
+import { postLogin } from "@/services/login";
 import { useAppDispatch } from "@/redux/hooks";
+import { setLoginData } from "@/redux/reducers/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
@@ -23,27 +24,55 @@ export default function SuccessPage({ resetAll }: Props) {
   const { theme } = useTheme();
   const animation = require("@/../assets/animations/Confetti.json");
   const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     Analytics({ pageName: "CadastroValidacao" });
   }, []);
 
   async function handleSingIn() {
-    const email = await AsyncStorage.getItem("userEmailLogin");
-    const password = await AsyncStorage.getItem("userPasswordLogin");
+    try {
+      setIsLoading(true);
+      
+      const email = await AsyncStorage.getItem("userEmailLogin");
+      const password = await AsyncStorage.getItem("userPasswordLogin");
 
-    await dispatch(
-      login({
-        grantType: "password",
-        identifier: email!,
-        password: password!,
-        scopes:
-          "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
-      })
-    );
+      if (!email || !password) {
+        Alert.alert(
+          "Erro",
+          "Não foi possível recuperar as credenciais de login. Por favor, faça login manualmente.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
 
-    await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
+      const loginData = {
+        email: email,
+        password: password,
+      };      
+      const loginResponse = await postLogin(loginData);
+
+      dispatch(setLoginData(loginResponse));
+
+      await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
+    } catch (error) {
+      console.error("Erro ao fazer login automático:", error);
+      Alert.alert(
+        "Erro",
+        "Não foi possível fazer login automático. Por favor, faça login manualmente.",
+        [{ text: "OK" }]
+      );
+      nav.navigate('Login' as never);
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  const handleLoginPress = async () => {
+    Analytics({ eventName: "CadastroValidacao_HomeLogin" });
+    resetAll();
+    await handleSingIn();
+  };
 
   return (
     <LinearGradient
@@ -67,46 +96,46 @@ export default function SuccessPage({ resetAll }: Props) {
           source={animation}
         />
       </View>
+
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={{ flexGrow: 1 }}>
-            <Text style={styles.title}>Você está quase lá!</Text>
+            <Text style={styles.title}>Conta criada com sucesso! 🎉</Text>
+            
             <Text style={{ ...styles.desc, fontSize: 18 }}>
-              Seu cadastro foi realizado com sucesso, e nesse momento estamos
-              analisando seus dados para abertura de conta.
+              Parabéns! Sua conta foi criada com sucesso. Agora precisamos de mais um passo para ativá-la.
             </Text>
+            
             <Text style={{ ...styles.desc, fontFamily: theme.fonts.regular }}>
-              Não se preocupe, estamos finalizando as verificações necessárias,
-              e em breve você poderá aproveitar todos os serviços oferecidos em
-              nosso aplicativo.
+              Enviamos um email de confirmação para você. Por favor, acesse sua caixa de entrada e clique no link de validação para ativar sua conta.
             </Text>
-            <Text style={styles.desc}>Agradecemos pela sua paciência!</Text>
+            
+            <Text style={{ ...styles.desc, fontFamily: theme.fonts.regular }}>
+              Não conseguiu encontrar o email? Verifique também sua pasta de spam ou lixo eletrônico.
+            </Text>
+            
+            <Text style={styles.desc}>
+              Após validar sua conta, você poderá fazer login e aproveitar todos os nossos serviços!
+            </Text>
+
             <View style={{ marginTop: 24, alignItems: "center" }}>
               <ShieldIcon color={theme.customColors.baseWhite} />
             </View>
           </View>
+
           <View style={styles.footer}>
             <BtnDefault
-              label="Entrar"
+              label={isLoading ? "Entrando..." : "Entrar"}
               white
-              onPress={() => {
-                Analytics({ eventName: "CadastroValidacao_HomeLogin" });
-                resetAll();
-                // nav.navigate('Login' as never);
-                handleSingIn();
-              }}
+              disabled={isLoading}
+              onPress={handleLoginPress}
             />
-            <View style={{ alignItems: "center" }}>
-              <NeedHelp
-                white
-                preRegister
-                marginTop={16}
-                onPress={() => {
-                  Analytics({ eventName: "CadastroValidacao_PrecisaDeAjuda" });
-                  // resetAll();
-                }}
-              />
-            </View>
+            
+            {isLoading && (
+              <View style={{ marginTop: 16, alignItems: "center" }}>
+                <ActivityIndicator color={theme.customColors.baseWhite} size="small" />
+              </View>
+            )}
           </View>
         </View>
       </SafeAreaView>

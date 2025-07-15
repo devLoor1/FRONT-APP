@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ChangeBank, GetBank } from '@/services/bank';
+import { ChangeBank, GetBank } from '@/services-old/bank';
 import { GetBankResponse } from '@/models/user/bank.response';
 
 const initialState = {

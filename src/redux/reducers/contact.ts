@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { AdvisorResponse } from '@/models/contact/advisor.response';
-import { ListPendenciesResponse } from '@/models/contact/listPendencies.response';
-import { GetAdvisor, GetPendencies, ResetChat } from '@/services/contact';
+import { AdvisorResponse } from '@/models-old/contact/advisor.response';
+import { ListPendenciesResponse } from '@/models-old/contact/listPendencies.response';
+import { GetAdvisor, GetPendencies, ResetChat } from '@/services-old/contact';
 
 const initialState = {
   listPendencies: <ListPendenciesResponse | null>null,

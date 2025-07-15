@@ -18,7 +18,7 @@ import { GetVersionResponse } from '@/models/user/getVersion.response';
 import { UserDetailsResponse } from '@/models/user/userDetails';
 import { PaymentMethodAvailableResponse } from '@/models/payment/paymentMethodAvailable.response';
 import { UserPictureResponse } from '@/models/register/userPicture.response';
-import { UserType } from '@/models/types/User';
+import { UserType } from '@/models-old/types/User';
 import { CepResponse } from '@/models/register/cep.response';
 import { AddressRequest } from '@/models/register/address.request';
 

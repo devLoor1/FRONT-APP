@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { DebitResumeResponse } from '@/models/investiment/debitResume.response';
-import { ResumeResponse } from '@/models/investiment/resume.response';
-import { GetResume } from '@/services/resume';
-import { GetDebit } from '@/services/resume';
-import { GetDebitWealth } from '@/services/resume';
+import { DebitResumeResponse } from '@/models-old/investiment/debitResume.response';
+import { ResumeResponse } from '@/models-old/investiment/resume.response';
+import { GetResume } from '@/services-old/resume';
+import { GetDebit } from '@/services-old/resume';
+import { GetDebitWealth } from '@/services-old/resume';
 
 const initialState = {
     resume: <ResumeResponse | null>null,

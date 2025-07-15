@@ -9,7 +9,7 @@ import { Text, View } from "react-native";
 import { useTheme } from "@/context/MyThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models/routes/navigation";
+import { RootStackParamList } from "@/models-old/routes/navigation";
 import { Analytics } from "@/helpers/analytics";
 
 type HeaderProps = {

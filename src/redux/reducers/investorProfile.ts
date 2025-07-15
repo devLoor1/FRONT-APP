@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ProfileStatusResponse } from '@/models/Investor/profileStatus.response';
-import { QuestionResponse } from '@/models/Investor/question.response';
+import { ProfileStatusResponse } from '@/models-old/Investor/profileStatus.response';
+import { QuestionResponse } from '@/models-old/Investor/question.response';
 import {
   GetProfileStatus,
   GetQuestion,
   PostQuestion,
   RedoProfile,
-} from '@/services/investorProfile';
+} from '@/services-old/investorProfile';
 
 const initialState = {
   profileStatus: <ProfileStatusResponse | null>null,

@@ -32,7 +32,7 @@ import BlurValues from "@/components/BlurValues";
 import CommonMask from "@/helpers/masks";
 import ArrowUp from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
 import { useAppSelector } from "@/redux/hooks";
-import { ReceivedInterestGraphResponse } from "@/models/investiment/receivedInterestGraph.response";
+import { ReceivedInterestGraphResponse } from "@/models-old/investiment/receivedInterestGraph.response";
 import { useCommon } from "@/context/CommonContext";
 import { InterestFlyoutCompoment } from "./InterestFlyoutCompoment";
 import { TouchableOpacity } from "react-native-gesture-handler";

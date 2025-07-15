@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ListNotificationsResponse } from '@/models/notifications/listNotifications.response';
-import { NotificationsConfigResponse } from '@/models/notifications/notificationsConfig.response';
+import { ListNotificationsResponse } from '@/models-old/notifications/listNotifications.response';
+import { NotificationsConfigResponse } from '@/models-old/notifications/notificationsConfig.response';
 import {
   ChangeNotificationsConfig,
   GetNotifications,
   GetNotificationsConfig,
-} from '@/services/notifications';
+} from '@/services-old/notifications';
 
 const initialState = {
   listNotifications: <ListNotificationsResponse | null>null,

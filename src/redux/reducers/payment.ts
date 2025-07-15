@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { WithdrawResponse } from '@/models/payment/withdraw.response';
-import { SendPay, SendWithdraw } from '@/services/payment';
+import { SendPay, SendWithdraw } from '@/services-old/payment';
 
 const initialState = {
   payStatus: <boolean | null>null,

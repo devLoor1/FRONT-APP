@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ExcerptResponse } from '@/models/excerpt/excerpt.response';
-import { GetExcerpt, PostExcerpstEmail } from '@/services/excerpt';
+import { ExcerptResponse } from '@/models-old/excerpt/excerpt.response';
+import { GetExcerpt, PostExcerpstEmail } from '@/services-old/excerpt';
 
 const initialState = {
   listExcerpt: <ExcerptResponse | null>null,

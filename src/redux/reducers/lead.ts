@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IdentifierResponse } from '@/models/mfa/identifier.response';
+import { IdentifierResponse } from '@/models-old/mfa/identifier.response';
 import {
   GetIdentifierLead,
   GetInvestimentAmountList,
@@ -8,11 +8,11 @@ import {
   SendIdentifierCellphone,
   SendIdentifierEmail,
   SendPassword,
-} from '@/services/lead';
-import { LeadResponse } from '@/models/lead/lead.response';
-import { InvestimentAmountResponse } from '@/models/lead/investimentAmount.response';
-import { AuthResponse } from '@/models/auth/auth.response';
-import { LeadMissingResponse } from '@/models/lead/leadMissing.response';
+} from '@/services-old/lead';
+import { LeadResponse } from '@/models-old/lead/lead.response';
+import { InvestimentAmountResponse } from '@/models-old/lead/investimentAmount.response';
+import { AuthResponse } from '@/models-old/auth/auth.response';
+import { LeadMissingResponse } from '@/models-old/lead/leadMissing.response';
 
 const initialState = {
   hash: <LeadResponse | null>null,

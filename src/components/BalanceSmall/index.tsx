@@ -8,7 +8,7 @@ import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
 import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import BlurValues from "../BlurValues";
 import { useAppSelector } from "@/redux/hooks";
-import { WalletResponse } from "@/models/investiment/wallet.response";
+import { WalletResponse } from "@/models-old/investiment/wallet.response";
 
 export default function BalanceSmall({
   resume,

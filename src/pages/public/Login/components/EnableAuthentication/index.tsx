@@ -8,6 +8,10 @@ import Finger from '@/../assets/newSvgs/icons/Biometria.svg';
 import SecureStorage from '@/storages/secure-storage';
 import { useAuth } from '@/context/auth';
 import { Analytics } from '@/helpers/analytics';
+import { useAppDispatch } from '@/redux/hooks';
+import { setLoginData } from '@/redux/reducers/auth';
+import { postLogin } from '@/services/login';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
   refRBSheet: any;
@@ -18,11 +22,35 @@ export default function EnableAuth({ refRBSheet, onClose }: Props) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
   const { onSignIn } = useAuth();
+  const dispatch = useAppDispatch();
 
-  function setStorage(status: boolean) {
-    SecureStorage.SetLoginBiometry({ checked: status });
-    SecureStorage.SetInvestBiometry({ checked: status });
-    onSignIn();
+  async function setStorage(status: boolean) {
+    try {
+      // Salvar preferência de biometria
+      SecureStorage.SetLoginBiometry({ checked: status });
+      SecureStorage.SetInvestBiometry({ checked: status });
+
+      // Se habilitou biometria, tentar fazer login automático
+      if (status) {
+        const email = await AsyncStorage.getItem("userEmailLogin");
+        const password = await AsyncStorage.getItem("userPasswordLogin");
+
+        if (email && password) {
+          const loginResponse = await postLogin({
+            email: email,
+            password: password,
+          });
+
+          dispatch(setLoginData(loginResponse));
+          await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
+        }
+      }
+
+      onSignIn();
+    } catch (error) {
+      console.error("Erro ao configurar autenticação:", error);
+      onSignIn();
+    }
   }
 
   return (

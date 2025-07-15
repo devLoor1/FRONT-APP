@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { BillingDetailResponse } from '@/models/billingCenter/detail.response';
-import { BillingListResponse } from '@/models/billingCenter/list.response';
-import { GetBillingDetail, GetBillingList } from '@/services/billingCenter';
+import { BillingDetailResponse } from '@/models-old/billingCenter/detail.response';
+import { BillingListResponse } from '@/models-old/billingCenter/list.response';
+import { GetBillingDetail, GetBillingList } from '@/services-old/billingCenter';
 
 const initialState = {
   listBilling: <BillingListResponse | null>null,

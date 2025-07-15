@@ -8,7 +8,7 @@ import SuccessPage from './pages/Success';
 import { useCustomStyles } from './style';
 import ArrowIcon from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { useTheme } from '@/context/MyThemeContext';
-import { RegisterRequest } from '@/models/new/auth/register.request';
+import { RegisterRequest } from '@/models/auth/register.request';
 
 export default function LeadPages() {
   const styles = useCustomStyles();
@@ -32,47 +32,46 @@ export default function LeadPages() {
     });
   }
 
-  function handleRegisterData(data: RegisterRequest) {
-    setRegisterPayload(data);
-    setCurrentPage(2);
-  }
-
-  function handlePasswordComplete() {
-    setCurrentPage(3);
-  }
-
   let arrowColor = theme?.navigation?.colors?.text || '#39393A';
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1, flexGrow: 1 }}>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
-          <TouchableOpacity
-            onPress={() => (currentPage > 1 ? setCurrentPage(currentPage - 1) : navigation.replace('Login'))}
-            style={styles.arrow}
-          >
-            <ArrowIcon color={arrowColor} />
-          </TouchableOpacity>
-          <View style={styles.container}>
-            {currentPage === 1 && (
-              <RegisterData
-                registerPayload={registerPayload}
-                setRegisterPayload={setRegisterPayload}
-                onPress={handleRegisterData}
-              />
-            )}
-            {currentPage === 2 && (
-              <PasswordPage
-                registerPayload={registerPayload}
-                onPress={handlePasswordComplete}
-              />
-            )}
-            {currentPage === 3 && <SuccessPage resetAll={resetAll} />}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <>
+      {currentPage === 3 ? (
+        <SuccessPage resetAll={resetAll} />
+      ) : (
+        <SafeAreaView style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1, flexGrow: 1 }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+              <TouchableOpacity
+                onPress={() => (currentPage > 1 ? setCurrentPage(currentPage - 1) : navigation.replace('Login'))}
+                style={styles.arrow}
+              >
+                <ArrowIcon color={arrowColor} />
+              </TouchableOpacity>
+              <View style={styles.container}>
+                {currentPage === 1 && (
+                  <RegisterData
+                    registerPayload={registerPayload}
+                    setRegisterPayload={setRegisterPayload}
+                    onPress={(data: RegisterRequest) => {
+                      setRegisterPayload(data);
+                      setCurrentPage(2);
+                    }}
+                  />
+                )}
+                {currentPage === 2 && (
+                  <PasswordPage
+                    registerPayload={registerPayload}
+                    onComplete={() => setCurrentPage(3)}
+                  />
+                )}
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      )}
+    </>
   );
 }

@@ -21,7 +21,7 @@ import Snack from '@/components/Snack';
 import { CodeRequest } from '@/models/opportunities/code.request';
 import SecureStorage from '@/storages/secure-storage';
 import { biometricsAuth } from '@/helpers/auth/biometry';
-import { ValidateBiometric } from '@/services/authBiometric';
+import { ValidateBiometric } from '@/services-old/authBiometric';
 import { resetBiometric } from '@/redux/reducers/authBiometric';
 import { useAuth } from '@/context/auth';
 import BtnDefault from '../BtnDefault';

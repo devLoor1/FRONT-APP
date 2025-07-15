@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ValidateBiometric } from '@/services/authBiometric';
+import { ValidateBiometric } from '@/services-old/authBiometric';
 
 const initialState = {
   loading: false,

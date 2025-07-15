@@ -5,7 +5,7 @@ import BtnDefault from '@/components/BtnDefault';
 import CommonValidators from '@/helpers/validators/common.validators';
 import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
-import { RegisterRequest } from '@/models/new/auth/register.request';
+import { RegisterRequest } from '@/models/auth/register.request';
 import Select from '@/components/Select';
 
 type Props = {
@@ -124,6 +124,7 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
           error={!!error.type}
           txtError={'Necessário selecionar o tipo de pessoa'}
         />
+
       </View>
       <BtnDefault
         style={{ marginBottom: Platform.OS === 'android' ? 20 : 0 }}

@@ -1,25 +1,17 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import api from "./api";
-import { PixAvailableResponse } from "@/models/payment/pixAvailable.response";
-import { UserStatusResponse } from "@/models/user/userStatus.response";
-import { GetHashResponse } from "@/models/user/getHash.response";
-import Debug from "@/helpers/debug";
-import LogRocketHelper from "@/helpers/logRocket";
-import { GetVersionResponse } from "@/models/user/getVersion.response";
-import { UserDetailsResponse } from "@/models/user/userDetails";
-import { CompleteRequest } from "@/models/register/complete.request";
-import { PaymentMethodAvailableResponse } from "@/models/payment/paymentMethodAvailable.response";
-import { UserPictureResponse } from "@/models/register/userPicture.response";
-import { handleAnalyticsUserProfile } from "@/helpers/analytics";
-import { CepResponse } from "@/models/register/cep.response";
-import { PersonalInfo } from "@/models/user/personalInformation";
-
-export const getPersonalInfo = async () => {
-  const { data } = await api.get<{ data: PersonalInfo }>(
-    "/investors/personal-information"
-  );
-  return data.data;
-};
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import api from './api';
+import { PixAvailableResponse } from '@/models/payment/pixAvailable.response';
+import { UserStatusResponse } from '@/models/user/userStatus.response';
+import { GetHashResponse } from '@/models/user/getHash.response';
+import Debug from '@/helpers/debug';
+import LogRocketHelper from '@/helpers/logRocket';
+import { GetVersionResponse } from '@/models/user/getVersion.response';
+import { UserDetailsResponse } from '@/models/user/userDetails';
+import { CompleteRequest } from '@/models/register/complete.request';
+import { PaymentMethodAvailableResponse } from '@/models/payment/paymentMethodAvailable.response';
+import { UserPictureResponse } from '@/models/register/userPicture.response';
+import { handleAnalyticsUserProfile } from '@/helpers/analytics';
+import { CepResponse } from '@/models/register/cep.response';
 
 export const GetUserStatus = createAsyncThunk(
   "user/GetUserStatus",

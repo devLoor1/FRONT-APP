@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ActiveSatisfactionResponse } from '@/models/analytic/active.response';
-import { ListPagesSatisfactionResponse } from '@/models/analytic/listPages.response';
-import { ActiveSatisfaction, ListPagesSatisfaction, PostSatisfaction } from '@/services/analytic';
+import { ActiveSatisfactionResponse } from '@/models-old/analytic/active.response';
+import { ListPagesSatisfactionResponse } from '@/models-old/analytic/listPages.response';
+import { ActiveSatisfaction, ListPagesSatisfaction, PostSatisfaction } from '@/services-old/analytic';
 
 const initialState = {
   listPages: <ListPagesSatisfactionResponse | null>null,

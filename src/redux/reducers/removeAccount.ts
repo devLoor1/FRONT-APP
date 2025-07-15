@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { RequirementsToRemoveResponse } from '@/models/removeAccount/requirementsToRemove.response';
-import { GetRequirementsToRemove } from '@/services/removeAccount';
+import { RequirementsToRemoveResponse } from '@/models-old/removeAccount/requirementsToRemove.response';
+import { GetRequirementsToRemove } from '@/services-old/removeAccount';
 
 const initialState = {
   rListRequirements: <RequirementsToRemoveResponse | null>null,

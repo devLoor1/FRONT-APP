@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PutPassword } from '@/services/password';
+import { PutPassword } from '@/services-old/password';
 
 const initialState = {
   changePassword: <boolean | null>null,

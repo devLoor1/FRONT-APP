@@ -3,9 +3,9 @@ import {
   GetAnticipateStatus,
   GetPersonalDataStatus,
   GetReportStatus,
-} from '@/services/generalStatus';
-import { StatusResponse } from '@/models/idWall/status.response';
-import { AvailableResponse } from '@/models/anticipate/available.response';
+} from '@/services-old/generalStatus';
+import { StatusResponse } from '@/models-old/idWall/status.response';
+import { AvailableResponse } from '@/models-old/anticipate/available.response';
 import { PersonalDataStatusResponse } from '@/models/register/personalDataStatus.response';
 
 const initialState = {

@@ -1,9 +1,7 @@
 import axios from "axios";
 import Constants from "expo-constants";
 import deviceData from "@/helpers/deviceData";
-import refreshToken from "@/helpers/refreshToken";
 import AuthStorage from "@/storages/auth-storage";
-import createAuthRefreshInterceptor from "axios-auth-refresh";
 import * as Updates from "expo-updates";
 import Debug from "@/helpers/debug";
 
@@ -21,15 +19,13 @@ const api = axios.create({
   },
 });
 
-createAuthRefreshInterceptor(api, refreshToken);
-
 api.interceptors.response.use(
   (config) => {
     return config;
   },
   (error) => {
     Debug.Capture(error);
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   }
 );
 
@@ -42,7 +38,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   }
 );
 

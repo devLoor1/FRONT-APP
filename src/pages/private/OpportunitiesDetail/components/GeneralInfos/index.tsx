@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import moment from "moment";
 
-import { ThumbsProps } from "@/models/types/Thumbs";
+import { ThumbsProps } from "@/models-old/types/Thumbs";
 import { useCustomStyles } from "./style";
 import { useTheme } from "@/context/MyThemeContext";
 import CommonMask from "@/helpers/masks";

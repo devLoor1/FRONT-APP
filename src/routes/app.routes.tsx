@@ -2,7 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import InvestorProfilePage from '~/pages/private/InvestorProfile';
 import Tabs from "./private/Tabs";
-import { RootStackParamList } from "@/models/routes/navigation";
+import { RootStackParamList } from "@/models-old/routes/navigation";
 // import ExcerptPage from '~/pages/private/Excerpt';
 // import ContactPage from '~/pages/public/Contact';
 // import FaqPage from '~/pages/private/Faq';

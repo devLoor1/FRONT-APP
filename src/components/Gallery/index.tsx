@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useCustomStyles } from './style';
-import { ThumbsProps } from '@/models/types/Thumbs';
+import { ThumbsProps } from '@/models-old/types/Thumbs';
 import WebView from 'react-native-webview';
 import { ImageBackground, Text, View } from 'react-native';
 import BottomSheet from '../BottomSheet';

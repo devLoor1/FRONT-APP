@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { AcceptNewTerms, GetNewTerms, VerifyNewTerms } from '@/services/terms';
-import { VerifyNewTemsResponse } from '@/models/terms/verifyNewTems.response';
-import { GetNewTemsResponse } from '@/models/terms/getNewTems.response';
+import { AcceptNewTerms, GetNewTerms, VerifyNewTerms } from '@/services-old/terms';
+import { VerifyNewTemsResponse } from '@/models-old/terms/verifyNewTems.response';
+import { GetNewTemsResponse } from '@/models-old/terms/getNewTems.response';
 
 const initialState = {
   loading: false,

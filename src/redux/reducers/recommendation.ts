@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { CodeResponse } from '@/models/recommendation/code.response';
-import { GetCodeRecommendation } from '@/services/recommendation';
+import { CodeResponse } from '@/models-old/recommendation/code.response';
+import { GetCodeRecommendation } from '@/services-old/recommendation';
 
 const initialState = {
   recommendationStatus: <CodeResponse | null>null,

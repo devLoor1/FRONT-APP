@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ConfirmAnticipate, GetList, Simulate } from '@/services/anticipate';
-import { ListResponse } from '@/models/anticipate/list.response';
-import { SimulateResponse } from '@/models/anticipate/simulate.response';
-import { ConfirmResponse } from '@/models/anticipate/confirm.response';
+import { ConfirmAnticipate, GetList, Simulate } from '@/services-old/anticipate';
+import { ListResponse } from '@/models-old/anticipate/list.response';
+import { SimulateResponse } from '@/models-old/anticipate/simulate.response';
+import { ConfirmResponse } from '@/models-old/anticipate/confirm.response';
 
 const initialState = {
   anticipateList: <ListResponse | null>null,

@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { FaqResponse } from '@/models/faq/faq.response';
-import { NewsResponse } from '@/models/faq/news.response';
-import { NewsItemResponse } from '@/models/faq/newsItem.response';
-import { GetFAQ, GetFAQHightlights, GetItemFAQ, GetListFaq } from '@/services/faq';
+import { FaqResponse } from '@/models-old/faq/faq.response';
+import { NewsResponse } from '@/models-old/faq/news.response';
+import { NewsItemResponse } from '@/models-old/faq/newsItem.response';
+import { GetFAQ, GetFAQHightlights, GetItemFAQ, GetListFaq } from '@/services-old/faq';
 
 const initialState = {
   faqList: <FaqResponse | null>null,

@@ -27,7 +27,7 @@ import { Chip, TextInput } from "react-native-paper";
 import SearchIcon from "@/../assets/newSvgs/icons/search.svg";
 import FilterIcon from "@/../assets/newSvgs/icons/filter_list.svg";
 import FilterBottomSheet from "@/components/FilterBottomSheet";
-import { getWalletResume } from "@/services/wallet";
+import { getWalletResume } from "@/services-old/wallet";
 import { debounce } from "lodash";
 import { OpportunitiesRequest } from "@/models/opportunities/opportunities.request";
 

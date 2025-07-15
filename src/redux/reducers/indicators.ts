@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { GetGeneralIndicators, GetIndividualIndicators } from '@/services/indicators';
-import { GeneralIndicatorsResponse } from '@/models/indicators/generalIndicators.response';
-import { IndividualIndicatorsResponse } from '@/models/indicators/individualIndicators.response';
+import { GetGeneralIndicators, GetIndividualIndicators } from '@/services-old/indicators';
+import { GeneralIndicatorsResponse } from '@/models-old/indicators/generalIndicators.response';
+import { IndividualIndicatorsResponse } from '@/models-old/indicators/individualIndicators.response';
 
 const initialState = {
   generalIndicators: <GeneralIndicatorsResponse | null>null,

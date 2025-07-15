@@ -10,7 +10,7 @@ import BlurValues from "@/components/BlurValues";
 import { useAppSelector } from "@/redux/hooks";
 import ModalDefault from "@/components/ModalDefault";
 import { useCommon } from "@/context/CommonContext";
-import { WalletResponse } from "@/models/investiment/wallet.response";
+import { WalletResponse } from "@/models-old/investiment/wallet.response";
 
 export default function CardValues({
   resume,

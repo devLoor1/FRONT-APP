@@ -7,16 +7,16 @@ import { useNavigation } from "@react-navigation/native";
 import { Analytics } from "@/helpers/analytics";
 import PasswordComp from "@/components/Password";
 import BtnDefault from "@/components/BtnDefault";
-import { RegisterRequest } from "@/models/new/auth/register.request";
-import { postRegister } from "@/services/new/register";
+import { RegisterRequest } from "@/models/auth/register.request";
+import { postRegister } from "@/services/register";
 import { useCustomStyles } from "../../style";
 
 type Props = {
   readonly registerPayload: RegisterRequest;
-  readonly onPress: () => void;
+  readonly onComplete: () => void;
 };
 
-export default function Password({ registerPayload, onPress }: Props) {
+export default function Password({ registerPayload, onComplete }: Props) {
   const styles = useCustomStyles();
 
   const [password, setPassword] = useState("");
@@ -49,11 +49,15 @@ export default function Password({ registerPayload, onPress }: Props) {
 
   async function onSubmit() {
     if (isValidPassword) {
-      await AsyncStorage.setItem("userPasswordLogin", password);
+      await AsyncStorage.setItem('userPasswordLogin', password);
 
       try {
-        await sendPassword(registerPayload);
-        onPress();
+        await sendPassword({
+          ...registerPayload,
+          password
+        });
+
+        onComplete();
       } catch (error) {
         console.error("Erro ao persistir dados:", error);
       }
@@ -63,12 +67,9 @@ export default function Password({ registerPayload, onPress }: Props) {
   return (
     <>
       <View style={{ flexGrow: 1 }}>
-        <Text style={{ ...styles.title, marginBottom: 48 }}>
-          Escolha sua senha
-        </Text>
+        <Text style={{ ...styles.title, marginBottom: 48 }}>Escolha sua senha</Text>
         <Text style={styles.desc}>
-          Defina uma senha de acesso à plataforma. Atente-se para os requisitos
-          de uma senha segura.
+          Defina uma senha de acesso à plataforma. Atente-se para os requisitos de uma senha segura.
         </Text>
         <PasswordComp
           labelPassword="Digite sua senha *"

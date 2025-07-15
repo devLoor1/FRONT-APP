@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IdentifierResponse } from '@/models/mfa/identifier.response';
+import { IdentifierResponse } from '@/models-old/mfa/identifier.response';
 import {
   CompleteRegister,
   GetAddress,
@@ -11,11 +11,11 @@ import {
   UploadDoc,
   VerifyDoc,
   VerifyIsPublicPerson,
-} from '@/services/register';
+} from '@/services-old/register';
 import { CepResponse } from '@/models/register/cep.response';
 import { ListBanksResponse } from '@/models/register/listBanks.response';
 import { VerifyDocResponse } from '@/models/register/verifyDoc.response';
-import { PatchIdentifierResponse } from '@/models/mfa/patch.identifier.response';
+import { PatchIdentifierResponse } from '@/models-old/mfa/patch.identifier.response';
 import { ProfessionListResponse } from '@/models/register/professionList.response';
 
 const initialState = {

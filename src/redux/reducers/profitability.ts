@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getProfitability } from '@/services/profitability';
+import { getProfitability } from '@/services-old/profitability';
 
 const initialState = {
   profitabilityStatus: < any | null>null,

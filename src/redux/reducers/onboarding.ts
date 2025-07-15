@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { GetPublicOpportunities } from '../../services/onboarding';
+import { GetPublicOpportunities } from '../../services-old/onboarding';
 import { ListPublicOpportunitiesResponse } from '@/models/opportunities/publicOpportunities';
 
 const initialState = {

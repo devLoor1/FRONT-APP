@@ -1,16 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import Constants from "expo-constants";
-import { AuthResponse } from "@/models/auth/auth.response";
+import { AuthResponse } from "@/models-old/auth/auth.response";
 import AuthStorage from "@/storages/auth-storage";
 import api from "./api";
-import { RisksResponse } from "@/models/auth/risks.response";
-import { GetNewTemsResponse } from "@/models/terms/getNewTems.response";
-import apiPublic from "./apiPublic";
+import { RisksResponse } from "@/models-old/auth/risks.response";
+import { GetNewTemsResponse } from "@/models-old/terms/getNewTems.response";
+import apiPublic from "../services-old/apiPublic";
 import { AgreeRiskInvestRequest } from "@/models/auth/agreeRiskInvest.request";
 import { DailySummaryResponse } from "@/models/auth/dailySummary.response";
 import { ConfirmDailySummaryResponse } from "@/models/auth/confirmDailySummary.response";
 import { Segments } from "@/models/opportunities/segments.response";
-import { Country } from "@/models/new/common/country";
+import { Country } from "@/models/common/country";
 
 export const GetPublicToken = createAsyncThunk(
   "common/getPublicToken",

@@ -12,7 +12,7 @@ import {
   GetOpportunitiePJ,
   GetRating,
   GetRevenue,
-} from '@/services/opportunitiePJ';
+} from '@/services-old/opportunitiePJ';
 
 const initialState = {
   opportunitieDetail: <OpportunitiePJResponse | null>null,

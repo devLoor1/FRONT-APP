@@ -15,7 +15,7 @@ type ConfirmationProps = {
 export default function ConfirmationPage({ confirmRegister }: ConfirmationProps) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  const animation = require('@/../assets/animations/lock-ok.json');
+  const animation = require('@/../assets/animations/ok-anima-v2.json');
 
   useEffect(() => {
     Analytics({ pageName: 'EsqueceuSenhaSucesso' });
@@ -26,7 +26,7 @@ export default function ConfirmationPage({ confirmRegister }: ConfirmationProps)
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={{ flexGrow: 1 }}>
-            <Text style={styles.title}>Sua senha foi alterada com sucesso!</Text>
+            <Text style={styles.title}>Email enviado com sucesso!</Text>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <View
                 style={{ width: 250, height: 250, justifyContent: 'center', alignItems: 'center' }}>
@@ -39,7 +39,10 @@ export default function ConfirmationPage({ confirmRegister }: ConfirmationProps)
                 />
               </View>
             </View>
-            <Text style={styles.desc}>Agora você pode fazer login usando sua nova senha.</Text>
+            <Text style={styles.desc}>
+              Enviamos um link para redefinir sua senha no email informado. 
+              Verifique sua caixa de entrada e siga as instruções.
+            </Text>
           </View>
           <View style={styles.footer}>
             <BtnDefault

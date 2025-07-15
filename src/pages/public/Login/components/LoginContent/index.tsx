@@ -3,9 +3,9 @@ import { Text, TouchableOpacity, View, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
 import Input from "@/components/Input";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import CommonValidators from "@/helpers/validators/common.validators";
-import { login } from "@/services/auth";
+import { postLogin } from "@/services/login";
 import { PublicNavigation } from "@/models/routes/navigation.public";
 import { reset, setLoginData } from "@/redux/reducers/auth";
 import { Analytics, handleAnalyticsUserProfile } from "@/helpers/analytics";
@@ -13,14 +13,12 @@ import Version from "@/helpers/version/version";
 import NeedHelp from "@/components/NeedHelp";
 import { useTheme } from "@/context/MyThemeContext";
 import Logo from "@/../assets/newSvgs/LogoClaro.svg";
-import LogoDark from "@/../assets/newSvgs/LogoEscuro.svg";
 import BtnDefault from "@/components/BtnDefault";
 import { TextInput } from "react-native-paper";
 import Snack from "@/components/Snack";
 import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
 import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 
 export default function LoginContent() {
   const { theme } = useTheme();
@@ -32,9 +30,9 @@ export default function LoginContent() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useAppDispatch();
-  // const { loginError, loading } = useAppSelector((state) => state.auth);
   const nav = useNavigation<PublicNavigation>();
   const [showSnack, setShowSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
   const [focusPassword, setFocusPassword] = useState(false);
 
   const emailValidator = CommonValidators.isEmailValid(email);
@@ -50,15 +48,16 @@ export default function LoginContent() {
     error: loginError,
     isPending: loading,
   } = useMutation({
-    mutationKey: [login.name],
-    mutationFn: login,
+    mutationKey: [postLogin.name],
+    mutationFn: postLogin,
   });
 
   async function handleSingIn() {
     setEmailError(emailValidator.error);
     setPasswordError(passwordValidator.error);
     if (isFormValid) {
-      await loginMutation({ email: email.toLowerCase(), password });
+      const loginData = { email: email.toLowerCase(), password };
+      await loginMutation(loginData);
     }
   }
 
@@ -75,9 +74,19 @@ export default function LoginContent() {
 
   useEffect(() => {
     if (loginError) {
-      setShowSnack(true);
+      const errorMessage = loginError?.response?.data?.errors?.[0]?.message;
+      if (errorMessage) {
+        setSnackMessage(errorMessage);
+        setShowSnack(true);
+      }
     }
   }, [loginError]);
+
+  useEffect(() => {
+    if (!showSnack) {
+      setSnackMessage("");
+    }
+  }, [showSnack]);
 
   useEffect(() => {
     if (data) {
@@ -188,9 +197,11 @@ export default function LoginContent() {
       <Text style={styles.version}>Versão {Version()}</Text>
       <Snack
         visible={showSnack}
-        txt={loginError?.response?.data?.errors?.[0].message || ""}
+        txt={snackMessage}
         setShowSnack={setShowSnack}
         reset={reset}
+        type="error"
+        duration={5000}
       />
     </>
   );

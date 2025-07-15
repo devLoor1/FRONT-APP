@@ -26,7 +26,7 @@ import AddIcon from "@/../assets/newSvgs/icons/add_circle.svg";
 import Snack from "../Snack";
 import { useAppSelector } from "@/redux/hooks";
 import handleInvest from "@/helpers/handleInvest";
-import { RootStackParamList } from "@/models/routes/navigation";
+import { RootStackParamList } from "@/models-old/routes/navigation";
 import { Analytics } from "@/helpers/analytics";
 
 type Props = {
