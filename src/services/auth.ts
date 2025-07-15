@@ -7,6 +7,7 @@ import apiPublic from "./apiPublic";
 import Debug from "@/helpers/debug";
 import LogRocketHelper from "@/helpers/logRocket";
 import { handleAnalyticsUserProfile } from "@/helpers/analytics";
+import { MeResponse } from "@/models/user/me.response";
 
 export const login = async (request: AuthRequest) => {
   Debug.SetUser({ email: request.email });
@@ -20,6 +21,11 @@ export const login = async (request: AuthRequest) => {
 
   handleAnalyticsUserProfile("sigIn", { Identity: token });
   return response.data;
+};
+
+export const getMe = async () => {
+  const response = await apiPublic.post<MeResponse>("/auth/investor/me");
+  return response.data.data;
 };
 
 export const GetNewDeviceCode = createAsyncThunk(

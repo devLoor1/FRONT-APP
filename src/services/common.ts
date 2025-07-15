@@ -10,6 +10,7 @@ import { AgreeRiskInvestRequest } from "@/models/auth/agreeRiskInvest.request";
 import { DailySummaryResponse } from "@/models/auth/dailySummary.response";
 import { ConfirmDailySummaryResponse } from "@/models/auth/confirmDailySummary.response";
 import { Segments } from "@/models/opportunities/segments.response";
+import { Country } from "@/models/new/common/country";
 
 export const GetPublicToken = createAsyncThunk(
   "common/getPublicToken",
@@ -99,6 +100,11 @@ export const ConfirmDailySummary = createAsyncThunk(
 
 export const getSegments = async () => {
   const response = await api.get<Segments>("/segments");
+
+  return response.data.data;
+};
+export const getCountries = async () => {
+  const response = await api.get<{ data: Country[] }>("/countries");
 
   return response.data.data;
 };

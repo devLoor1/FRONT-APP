@@ -1,11 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { HelperText, Searchbar, TextInput, Divider, RadioButton } from 'react-native-paper';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import { useTheme } from '@/context/MyThemeContext';
-import { useCustomStyles } from './style';
-import ArrowIcon from '@/../assets/newSvgs/icons/keyboard_arrow_down.svg';
-import BottomSheet from '../BottomSheet';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import {
+  HelperText,
+  Searchbar,
+  TextInput,
+  Divider,
+  RadioButton,
+} from "react-native-paper";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { useTheme } from "@/context/MyThemeContext";
+import { useCustomStyles } from "./style";
+import ArrowIcon from "@/../assets/newSvgs/icons/keyboard_arrow_down.svg";
+import BottomSheet from "../BottomSheet";
+import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 
 type InputType = {
   placeholder?: string;
@@ -17,7 +30,7 @@ type InputType = {
       value: string;
     }[];
   };
-  setValue: any;
+  setValue?: any;
   fieldName: string;
   withSearch?: boolean;
   error?: boolean;
@@ -25,6 +38,8 @@ type InputType = {
   label?: string;
   required?: boolean;
   marginBottom?: number;
+  disabled?: boolean;
+  onSelect?: (id: string) => void;
 };
 
 export default function Select({
@@ -36,16 +51,18 @@ export default function Select({
   fieldName,
   withSearch = false,
   error = false,
-  txtError = '',
+  txtError = "",
   label,
   required,
   marginBottom = 8,
+  disabled = false,
+  onSelect,
 }: InputType) {
   const { theme } = useTheme();
-  const [searchField, setSearchField] = useState('');
+  const [searchField, setSearchField] = useState("");
   const [arrFiltered, setArrFiltered] = useState<typeof arr.list>([]);
   const styles = useCustomStyles();
-  const btSheetRef = useRef<RBSheet>();
+  const btSheetRef = useRef<RBSheetRef>(null);
   const { height } = useWindowDimensions();
 
   const onChangeSearch = (query: string) => setSearchField(query);
@@ -62,13 +79,17 @@ export default function Select({
       {label && (
         <View style={styles.labelContainer}>
           <Text style={styles.label}>{label} </Text>
-          {required && <Text style={{ color: theme.customColors.error.default }}>*</Text>}
+          {required && (
+            <Text style={{ color: theme.customColors.error.default }}>*</Text>
+          )}
         </View>
       )}
       <TouchableOpacity
+        disabled={disabled}
         onPress={() => {
           btSheetRef.current?.open();
-        }}>
+        }}
+      >
         <TextInput
           value={value}
           placeholder={placeholder}
@@ -76,6 +97,7 @@ export default function Select({
           mode="outlined"
           editable={false}
           error={error}
+          disabled={disabled}
           onTouchEnd={() => {
             btSheetRef.current?.open();
           }}
@@ -84,16 +106,26 @@ export default function Select({
           underlineColor="transparent"
           style={styles.input}
           theme={{ fonts: { regular: { fontFamily: theme.fonts.semiBold } } }}
+          right={
+            <TextInput.Icon
+              icon={() => (
+                <ArrowIcon
+                  color={theme.customColors.neutrals[400]}
+                  width={24}
+                  height={24}
+                />
+              )}
+              onPress={() => btSheetRef.current?.open()}
+            />
+          }
         />
-        <View style={styles.arrow}>
-          <ArrowIcon color={theme.customColors.neutrals[400]} width={24} height={24} />
-        </View>
       </TouchableOpacity>
 
       <BottomSheet
         refRBSheet={btSheetRef}
         height={height / 2}
-        background={theme.dark ? theme.colors.background : '#FFFFFF'}>
+        background={theme.dark ? theme.colors.background : "#FFFFFF"}
+      >
         <View style={styles.bottomSheetContainer}>
           <Text style={styles.title}>{label ? label : placeholder}</Text>
           {withSearch && (
@@ -101,13 +133,13 @@ export default function Select({
               <Searchbar
                 placeholder="Buscar"
                 onChangeText={onChangeSearch}
-                value={searchField || ''}
+                value={searchField || ""}
                 iconColor={theme.colors.text}
                 placeholderTextColor={theme.colors.text}
                 inputStyle={styles.searchInput}
                 style={styles.search}
                 onIconPress={() => {
-                  setSearchField('');
+                  setSearchField("");
                 }}
               />
             </View>
@@ -121,19 +153,26 @@ export default function Select({
               borderColor: theme.colors.border,
             }}
             contentContainerStyle={{ flexGrow: 1 }}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <RadioButton.Item
                 label={item.value}
-                style={[styles.option, { justifyContent: 'space-between', width: '100%' }]}
-                labelStyle={{ fontFamily: theme.fonts.regular, color: theme.colors.text }}
+                style={[
+                  styles.option,
+                  { justifyContent: "space-between", width: "100%" },
+                ]}
+                labelStyle={{
+                  fontFamily: theme.fonts.regular,
+                  color: theme.colors.text,
+                }}
                 color={theme.customColors.secondary.default}
                 uncheckedColor={theme.colors.text}
                 value={item.id}
-                status={item.value === value ? 'checked' : 'unchecked'}
+                status={item.value === value ? "checked" : "unchecked"}
                 onPress={() => {
                   btSheetRef.current?.close();
-                  setValue({ ...form, [fieldName]: item.value });
+                  setValue?.({ ...form, [fieldName]: item.value });
+                  onSelect?.(item.id);
                 }}
               />
             )}
@@ -147,7 +186,8 @@ export default function Select({
         <HelperText
           type="error"
           visible={error}
-          theme={{ colors: { error: theme.customColors.error.default } }}>
+          theme={{ colors: { error: theme.customColors.error.default } }}
+        >
           {txtError}
         </HelperText>
       )}

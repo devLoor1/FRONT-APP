@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -7,13 +7,20 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
-} from 'react-native';
-import { HelperText, Searchbar, TextInput, Divider, RadioButton } from 'react-native-paper';
-import { useCustomStyles } from './style';
-import { useTheme } from '@/context/MyThemeContext';
-import ArrowIcon from '@/../assets/newSvgs/icons/keyboard_arrow_down.svg';
-import BottomSheet from '../BottomSheet';
-import RBSheet from 'react-native-raw-bottom-sheet';
+} from "react-native";
+import {
+  HelperText,
+  Searchbar,
+  TextInput,
+  Divider,
+  RadioButton,
+} from "react-native-paper";
+import { useCustomStyles } from "./style";
+import { useTheme } from "@/context/MyThemeContext";
+import ArrowIcon from "@/../assets/newSvgs/icons/keyboard_arrow_down.svg";
+import BottomSheet from "../BottomSheet";
+import RBSheet from "react-native-raw-bottom-sheet";
+import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 
 type InputType = {
   placeholder?: string;
@@ -39,7 +46,7 @@ export default function SelectSearch({
   arr,
   fieldName,
   error = false,
-  txtError = '',
+  txtError = "",
   handleSearch,
   loading,
   marginBottom = 8,
@@ -47,10 +54,10 @@ export default function SelectSearch({
   required,
 }: InputType) {
   const { height } = useWindowDimensions();
-  const [searchField, setSearchField] = useState('');
+  const [searchField, setSearchField] = useState("");
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  const btSheetRef = useRef<RBSheet>();
+  const btSheetRef = useRef<RBSheetRef>(null);
 
   const onChangeSearch = (query: string) => setSearchField(query);
 
@@ -62,7 +69,9 @@ export default function SelectSearch({
 
   function renderList() {
     if (searchField.length < 4) {
-      return <Text style={styles.supportTxt}>Digite pelo menos 4 caracteres...</Text>;
+      return (
+        <Text style={styles.supportTxt}>Digite pelo menos 4 caracteres...</Text>
+      );
     } else if (loading) {
       return (
         <View style={{ padding: 12 }}>
@@ -77,12 +86,18 @@ export default function SelectSearch({
           renderItem={({ item }) => (
             <RadioButton.Item
               label={item}
-              style={[styles.option, { justifyContent: 'space-between', width: '100%' }]}
-              labelStyle={{ fontFamily: theme.fonts.regular, color: theme.colors.text }}
+              style={[
+                styles.option,
+                { justifyContent: "space-between", width: "100%" },
+              ]}
+              labelStyle={{
+                fontFamily: theme.fonts.regular,
+                color: theme.colors.text,
+              }}
               color={theme.customColors.secondary.default}
               uncheckedColor={theme.colors.text}
               value={item}
-              status={item === value ? 'checked' : 'unchecked'}
+              status={item === value ? "checked" : "unchecked"}
               onPress={() => {
                 btSheetRef.current?.close();
                 setValue({ ...form, [fieldName]: item });
@@ -95,7 +110,9 @@ export default function SelectSearch({
         />
       );
     } else if (!arr?.length && !loading) {
-      return <Text style={styles.supportTxt}>Nenhuma profissão encontrada...</Text>;
+      return (
+        <Text style={styles.supportTxt}>Nenhuma profissão encontrada...</Text>
+      );
     }
   }
 
@@ -104,13 +121,16 @@ export default function SelectSearch({
       {label && (
         <View style={styles.labelContainer}>
           <Text style={styles.label}>{label} </Text>
-          {required && <Text style={{ color: theme.customColors.error.default }}>*</Text>}
+          {required && (
+            <Text style={{ color: theme.customColors.error.default }}>*</Text>
+          )}
         </View>
       )}
       <TouchableOpacity
         onPress={() => {
           btSheetRef.current?.open();
-        }}>
+        }}
+      >
         <TextInput
           value={value}
           placeholder={placeholder}
@@ -128,36 +148,44 @@ export default function SelectSearch({
           theme={{ fonts: { regular: { fontFamily: theme.fonts.semiBold } } }}
         />
         <View style={styles.arrow}>
-          <ArrowIcon color={theme.customColors.neutrals[400]} width={24} height={24} />
+          <ArrowIcon
+            color={theme.customColors.neutrals[400]}
+            width={24}
+            height={24}
+          />
         </View>
       </TouchableOpacity>
 
       <BottomSheet
         refRBSheet={btSheetRef}
         height={height / 2}
-        background={theme.dark ? theme.colors.background : '#FFFFFF'}>
+        background={theme.dark ? theme.colors.background : "#FFFFFF"}
+      >
         <View style={styles.bottomSheetContainer}>
           <Text style={styles.title}>{label}</Text>
           <Searchbar
             placeholder="Buscar"
             onChangeText={onChangeSearch}
-            value={searchField || ''}
+            value={searchField || ""}
             iconColor={theme.colors.text}
             placeholderTextColor={theme.colors.text}
             inputStyle={styles.searchInput}
             style={styles.search}
             onIconPress={() => {
-              setSearchField('');
+              setSearchField("");
             }}
           />
-          <ScrollView style={{ marginHorizontal: -16 }}>{renderList()}</ScrollView>
+          <ScrollView style={{ marginHorizontal: -16 }}>
+            {renderList()}
+          </ScrollView>
         </View>
       </BottomSheet>
       {error && (
         <HelperText
           type="error"
           visible={error}
-          theme={{ colors: { error: theme.customColors.error.default } }}>
+          theme={{ colors: { error: theme.customColors.error.default } }}
+        >
           {txtError}
         </HelperText>
       )}

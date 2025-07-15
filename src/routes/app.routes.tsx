@@ -21,7 +21,7 @@ import { RootStackParamList } from "@/models/routes/navigation";
 // import RefusedPage from '~/pages/private/Refused';
 import OpportunitiesDetailPage from "@/pages/private/OpportunitiesDetail";
 // import { RootStackParamList } from '~/models/routes/navigation';
-// import InvestPage from '~/pages/private/Invest';
+import InvestPage from "@/pages/private/Invest";
 // import ProfilePage from '~/pages/private/Profile';
 // import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
 // import ProfilePicturePage from '~/pages/private/ProfilePicture';
@@ -53,6 +53,7 @@ export default function AppRoutes({
         name="OpportunitiesDetail"
         component={OpportunitiesDetailPage}
       />
+      <MainStack.Screen name="Invest" component={InvestPage} />
       {/* <MainStack.Screen
         name="InvestmentDetail"
         component={InvestmentDetailPage}
@@ -78,7 +79,6 @@ export default function AppRoutes({
         name="SettingsNotification"
         component={SettingsNotificationPage}
       />
-      <MainStack.Screen name="Invest" component={InvestPage} />
       <MainStack.Screen name="Profile" component={ProfilePage} />
       <MainStack.Screen name="ProfilePicture" component={ProfilePicturePage} />
       <MainStack.Screen name="Profitability" component={ProfitabilityPage} />

@@ -76,6 +76,7 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
       dark: theme.navigation.dark,
       colors: {
         ...DefaultTheme.colors,
+        primary: theme.colors.primary,
         background: theme.navigation.colors.background,
         text: theme.navigation.colors.text,
         disabled: theme.navigation.dark
@@ -90,6 +91,13 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
       },
       fonts: configureFonts({
         config: {
+          default: {
+            fontFamily: theme.fonts.regular,
+            fontWeight: "normal",
+            fontSize: 14,
+            letterSpacing: 0,
+            lineHeight: 16,
+          },
           thin: {
             fontFamily: theme.fonts.extraLight,
             fontWeight: "normal",
@@ -107,9 +115,9 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
           regular: {
             fontFamily: theme.fonts.regular,
             fontWeight: "normal",
-            fontSize: 16,
+            fontSize: 14,
             letterSpacing: 0,
-            lineHeight: 24,
+            lineHeight: 16,
           },
           medium: {
             fontFamily: theme.fonts.semiBold,
@@ -117,6 +125,13 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
             fontSize: 18,
             letterSpacing: 0,
             lineHeight: 28,
+          },
+          displayMedium: {
+            fontFamily: theme.fonts.regular,
+            fontWeight: "normal",
+            fontSize: 14,
+            letterSpacing: 0,
+            lineHeight: 16,
           },
         },
       }),

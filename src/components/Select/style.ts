@@ -1,21 +1,23 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
     labelContainer: {
-      flexDirection: 'row',
+      flexDirection: "row",
     },
     label: {
-      color: theme.dark ? theme.customColors.neutrals[400] : theme.customColors.neutrals[700],
+      color: theme.dark
+        ? theme.customColors.neutrals[400]
+        : theme.customColors.neutrals[700],
       marginBottom: 6,
       fontFamily: theme.fonts.semiBold,
       fontSize: 14,
     },
     option: {
-      width: '100%',
+      width: "100%",
       padding: 16,
     },
     optionTxt: {
@@ -27,27 +29,27 @@ export const useCustomStyles = () => {
       backgroundColor: theme.customColors.inputBg,
       fontFamily: theme.fonts.semiBold,
       fontSize: 14,
-      width: '100%',
+      width: "100%",
     },
     arrow: {
-      position: 'absolute',
+      position: "absolute",
       right: 16,
       top: 24,
     },
     bottomSheetContainer: { flex: 1, paddingTop: 24, gap: 24 },
     search: {
       borderRadius: 12,
-      borderColor: 'rgba(255, 255, 255, 0.3)',
+      borderColor: "rgba(255, 255, 255, 0.3)",
       borderWidth: 1,
       shadowOpacity: 0,
       backgroundColor: theme.customColors.inputBg,
       height: 55,
-      shadowColor: 'transparent',
+      shadowColor: "transparent",
     },
     searchInput: {
       color: theme.colors.text,
       fontFamily: theme.fonts.regular,
-      shadowColor: 'transparent',
+      shadowColor: "transparent",
       fontSize: 14,
     },
     supportTxt: {

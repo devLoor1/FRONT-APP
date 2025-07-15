@@ -235,6 +235,7 @@ export default function OpportunitiesPage() {
           flexGrow: 1,
           paddingBottom: bottomTabBarHeight,
           paddingHorizontal: 16,
+          gap: 16,
         }}
         onEndReached={onEndReached}
         onScroll={getTopScroll}
