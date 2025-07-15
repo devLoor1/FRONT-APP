@@ -40,7 +40,10 @@ export default function SuccessPage({ resetAll }: Props) {
         Alert.alert(
           "Erro",
           "Não foi possível recuperar as credenciais de login. Por favor, faça login manualmente.",
-          [{ text: "OK" }]
+          [{ 
+            text: "OK",
+            onPress: () => nav.navigate('Login' as never)
+          }]
         );
         return;
       }
