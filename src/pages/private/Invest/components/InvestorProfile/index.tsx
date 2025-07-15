@@ -13,7 +13,7 @@ import { useAppSelector } from "@/redux/hooks";
 import WarningIcon from "@/../assets/newSvgs/icons/warning-fill.svg";
 import InfoIcon from "@/../assets/newSvgs/icons/info-fill.svg";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models/routes/navigation";
+import { RootStackParamList } from "@/models-old/routes/navigation";
 import { Analytics } from "@/helpers/analytics";
 import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 import { InvestorProfile } from "@/models/user/me.response";
@@ -33,7 +33,7 @@ export default function InvestorProfileBottom({
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useCustomStyles();
   const [checked, setChecked] = useState(false);
-  const { profileStatus } = useAppSelector((state) => state.investor);
+  // const { profileStatus } = useAppSelector((state) => state.investor);
   const [openInvest, setOpenInvest] = useState(false);
 
   return (
@@ -86,7 +86,7 @@ export default function InvestorProfileBottom({
           </BtnIcon>
         </View>
         <View style={{ flex: 1 }}>
-          {profileStatus?.profileInvestor ? (
+          {investorProfile?.title ? (
             <View style={styles.card}>
               <InfoIcon
                 color={theme.customColors.hyperlink}
@@ -106,7 +106,7 @@ export default function InvestorProfileBottom({
                       textTransform: "uppercase",
                     }}
                   >
-                    {profileStatus?.profileInvestor}
+                    {investorProfile?.title}
                   </Text>
                 </Text>
                 <Text style={{ ...styles.warnTxt, marginTop: 10 }}>
@@ -131,7 +131,7 @@ export default function InvestorProfileBottom({
               </View>
             </View>
           )}
-          {!profileStatus?.profileInvestor && (
+          {!investorProfile?.title && (
             <TouchableOpacity
               style={styles.checkBlock}
               onPress={() => {
@@ -169,7 +169,7 @@ export default function InvestorProfileBottom({
           )}
         </View>
         <View style={styles.footer}>
-          {!profileStatus?.profileInvestor && (
+          {!investorProfile?.title && (
             <View style={{ flex: 1 }}>
               <BtnDefault
                 label="Definir Perfil Investidor"
@@ -188,14 +188,14 @@ export default function InvestorProfileBottom({
               label="Prosseguir"
               onPress={() => {
                 Analytics({
-                  eventName: !profileStatus?.profileInvestor
+                  eventName: !investorProfile?.title
                     ? "PerfilInvestValid_Continuar"
                     : "PerfilInvestValidErrado_Continuar",
                 });
                 handleContinue();
                 refRBSheet.current?.close();
               }}
-              disabled={!profileStatus?.profileInvestor && !checked}
+              disabled={!investorProfile?.title && !checked}
             />
           </View>
         </View>

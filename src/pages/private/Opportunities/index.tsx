@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getOpportunities } from "@/services/opportunities";
-import { reset, resetListOpportunities } from "@/redux/reducers/opportunities";
 import BackToTop from "@/components/BackToTop";
 import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
 import { GetUserStatus } from "@/services/user";
@@ -170,14 +169,13 @@ export default function OpportunitiesPage() {
     Analytics({ pageName: "OportEntr" });
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const applyFilters = async () => {
-      dispatch(reset());
       setData([]);
       setPageNumber(1);
     };
     applyFilters();
-  }, [shortOrder, opportunityInvested, filter]);
+  }, [shortOrder, opportunityInvested, filter]); */
 
   useEffect(() => {
     setData(listOpportunities?.pages.flatMap((page) => page.data) ?? []);

@@ -1,7 +1,4 @@
-import { GetDebitWealth, GetResume } from "@/services-old/resume";
-import { GetDebit } from "@/services-old/resume";
-import { GetInterestReceivedGraph, getWalletResume } from "@/services-old/wallet";
-import { reset } from "@/redux/reducers/wallet";
+import { getWalletResume } from "@/services-old/wallet";
 import { Analytics } from "@/helpers/analytics";
 import ProfileIcon from "@/../assets/newSvgs/icons/clinical_notes.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -25,11 +22,9 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { getOpportunities } from "@/services/opportunities";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import CommonMask from "@/helpers/masks";
-import { GetCodeRecommendation } from "@/services-old/recommendation";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/models-old/routes/navigation";
 import News from "./components/news";
-import { GetFAQHightlights } from "@/services-old/faq";
 import ModalDefault from "@/components/ModalDefault";
 // import PromoComponent from './components/Promo';
 import { useCommon } from "@/context/CommonContext";
@@ -46,11 +41,9 @@ export default function WalletPage() {
   // const [refreshing, setRefreshing] = useState(false);
   const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { summary, loadingGraph } = useAppSelector((state) => state.wallet);
   // const { listOpportunities, loadingList } = useAppSelector(
   //   (state) => state.opportunities
   // );
-  const { highlightsList } = useAppSelector((state) => state.faq);
   const refPage = useRef<ScrollView>(null);
   const [showToUp, setShowToUp] = useState(false);
   const refRBSheet = useRef<any>(null);
@@ -103,25 +96,21 @@ export default function WalletPage() {
   useEffect(() => {
     Analytics({ pageName: "HomeApp" });
     // getAll();
-
-    return () => {
-      dispatch(reset());
-    };
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (!highlightsList) {
       (async () => {
         await dispatch(GetFAQHightlights({ pageSize: 2 }));
       })();
     }
-  }, [highlightsList]);
+  }, [highlightsList]); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (summary || listOpportunities) {
       // setRefreshing(false);
     }
-  }, [summary, listOpportunities]);
+  }, [summary, listOpportunities]); */
 
   const onRefresh = useCallback(async () => {
     // setRefreshing(true);
@@ -144,7 +133,7 @@ export default function WalletPage() {
   return (
     <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
       <HeaderPhoto analytics="HomeApp" />
-      {loadingList || loadingGraph || loadingResume ? (
+      {loadingList || loadingResume ? (
         <LoadingComp transparent />
       ) : (
         <ScrollView

@@ -1,5 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { ValidateBiometric } from '@/services-old/authBiometric';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: false,
@@ -8,28 +7,10 @@ const initialState = {
 };
 
 const authBiometricSlice = createSlice({
-  name: 'authBiometric',
+  name: "authBiometric",
   initialState,
   reducers: {
     resetBiometric: () => initialState,
-  },
-  extraReducers: builder => {
-    builder
-      .addCase(ValidateBiometric.pending, state => {
-        state.loading = true;
-        state.requestError = null;
-        state.succesBiometry = null;
-      })
-      .addCase(ValidateBiometric.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        if (payload) {
-          if (payload.message) {
-            state.requestError = payload.message;
-          } else {
-            state.succesBiometry = payload;
-          }
-        }
-      });
   },
 });
 

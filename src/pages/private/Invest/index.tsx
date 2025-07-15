@@ -8,20 +8,19 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 // import Coupon from './components/Coupon';
-import { RootStackParamList } from "@/models/routes/navigation";
+import { RootStackParamList } from "@/models-old/routes/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import SuccessPage from "./components/Success";
 import { useTheme } from "@/context/MyThemeContext";
 import HeaderDefault from "@/components/HeaderDefault";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { SendPay } from "@/services/payment";
+import { SendPay } from "@/services-old/payment";
 import { Analytics } from "@/helpers/analytics";
 import BottomsheetAuth from "@/components/BottomsheetAuth";
 import Snack from "@/components/Snack";
 import { getOpportunity } from "@/services/opportunities";
 import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
-import { getMe } from "@/services/auth";
 import InvestmentTab from "./tabs/InvestmentTab";
 import PersonalDataTab from "./tabs/PersonalDataTab";
 import { BackHandler, Text } from "react-native";
@@ -37,7 +36,6 @@ export default function InvestPage({ route }: Props) {
   const { opportunityId, quotasRoute } = route.params;
   const [tot, setTot] = useState(0);
   const refRBSheet = useRef<RBSheetRef>(null);
-  const { payStatus, requestError } = useAppSelector((state) => state.payment);
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState("");
   const [finishedAnimation, setFinishedAnimation] = useState(false);
@@ -58,12 +56,12 @@ export default function InvestPage({ route }: Props) {
     refRBSheet.current?.open();
   };
 
-  useEffect(() => {
-    if (requestError) {
-      refRBSheet.current?.close();
-      setPage(1);
-    }
-  }, [requestError]);
+  // useEffect(() => {
+  //   if (requestError) {
+  //     refRBSheet.current?.close();
+  //     setPage(1);
+  //   }
+  // }, [requestError]);
 
   // useEffect(() => {
   //   if (payStatus && finishedAnimation) {

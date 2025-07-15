@@ -43,7 +43,6 @@ const InvestmentTab: React.FC<
   // const maxQuota = opportunity.qtdTotalCotas / 2;
   const loginData = useAppSelector((state) => state.auth.loginData.data);
   const refRBSheet = useRef<RBSheetRef>(null);
-  const { payStatus, requestError } = useAppSelector((state) => state.payment);
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState("");
   const [finishedAnimation, setFinishedAnimation] = useState(false);

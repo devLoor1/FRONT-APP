@@ -9,12 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getPersonalInfo } from "@/services/user";
 import { PersonalInfo } from "@/models/user/personalInformation";
 import Input from "@/components/Input";
-import LoadingScreen from "@/components/LoadingScreen";
 import moment from "moment";
 import SelectSearch from "@/components/SelectSearch";
 import { getCountries } from "@/services/common";
 import Select from "@/components/Select";
 import CommonMask from "@/helpers/masks";
+import LoadingComp from "@/components/Loading";
 
 type PersonalDataTabProps = {
   onNext: () => void;
@@ -51,7 +51,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     disabled: true,
   });
 
-  if (isLoading) return <LoadingScreen />;
+  if (isLoading) return <LoadingComp />;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

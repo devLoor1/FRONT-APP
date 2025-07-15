@@ -51,7 +51,8 @@ const InterestChart: React.FC = () => {
   const styles = useCustomStyles();
   const [chartWidth, setChartWidth] = useState(0);
   const [selectedData, setSelectedData] = useState();
-  const { graph } = useAppSelector((state) => state.wallet);
+  // const { graph } = useAppSelector((state) => state.wallet);
+  const graph: any[] | undefined = [];
   const { showBalance } = useCommon();
   const [coord, setCoord] = useState<{ x: number; y: number }>();
   const [showModal, setShowModal] = useState(false);
