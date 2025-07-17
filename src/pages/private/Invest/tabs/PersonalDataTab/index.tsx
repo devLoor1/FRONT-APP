@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import { Checkbox, List, Text } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
@@ -46,6 +46,8 @@ const initValues = (obj: any) => {
   return newObj;
 };
 
+type PersonalDataForm = PersonalInfo & Me & OpportunityPix;
+
 const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
   const styles = useCustomStyles();
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
@@ -64,13 +66,9 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     queryKey: [getOpportunityPix.name],
     queryFn: () => getOpportunityPix(props.opportunityId),
   });
-  const { control, getValues } = useForm<PersonalInfo & Me & OpportunityPix>({
-    defaultValues: initValues({ ...personalInfo, ...me, ...pix }),
+  const { control, getValues, reset } = useForm<PersonalDataForm>({
     disabled: true,
   });
-
-  if (isLoading || isLoadingMe || isLoadingPix || isLoadingCountries)
-    return <LoadingComp />;
 
   const formatKey = (field: string) => {
     switch (getValues("type")) {
@@ -88,6 +86,15 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
         return "";
     }
   };
+
+  useEffect(() => {
+    if (personalInfo && me && pix) {
+      reset(initValues({ ...personalInfo, ...me, ...pix }));
+    }
+  }, [personalInfo, me, pix]);
+
+  if (isLoading || isLoadingMe || isLoadingPix || isLoadingCountries)
+    return <LoadingComp />;
 
   return (
     <SafeAreaView edges={["bottom"]} style={{ flex: 1, gap: 8 }}>
@@ -574,6 +581,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
           Analytics({
             eventName: "OportInvestirAgora_ConfirmaDadosPessoais",
           });
+          props.jumpTo("crowdfunding");
           props.onNext();
         }}
       />

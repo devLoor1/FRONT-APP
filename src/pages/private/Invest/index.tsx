@@ -24,6 +24,7 @@ import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 import InvestmentTab from "./tabs/InvestmentTab";
 import PersonalDataTab from "./tabs/PersonalDataTab";
 import { BackHandler, Text } from "react-native";
+import CrowdfundingTab from "./tabs/Crowdfunding";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Invest">;
 export default function InvestPage({ route }: Props) {
@@ -110,6 +111,7 @@ export default function InvestPage({ route }: Props) {
       case "personal_data":
         return <PersonalDataTab {...{ onNext, opportunityId, ...props }} />;
       case "crowdfunding":
+        return <CrowdfundingTab {...{ onNext, ...props }} />;
       case "summary":
       case "finish":
       default:
