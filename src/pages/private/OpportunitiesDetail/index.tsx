@@ -11,7 +11,7 @@ import LoadingComp from "../../../components/Loading";
 import { reset } from "@/redux/reducers/opportunitiePJ";
 import { GetOpportunitiePJ } from "@/services-old/opportunitiePJ";
 import Snack from "@/components/Snack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { Analytics } from '~/helpers/analytics';
-import { CompleteRegister, GetAddress } from '~/services/register';
-import CommonValidators from '~/helpers/validators/common.validators';
-import CommonClears from '~/helpers/clears/common.clear';
-import Input from '~/components/Input';
-import BtnDefault from '~/components/BtnDefault';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { Analytics } from '@/helpers/analytics';
+// import { CompleteRegister, GetAddress } from '@/services/register';
+import CommonValidators from '@/helpers/validators/common.validators';
+import CommonClears from '@/helpers/clears/common.clear';
+import Input from '@/components/Input';
+import BtnDefault from '@/components/BtnDefault';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { useCustomStyles } from '../../style';
 import { useAddressStyles } from './style';
@@ -116,9 +116,9 @@ export default function Address() {
       streetValidator.status &&
       numberValidator.status
     ) {
-      await dispatch(
-        CompleteRegister({ ...form, postalCode: CommonClears.clearCEP(form.postalCode) })
-      );
+      // await dispatch(
+      //   CompleteRegister({ ...form, postalCode: CommonClears.clearCEP(form.postalCode) })
+      // );
     }
   }
 

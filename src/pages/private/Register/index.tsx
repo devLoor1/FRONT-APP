@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView, Platform, View, TouchableOpacity } from 'react-native';
-import { GetUserStatus } from '~/services/user';
-import refreshToken from '~/helpers/refreshToken';
-import { useAuth } from '~/context/auth';
-import Steps from '~/components/Steps';
+import { GetUserStatus } from '@/services/user';
+import refreshToken from '@/helpers/refreshToken';
+import { useAuth } from '@/context/auth';
+import Steps from '@/components/Steps';
 import PersonalDataOne from './pages/PersonalDataOne';
 import { useCustomStyles } from './style';
-import Snack from '~/components/Snack';
+import Snack from '@/components/Snack';
 import PersonalDataTwo from './pages/PersonalDataTwo';
 import Address from './pages/Address';
-import Caf from './pages/Caf';
 import Proof from './pages/Proof'; 
 import SuccessPage from './pages/Success';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import ArrowBack from '~/../assets/newSvgs/icons/arrow_back.svg';
+import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '~/models/routes/navigation';
+import { RootStackParamList } from '@/models/routes/navigation.private';
 import BankData from './pages/BankData';
 
 export default function RegisterPage() {
@@ -33,7 +32,6 @@ export default function RegisterPage() {
   const [msgError, setMsgError] = useState('');
   const { theme } = useTheme();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { cafStatus } = useAppSelector(state => state.caf);
 
   useEffect(() => {
     setShowSnack(false);
@@ -57,8 +55,6 @@ export default function RegisterPage() {
         userStatus.emptyFields.includes('HasOwnResidence')
       ) {
         setPage(2);
-      } else if (userStatus.emptyFields.includes('Caf')) {
-        setPage(3);
       } else if (
         userStatus.emptyFields.includes('City') ||
         userStatus.emptyFields.includes('State') ||
@@ -102,8 +98,6 @@ export default function RegisterPage() {
         return <BankData />;
       case 2:
         return <PersonalDataTwo />;
-      case 3:
-        return <Caf />;
       case 4:
         return <Address />;
       case 5:
@@ -115,15 +109,6 @@ export default function RegisterPage() {
     }
   }
 
-  if ((cafStatus === true && page === 3) || page > 4) {
-    return (
-      <>
-        {renderContent()}
-        <Snack visible={showSnack} txt={msgError} setShowSnack={setShowSnack} />
-      </>
-    );
-  }
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: theme.colors.background }}
@@ -132,14 +117,7 @@ export default function RegisterPage() {
         {/* <View style={{ paddingHorizontal: 16 }}>
           {!(page === 4) && <Steps qtd={3} index={page} />}
         </View> */}
-        {!(cafStatus === true && page === 3) && (
-          <View style={styles.btnBackBlock}>
-            <TouchableOpacity onPress={() => { nav.navigate('Tabs', { screen: 'HomeTabs' }); }} style={styles.btnCancel}>
-              <ArrowBack color={theme.colors.text} width={32} height={32} />
-            </TouchableOpacity>
-          </View>
-        )}
-
+        
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
           contentContainerStyle={{ flexGrow: 1 }}>

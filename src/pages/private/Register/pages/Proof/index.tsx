@@ -1,26 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import Snack from '~/components/Snack';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import Snack from '@/components/Snack';
 import CameraComp from './components/Camera';
-import { UploadDoc, VerifyDoc } from '~/services/register';
+// import { UploadDoc, VerifyDoc } from '@/services/register';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, Text, View } from 'react-native';
 import SuccessPage from './components/Success';
 import { useCustomStyles } from '../../style';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 import { usePageStyles } from './style';
-import BtnDefault from '~/components/BtnDefault';
-import InfoIcon from '~/../assets/newSvgs/icons/info.svg';
-import WarningIcon from '~/../assets/newSvgs/icons/warning.svg';
-import CameraIcon from '~/../assets/newSvgs/icons/photo_camera.svg';
-import AddIcon from '~/../assets/newSvgs/icons/add.svg';
-import { Analytics } from '~/helpers/analytics';
+import BtnDefault from '@/components/BtnDefault';
+import InfoIcon from '@/../assets/newSvgs/icons/info.svg';
+import WarningIcon from '@/../assets/newSvgs/icons/warning.svg';
+import CameraIcon from '@/../assets/newSvgs/icons/photo_camera.svg';
+import AddIcon from '@/../assets/newSvgs/icons/add.svg';
+import { Analytics } from '@/helpers/analytics';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import ArrowBack from '~/../assets/newSvgs/icons/arrow_back.svg';
+import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '~/models/routes/navigation';
+import { RootStackParamList } from '@/models/routes/navigation.private';
 
 type Props = {
   onActionAfterSubmit?: (docResponse: any) => void
@@ -83,7 +83,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
       name: fileName,
     } as any);
 
-    await dispatch(UploadDoc({ request: formData, setProgress }));
+    // await dispatch(UploadDoc({ request: formData, setProgress }));
     if (onActionAfterSubmit) {
       await onActionAfterSubmit(docResponse);
     }
@@ -96,7 +96,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
   useEffect(() => {
     if (docResponse) {
       (async () => {
-        await dispatch(VerifyDoc());
+        // await dispatch(VerifyDoc());
       })();
     }
   }, [docResponse]);
@@ -202,7 +202,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
             }}
           /> */}
         </View>
-        <Snack visible={showSnack} txt={requestError} setShowSnack={setShowSnack} />
+        {/* <Snack visible={showSnack} txt={requestError} setShowSnack={setShowSnack} /> */}
       </ScrollView>
     </SafeAreaView>
   );

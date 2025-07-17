@@ -8,7 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 // import Coupon from './components/Coupon';
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import SuccessPage from "./components/Success";

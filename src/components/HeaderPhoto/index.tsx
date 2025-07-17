@@ -10,7 +10,7 @@ import FAQIcon from '@/../assets/newSvgs/icons/help.svg';
 import HelpIcon from '@/../assets/newSvgs/icons/forum.svg';
 import { useAuth } from '@/context/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/models-old/routes/navigation';
+import { RootStackParamList } from '@/models/routes/navigation.private';
 import { Analytics } from '@/helpers/analytics';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -34,7 +34,8 @@ export default function HeaderPhoto({ analytics }: HeaderProps) {
             style={styles.photo}
             onPress={() => {
               Analytics({ eventName: `${analytics}_MinhaContaPerfil` });
-              nav.navigate('Menu');
+              // nav.navigate('Menu'); // TODO: Criar página Menu
+              console.log('Menu não implementado ainda');
             }}>
             {userPicture?.bucketPath ? (
               <ImageBackground
@@ -55,14 +56,16 @@ export default function HeaderPhoto({ analytics }: HeaderProps) {
             <TouchableOpacity
               onPress={() => {
                 Analytics({ eventName: `${analytics}_PrecisaDeAjuda` });
-                nav.navigate('FAQ');
+                // nav.navigate('FAQ'); // TODO: Implementar página FAQ
+                console.log('FAQ não implementado ainda');
               }}>
               <FAQIcon color={theme.customColors.baseWhite} width={24} height={24} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 Analytics({ eventName: `${analytics}_Contato` });
-                nav.navigate('Contact');
+                // nav.navigate('Contact'); // TODO: Implementar página Contact
+                console.log('Contact não implementado ainda');
               }}>
               <HelpIcon color={theme.customColors.baseWhite} width={24} height={24} />
             </TouchableOpacity>

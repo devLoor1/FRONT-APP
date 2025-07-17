@@ -13,7 +13,7 @@ import { useAppSelector } from "@/redux/hooks";
 import WarningIcon from "@/../assets/newSvgs/icons/warning-fill.svg";
 import InfoIcon from "@/../assets/newSvgs/icons/info-fill.svg";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import { Analytics } from "@/helpers/analytics";
 import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 import { InvestorProfile } from "@/models/user/me.response";

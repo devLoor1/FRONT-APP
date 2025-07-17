@@ -88,6 +88,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
   };
 
   useEffect(() => {
+    console.log("personalInfo", personalInfo);
     if (personalInfo && me && pix) {
       reset(initValues({ ...personalInfo, ...me, ...pix }));
     }

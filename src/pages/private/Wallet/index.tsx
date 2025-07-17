@@ -23,7 +23,7 @@ import { getOpportunities } from "@/services/opportunities";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import CommonMask from "@/helpers/masks";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import News from "./components/news";
 import ModalDefault from "@/components/ModalDefault";
 // import PromoComponent from './components/Promo';

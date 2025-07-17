@@ -7,7 +7,7 @@ import { useTheme } from "@/context/MyThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppDispatch } from "@/redux/hooks";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import LottieView from "lottie-react-native";
 import { Analytics } from "@/helpers/analytics";
 import { resetBiometric } from "@/redux/reducers/authBiometric";

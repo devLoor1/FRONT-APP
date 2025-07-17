@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import CommonValidators from '~/helpers/validators/common.validators';
-import Input from '~/components/Input';
-import RadioButton from '~/components/RadioButton';
-import BtnDefault from '~/components/BtnDefault';
-import { CompleteRegister, GetProfessionList } from '~/services/register';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import CommonValidators from '@/helpers/validators/common.validators';
+import Input from '@/components/Input';
+import RadioButton from '@/components/RadioButton';
+import BtnDefault from '@/components/BtnDefault';
 import { Text, View } from 'react-native';
-import Select from '~/components/Select';
-import SelectSearch from '~/components/SelectSearch';
+import Select from '@/components/Select';
+import SelectSearch from '@/components/SelectSearch';
 import { useCustomStyles } from '../../style';
-import { Analytics } from '~/helpers/analytics';
+import { Analytics } from '@/helpers/analytics';
 
 const scholarityList = {
   list: [
@@ -96,7 +95,7 @@ export default function PersonalDataOne() {
       isPepValidator.status &&
       isScholarityValidator.status
     ) {
-      await dispatch(CompleteRegister({ ...form, isPep: form.isPep ? 1 : 0 }));
+      // await dispatch(CompleteRegister({ ...form, isPep: form.isPep ? 1 : 0 }));
     }
   }
 

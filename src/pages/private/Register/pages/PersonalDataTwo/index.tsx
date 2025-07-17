@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import CommonValidators from '~/helpers/validators/common.validators';
-import { CompleteRegister } from '~/services/register';
-import Select from '~/components/Select';
-import Input from '~/components/Input';
-import RadioButton from '~/components/RadioButton';
-import BtnDefault from '~/components/BtnDefault';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import CommonValidators from '@/helpers/validators/common.validators';
+// import { CompleteRegister } from '@/services/register';
+import Select from '@/components/Select';
+import Input from '@/components/Input';
+import RadioButton from '@/components/RadioButton';
+import BtnDefault from '@/components/BtnDefault';
 import { Text, View } from 'react-native';
 import { useCustomStyles } from '../../style';
-import { Analytics } from '~/helpers/analytics';
+import { Analytics } from '@/helpers/analytics';
 
 type SelectProps = {
   list: {
@@ -155,12 +155,12 @@ export default function PersonalDataTwo() {
       hasOwnResidenceValidator.status &&
       spouseValidator.status
     ) {
-      await dispatch(
-        CompleteRegister({
-          ...form,
-          hasOwnResidence: form.hasOwnResidence ? 1 : 0,
-        })
-      );
+      // await dispatch(
+      //   CompleteRegister({
+      //     ...form,
+      //     hasOwnResidence: form.hasOwnResidence ? 1 : 0,
+      //   })
+      // );
     }
   }
 

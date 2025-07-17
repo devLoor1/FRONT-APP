@@ -50,7 +50,8 @@
     "react-native-svg": "15.11.2",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-tab-view": "^4.1.2",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "expo-camera": "~16.1.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

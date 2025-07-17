@@ -2,7 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import InvestorProfilePage from '~/pages/private/InvestorProfile';
 import Tabs from "./private/Tabs";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 // import ExcerptPage from '~/pages/private/Excerpt';
 // import ContactPage from '~/pages/public/Contact';
 // import FaqPage from '~/pages/private/Faq';
@@ -22,6 +22,7 @@ import { RootStackParamList } from "@/models-old/routes/navigation";
 import OpportunitiesDetailPage from "@/pages/private/OpportunitiesDetail";
 // import { RootStackParamList } from '~/models/routes/navigation';
 import InvestPage from "@/pages/private/Invest";
+import RegisterPage from "@/pages/private/Register";
 // import ProfilePage from '~/pages/private/Profile';
 // import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
 // import ProfilePicturePage from '~/pages/private/ProfilePicture';
@@ -48,12 +49,17 @@ export default function AppRoutes({
         name="Tabs"
         options={{ gestureEnabled: false }}
       />
-      {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
+      <MainStack.Screen
+        name="Register"
+        component={RegisterPage}
+        options={{ gestureEnabled: false }}
+      />
       <MainStack.Screen
         name="OpportunitiesDetail"
         component={OpportunitiesDetailPage}
-      />
+        />
       <MainStack.Screen name="Invest" component={InvestPage} />
+        {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
       {/* <MainStack.Screen
         name="InvestmentDetail"
         component={InvestmentDetailPage}
@@ -83,11 +89,6 @@ export default function AppRoutes({
       <MainStack.Screen name="ProfilePicture" component={ProfilePicturePage} />
       <MainStack.Screen name="Profitability" component={ProfitabilityPage} />
       <MainStack.Screen name="Caf" component={Caf} />
-      <MainStack.Screen
-        name="Register"
-        component={RegisterPage}
-        options={{ gestureEnabled: false }}
-      />
       <MainStack.Screen
         name="Refused"
         component={RefusedPage}

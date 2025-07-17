@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { CompleteRegister, GetBanks } from '~/services/register';
-import { GetUserStatus } from '~/services/user';
-import { useAuth } from '~/context/auth';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+// import { CompleteRegister, GetBanks } from '@/services/register';
+import { GetUserStatus } from '@/services/user';
+import { useAuth } from '@/context/auth';
 import { useCustomStyles } from '../../style';
-import Input from '~/components/Input';
-import Select from '~/components/Select';
-import BtnDefault from '~/components/BtnDefault';
-import Snack from '~/components/Snack';
+import Input from '@/components/Input';
+import Select from '@/components/Select';
+import BtnDefault from '@/components/BtnDefault';
+import Snack from '@/components/Snack';
 
 export default function BankData() {
   const dispatch = useAppDispatch();
   const styles = useCustomStyles();
   const { deviceToken } = useAuth();
   const { listBanks } = useAppSelector(state => state.register);
-  const { changeBankStatus, requestError, loading } = useAppSelector(state => state.bank);
+  // const { changeBankStatus, requestError, loading } = useAppSelector(state => state.bank);
 
   const [form, setForm] = useState({
     fullBank: '',
@@ -49,7 +49,7 @@ export default function BankData() {
   };
 
   useEffect(() => {
-    dispatch(GetBanks());
+    // dispatch(GetBanks());
   }, []);
 
   useEffect(() => {
@@ -83,25 +83,25 @@ export default function BankData() {
       bankNumber: form.bankNumber,
     };
     
-    await dispatch(CompleteRegister(payload));
-    await dispatch(GetUserStatus(deviceToken));
+    // await dispatch(CompleteRegister(payload));
+    // await dispatch(GetUserStatus(deviceToken));
   }
 
-  useEffect(() => {
-    if (changeBankStatus) {
-      setSnackType('information');
-      setMsgSnack('Conta cadastrada com sucesso!');
-      setShowSnack(true);
-    }
-  }, [changeBankStatus]);
+  // useEffect(() => {
+  //   if (changeBankStatus) {
+  //     setSnackType('information');
+  //     setMsgSnack('Conta cadastrada com sucesso!');
+  //     setShowSnack(true);
+  //   }
+  // }, [changeBankStatus]);
 
-  useEffect(() => {
-    if (requestError) {
-      setSnackType('error');
-      setMsgSnack(requestError);
-      setShowSnack(true);
-    }
-  }, [requestError]);
+  // useEffect(() => {
+  //   if (requestError) {
+  //     setSnackType('error');
+  //     setMsgSnack(requestError);
+  //     setShowSnack(true);
+  //   }
+  // }, [requestError]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -165,9 +165,9 @@ export default function BankData() {
             arr={{ list: accountTypesArr }}
           />
         </View>
-        <BtnDefault label="Continuar" onPress={onConfirmBank} loading={loading} style={{ marginBottom: 15 }} />
+        {/* <BtnDefault label="Continuar" onPress={onConfirmBank} loading={loading} style={{ marginBottom: 15 }} /> */}
       </View>
-      <Snack visible={showSnack} txt={msgSnack} setShowSnack={setShowSnack} type={snackType} />
+      {/* <Snack visible={showSnack} txt={msgSnack} setShowSnack={setShowSnack} type={snackType} /> */}
     </View>
   );
 } 

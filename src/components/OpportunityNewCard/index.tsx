@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@/context/MyThemeContext";
 import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import CommonMask from "@/helpers/masks";
 import { Analytics } from "@/helpers/analytics";
 import CaretRightIcon from "@/../assets/newSvgs/icons/keyboard_arrow_right.svg";

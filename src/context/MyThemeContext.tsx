@@ -20,7 +20,7 @@ import {
   DefaultTheme,
   configureFonts,
 } from "react-native-paper";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 
 interface ThemeContextData {
   theme: AppTheme;

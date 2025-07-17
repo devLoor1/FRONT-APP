@@ -16,7 +16,7 @@ import { useCustomStyles } from "./style";
 import BlurValues from "@/components/BlurValues";
 import { useAppSelector } from "@/redux/hooks";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models-old/routes/navigation";
+import { RootStackParamList } from "@/models/routes/navigation.private";
 import ModalDefault from "@/components/ModalDefault";
 import { Analytics } from "@/helpers/analytics";
 import CommonMask from "@/helpers/masks";
