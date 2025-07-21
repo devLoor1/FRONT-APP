@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import { Checkbox, List, Text } from "react-native-paper";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
 import useCustomStyles from "./style";
 import { SceneRendererProps } from "react-native-tab-view";
@@ -23,10 +23,11 @@ import { getOpportunityPix } from "@/services/opportunities";
 import { Me } from "@/models/user/me.response";
 import { OpportunityPix } from "@/models/opportunities/pix";
 import { nationality, maritalStatus, pixKeyTypes } from "@/utils/options";
+import { InvestmentRequest } from "@/models/investments/investment.request";
 
 type PersonalDataTabProps = {
   opportunityId: number;
-  onNext: () => void;
+  onNext: (data: Partial<InvestmentRequest>) => void;
 } & SceneRendererProps;
 
 const initValues = (obj: any) => {
@@ -46,7 +47,7 @@ const initValues = (obj: any) => {
   return newObj;
 };
 
-type PersonalDataForm = PersonalInfo & Me & OpportunityPix;
+export type PersonalDataForm = PersonalInfo & Me & { pix: OpportunityPix };
 
 const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
   const styles = useCustomStyles();
@@ -66,31 +67,39 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     queryKey: [getOpportunityPix.name],
     queryFn: () => getOpportunityPix(props.opportunityId),
   });
-  const { control, getValues, reset } = useForm<PersonalDataForm>({
-    disabled: true,
-  });
-
-  const formatKey = (field: string) => {
-    switch (getValues("type")) {
-      case "cpf":
-        return CommonMask.cpf(field);
-      case "cnpj":
-        return CommonMask.cnpj(field);
-      case "phone":
-        return CommonMask.phone(field);
-      case "email":
-        return CommonMask.email(field);
-      case "random":
-        return field;
-      default:
-        return "";
-    }
+  const { control, getValues, reset, watch, register, handleSubmit } =
+    useForm<PersonalDataForm>({ mode: "all", disabled: true });
+  const next: SubmitHandler<PersonalDataForm> = async (data) => {
+    Analytics({
+      eventName: "OportInvestirAgora_ConfirmaDadosPessoais",
+    });
+    props.jumpTo("crowdfunding");
+    props.onNext({
+      ...data,
+      investor_personal_information: {
+        birth_date: data.birth_date,
+        nationality: data.nationality,
+        gender: data.gender,
+        cpf: data.cpf,
+        rg: data.rg,
+        issuing_entity: data.issuing_entity,
+        marital_status: data.marital_status,
+        company: data.company,
+        job: data.job,
+        role: data.role,
+        exposed_politically: !!data.exposed_politically,
+      },
+      address: {
+        ...data.address,
+        country_id: data.address.country.id.toString(),
+      },
+      investor_company_information: undefined,
+    });
   };
 
   useEffect(() => {
-    console.log("personalInfo", personalInfo);
     if (personalInfo && me && pix) {
-      reset(initValues({ ...personalInfo, ...me, ...pix }));
+      reset(initValues({ ...personalInfo, ...me, pix }));
     }
   }, [personalInfo, me, pix]);
 
@@ -316,7 +325,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
             id="2"
             title={
               <Text style={styles.titleStyle}>
-                Dados de Contrato <Text style={styles.required}>*</Text>
+                Dados de Contato <Text style={styles.required}>*</Text>
               </Text>
             }
           >
@@ -531,45 +540,54 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
             }
           >
             <View style={{ paddingVertical: 16 }}>
-              <View style={styles.formRowContainer}>
-                <View style={{ flex: 1 }}>
-                  <Controller
-                    name="type"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        form={undefined}
-                        outlinedLabel
-                        arr={{ list: pixKeyTypes }}
-                        value={
-                          pixKeyTypes.find((item) => item.id === field.value)
-                            ?.value || ""
-                        }
-                        fieldName="Tipo de chave PIX"
-                        label="Tipo de chave PIX"
-                        placeholder="Tipo de chave PIX"
-                        setValue={field.onChange}
-                      />
-                    )}
-                  />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Controller
-                    name="key"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        outlinedLabel
-                        value={formatKey(field.value)}
-                        label="Chave"
-                        placeholder="Chave"
-                        setValue={field.onChange}
-                      />
-                    )}
-                  />
-                </View>
+              <View style={{ flex: 1 }}>
+                <Controller
+                  name="pix.type"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      outlinedLabel
+                      form={undefined}
+                      disabled={false}
+                      arr={{ list: pixKeyTypes }}
+                      value={
+                        pixKeyTypes.find((item) => item.id === field.value)
+                          ?.value || ""
+                      }
+                      fieldName="Tipo de chave PIX"
+                      label="Tipo de chave PIX"
+                      placeholder="Tipo de chave PIX"
+                      onSelect={field.onChange}
+                    />
+                  )}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Controller
+                  name="pix.key"
+                  control={control}
+                  rules={{ required: "Campo obrigatório" }}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      {...register("pix.key", { required: true })}
+                      outlinedLabel
+                      disabled={!watch("pix.type")}
+                      mask={
+                        getValues("pix.type") as React.ComponentProps<
+                          typeof Input
+                        >["mask"]
+                      }
+                      label="Chave *"
+                      placeholder="Chave"
+                      onChangeText={field.onChange}
+                      error={fieldState.invalid}
+                      txtError={fieldState.error?.message}
+                    />
+                  )}
+                />
               </View>
             </View>
           </List.Accordion>
@@ -578,13 +596,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
       <BtnDefault
         label="Salvar e avançar"
         style={{ marginHorizontal: 16 }}
-        onPress={() => {
-          Analytics({
-            eventName: "OportInvestirAgora_ConfirmaDadosPessoais",
-          });
-          props.jumpTo("crowdfunding");
-          props.onNext();
-        }}
+        onPress={handleSubmit(next)}
       />
     </SafeAreaView>
   );

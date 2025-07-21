@@ -8,13 +8,15 @@ const useCustomStyles = () => {
     container: { flex: 1, gap: 16 },
     radioContainer: { gap: 8 },
     title: { fontFamily: theme.fonts.semiBold },
+    radioItemContainer: {
+      borderRadius: 12,
+      overflow: "hidden",
+      backgroundColor: theme.customColors.neutrals[100],
+    },
     radio: {
       flexDirection: "row-reverse",
       gap: 16,
-      borderRadius: 12,
-      backgroundColor: theme.customColors.neutrals[100],
       paddingVertical: 10,
-      overflow: "hidden",
     },
     radioLabel: {
       fontFamily: theme.fonts.semiBold,

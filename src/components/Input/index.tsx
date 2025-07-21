@@ -18,7 +18,8 @@ import { useTheme } from "@/context/MyThemeContext";
 type InputType = {
   placeholder?: string;
   value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  defaultValue?: string;
+  setValue?: React.Dispatch<React.SetStateAction<string>>;
   keyboardType?: KeyboardTypeOptions | undefined;
   autoComplete?: TextInputProps["autoComplete"];
   textContentType?: TextInputProps["textContentType"];
@@ -28,7 +29,7 @@ type InputType = {
   prefix?: React.ReactElement | null;
   error?: boolean;
   txtError?: string;
-  mask?: "cpf" | "cep" | "phone" | "currency" | "date" | undefined;
+  mask?: "cpf" | "cep" | "phone" | "currency" | "date" | "cnpj" | undefined;
   maxLength?: number;
   width?: DimensionValue;
   editable?: boolean;
@@ -59,6 +60,7 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
     placeholder,
     value,
     setValue,
+    defaultValue,
     keyboardType = undefined,
     autoComplete = "off",
     secureTextEntry = false,
@@ -125,6 +127,9 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
       case "cpf":
         maskValue = CommonMask.cpf(txt);
         break;
+      case "cnpj":
+        maskValue = CommonMask.cnpj(txt);
+        break;
       case "cep":
         maskValue = CommonMask.cep(txt);
         break;
@@ -141,7 +146,8 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         maskValue = txt;
         break;
     }
-    setValue(maskValue);
+    setValue?.(maskValue);
+    return maskValue;
   }
 
   return (
@@ -163,10 +169,11 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
       <TextInput
         ref={ref}
         value={value}
+        defaultValue={defaultValue}
         onChangeText={
           onChangeText
-            ? onChangeText
-            : (txt) => (mask ? handleChange(txt) : setValue(txt))
+            ? (txt) => (mask ? onChangeText(handleChange(txt)) : onChangeText)
+            : (txt) => (mask ? handleChange(txt) : setValue?.(txt))
         }
         mode={mode}
         label={outlinedLabel ? label : undefined}
@@ -195,7 +202,7 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         style={styles.input}
         theme={{
           fonts: {
-            regular: {
+            default: {
               fontFamily: theme?.fonts?.semiBold || "NunitoSans_600SemiBold",
             },
           },

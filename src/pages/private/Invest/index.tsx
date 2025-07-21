@@ -22,11 +22,15 @@ import Snack from "@/components/Snack";
 import { getOpportunity } from "@/services/opportunities";
 import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 import InvestmentTab from "./tabs/InvestmentTab";
-import PersonalDataTab from "./tabs/PersonalDataTab";
+import PersonalDataTab, { PersonalDataForm } from "./tabs/PersonalDataTab";
 import { BackHandler, Text } from "react-native";
 import CrowdfundingTab from "./tabs/Crowdfunding";
+import { InvestmentRequest } from "@/models/investments/investment.request";
+
+type InvestmentData = InvestmentRequest;
 
 type Props = NativeStackScreenProps<RootStackParamList, "Invest">;
+
 export default function InvestPage({ route }: Props) {
   const dispatch = useAppDispatch();
   // const refRBSheetCoupon = useRef<any>();
@@ -41,54 +45,20 @@ export default function InvestPage({ route }: Props) {
   const [msgError, setMsgError] = useState("");
   const [finishedAnimation, setFinishedAnimation] = useState(false);
   const [index, setIndex] = React.useState(0);
-
-  /* async function confirmInvestiment() {
-    if (opportunity)
-      await dispatch(
-        SendPay({
-          amount: opportunity.monetary.min_investment_value / 100,
-          idOpportunity: opportunity.id,
-          quotas: +quotas,
-        })
-      );
-  } */
+  const [investmentData, setInvestmentData] =
+    useState<Partial<InvestmentRequest>>();
 
   const onOpen = () => {
     refRBSheet.current?.open();
   };
 
-  // useEffect(() => {
-  //   if (requestError) {
-  //     refRBSheet.current?.close();
-  //     setPage(1);
-  //   }
-  // }, [requestError]);
-
-  // useEffect(() => {
-  //   if (payStatus && finishedAnimation) {
-  //     setPage(2);
-  //     Analytics({
-  //       pageName: "OportunidadeInvestirAgora_Confirmado",
-  //       generalData: {
-  //         cod_oportunidade: opportunity?.id,
-  //         // risco_oportunidade: opportunity?.rating,
-  //         valor_cota: opportunity?.monetary.min_investment_value,
-  //         quantidade_cotas: +quotas,
-  //         valor_investido:
-  //           (opportunity?.monetary.min_investment_value || 0) * +quotas,
-  //       },
-  //     });
-
-  //     // dispatch(GetUserStatus(deviceToken));
-  //   }
-  // }, [payStatus, finishedAnimation]);
-
   if (page === 2) {
     return <SuccessPage />;
   }
 
-  const onNext = () => {
-    console.log("next");
+  const onNext = (data: Partial<InvestmentRequest>) => {
+    console.log(data);
+    setInvestmentData((prev) => (prev ? { ...prev, ...data } : data));
   };
 
   const routes = [
