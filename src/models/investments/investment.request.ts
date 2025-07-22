@@ -1,7 +1,10 @@
 export type InvestmentRequest = {
   opportunity_id: string;
-  quota_quantity: string;
-  declaration: string;
+  quota_quantity: number;
+  declaration:
+    | "less_than_or_equal_200_thousand"
+    | "greater_than_200_thousand_less_than_1_million"
+    | "greater_than_or_equal_1_million";
   anonymous: boolean;
   other_crowdfunding_platforms: number;
   investor_personal_information: InvestorPersonalInformation;

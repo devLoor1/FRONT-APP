@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@/context/MyThemeContext';
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/context/MyThemeContext";
 
 export const useCustomStyles = () => {
   const { theme } = useTheme();
@@ -7,24 +7,22 @@ export const useCustomStyles = () => {
   return StyleSheet.create({
     modal: {
       maxWidth: 384,
-      minWidth: '80%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      minWidth: "80%",
       borderRadius: 8,
-      paddingHorizontal: 12,
+      marginHorizontal: 16,
     },
     container: {
       borderRadius: 8,
       backgroundColor: theme.dark
         ? theme.customColors.neutrals[700]
         : theme.customColors.neutrals[100],
-      overflow: 'hidden',
+      overflow: "hidden",
     },
     header: {
       padding: 16,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       backgroundColor: theme.customColors.secondary[600],
     },
     headTitle: {
@@ -34,8 +32,8 @@ export const useCustomStyles = () => {
     },
     btnClose: {
       backgroundColor: theme.customColors.baseWhite,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
     content: {
       padding: 16,

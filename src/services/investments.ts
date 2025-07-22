@@ -27,3 +27,16 @@ export const getInvestmentQrCode = async (investmentId: number) => {
 
   return response.data.data;
 };
+
+export const getInvestmentContract = async (data: {
+  opportunity_id: number;
+  quota_quantity: number;
+}) => {
+  const response = await api.post<Blob>(
+    "/investors/investments/contract/",
+    data,
+    { responseType: "blob" }
+  );
+
+  return response.data;
+};

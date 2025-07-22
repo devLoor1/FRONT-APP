@@ -1,5 +1,5 @@
 import { SetStateAction, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
 import { Checkbox, RadioButton } from "react-native-paper";
 import useCustomStyles from "./style";
 import Input from "@/components/Input";
@@ -31,83 +31,90 @@ const CrowdfundingTab: React.FC<CrowdfundingTabProps> = (props) => {
   const disabled = !checked || !value || !investmentOther;
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: "space-between",
-        padding: 16,
-      }}
-    >
-      <View style={styles.container}>
-        <Text style={styles.title}>Declaração do perfil do investidor</Text>
-        <RadioButton.Group onValueChange={setValue} value={value}>
-          <View style={styles.radioContainer}>
-            {Object.entries(declaration).map(([option, value]) => (
-              <View style={styles.radioItemContainer} key={option}>
-                <RadioButton.Item
-                  mode="android"
-                  value={option}
-                  style={styles.radio}
-                  labelStyle={styles.radioLabel}
-                  label={value}
-                />
-              </View>
-            ))}
-          </View>
-        </RadioButton.Group>
-        <Text style={styles.title}>Investimentos feitos nesta plataforma</Text>
-        <Input
-          disabled
-          placeholder="Valor de investimentos R$"
-          value={
-            "R$ " +
-            CommonMask.currency(
-              (totalInvestment?.total_invested || 0).toString()
-            )
-          }
-          setValue={() => null}
-        />
-        <Text style={styles.title}>
-          Investimento feitos em outras plataformas no ano atual
-        </Text>
-        <Input
-          placeholder="Valor de investimentos R$"
-          keyboardType="numeric"
-          mask="currency"
-          value={
-            investmentOther ? "R$ " + CommonMask.currency(investmentOther) : ""
-          }
-          setValue={setInvestmentOther}
-        />
-        <Checkbox.Item
-          mode="android"
-          rippleColor="transparent"
-          onPress={() => setChecked(!checked)}
-          status={checked ? "checked" : "unchecked"}
-          label="Li e estou de acordo com os Termos de Riscos."
-          style={styles.checkbox}
-          labelStyle={styles.checkboxLabelStyle}
-        />
-      </View>
-      <View>
-        <BtnDefault
-          label="Avançar"
-          disabled={disabled}
-          onPress={() => {
-            if (!value || !investmentOther) return;
+    <KeyboardAvoidingView style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "space-between",
+          padding: 16,
+        }}
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>Declaração do perfil do investidor</Text>
+          <RadioButton.Group onValueChange={setValue} value={value}>
+            <View style={styles.radioContainer}>
+              {Object.entries(declaration).map(([option, value]) => (
+                <View style={styles.radioItemContainer} key={option}>
+                  <RadioButton.Item
+                    mode="android"
+                    value={option}
+                    style={styles.radio}
+                    labelStyle={styles.radioLabel}
+                    label={value}
+                  />
+                </View>
+              ))}
+            </View>
+          </RadioButton.Group>
+          <Text style={styles.title}>
+            Investimentos feitos nesta plataforma
+          </Text>
+          <Input
+            disabled
+            placeholder="Valor de investimentos R$"
+            value={
+              "R$ " +
+              CommonMask.currency(
+                (totalInvestment?.total_invested || 0).toString()
+              )
+            }
+            setValue={() => null}
+          />
+          <Text style={styles.title}>
+            Investimento feitos em outras plataformas no ano atual
+          </Text>
+          <Input
+            placeholder="Valor de investimentos R$"
+            keyboardType="numeric"
+            mask="currency"
+            value={
+              investmentOther
+                ? "R$ " + CommonMask.currency(investmentOther)
+                : ""
+            }
+            setValue={setInvestmentOther}
+          />
+          <Checkbox.Item
+            mode="android"
+            rippleColor="transparent"
+            onPress={() => setChecked(!checked)}
+            status={checked ? "checked" : "unchecked"}
+            label="Li e estou de acordo com os Termos de Riscos."
+            style={styles.checkbox}
+            labelStyle={styles.checkboxLabelStyle}
+          />
+        </View>
+        <View>
+          <BtnDefault
+            label="Avançar"
+            disabled={disabled}
+            onPress={() => {
+              if (!value || !investmentOther) return;
 
-            Analytics({
-              eventName: "OportInvestirAgora_ConfirmaCrowdfunding",
-            });
-            props.jumpTo("summary");
-            props.onNext({
-              other_crowdfunding_platforms: +investmentOther.replace(",", "."),
-              declaration: value,
-            });
-          }}
-        />
-      </View>
-    </ScrollView>
+              Analytics({
+                eventName: "OportInvestirAgora_ConfirmaCrowdfunding",
+              });
+              props.jumpTo("summary");
+              props.onNext({
+                other_crowdfunding_platforms:
+                  +investmentOther.replace(",", ".") * 100,
+                declaration: value as InvestmentRequest["declaration"],
+              });
+            }}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

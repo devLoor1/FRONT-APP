@@ -26,6 +26,7 @@ import PersonalDataTab, { PersonalDataForm } from "./tabs/PersonalDataTab";
 import { BackHandler, Text } from "react-native";
 import CrowdfundingTab from "./tabs/Crowdfunding";
 import { InvestmentRequest } from "@/models/investments/investment.request";
+import Summary from "./tabs/Summary";
 
 type InvestmentData = InvestmentRequest;
 
@@ -45,8 +46,9 @@ export default function InvestPage({ route }: Props) {
   const [msgError, setMsgError] = useState("");
   const [finishedAnimation, setFinishedAnimation] = useState(false);
   const [index, setIndex] = React.useState(0);
-  const [investmentData, setInvestmentData] =
-    useState<Partial<InvestmentRequest>>();
+  const [investmentData, setInvestmentData] = useState<
+    Partial<InvestmentRequest>
+  >({});
 
   const onOpen = () => {
     refRBSheet.current?.open();
@@ -57,7 +59,6 @@ export default function InvestPage({ route }: Props) {
   }
 
   const onNext = (data: Partial<InvestmentRequest>) => {
-    console.log(data);
     setInvestmentData((prev) => (prev ? { ...prev, ...data } : data));
   };
 
@@ -83,6 +84,11 @@ export default function InvestPage({ route }: Props) {
       case "crowdfunding":
         return <CrowdfundingTab {...{ onNext, ...props }} />;
       case "summary":
+        return (
+          <Summary
+            {...{ onNext, ...props, summary: investmentData, opportunityId }}
+          />
+        );
       case "finish":
       default:
         return null;

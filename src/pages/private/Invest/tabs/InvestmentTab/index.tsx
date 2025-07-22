@@ -24,11 +24,12 @@ import { SceneRendererProps } from "react-native-tab-view";
 import { getOpportunity } from "@/services/opportunities";
 import { getMe } from "@/services/auth";
 import { useQuery } from "@tanstack/react-query";
+import { InvestmentRequest } from "@/models/investments/investment.request";
 
 const InvestmentTab: React.FC<
   {
     opportunityId: number;
-    onNext: (props: { quotas: number; anonymous: boolean }) => void;
+    onNext: (data: Partial<InvestmentRequest>) => void;
   } & SceneRendererProps
 > = ({ opportunityId, onNext, jumpTo }) => {
   const styles = useCustomStyles();
@@ -82,7 +83,12 @@ const InvestmentTab: React.FC<
   }
 
   function handleOnNext() {
-    onNext({ quotas, anonymous });
+    onNext({
+      quota_quantity: quotas,
+      anonymous,
+      user_agreed_at: new Date(),
+      user_agreed_to_continue: true,
+    });
     jumpTo("personal_data");
   }
 
