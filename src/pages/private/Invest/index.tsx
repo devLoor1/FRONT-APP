@@ -95,17 +95,22 @@ export default function InvestPage({ route }: Props) {
     }
   };
 
+  const gotToPreviousTab = () => {
+    if (index === 0) return false;
+    setIndex((i) => i - 1);
+    return true;
+  };
+
   useEffect(() => {
-    let sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (index === 0) return false;
-      setIndex((i) => i - 1);
-      return true;
-    });
+    let sub = BackHandler.addEventListener(
+      "hardwareBackPress",
+      gotToPreviousTab
+    );
 
     return () => {
       sub.remove();
     };
-  }, [index]);
+  }, []);
 
   useEffect(
     () => () => {
@@ -116,7 +121,13 @@ export default function InvestPage({ route }: Props) {
 
   return (
     <>
-      <HeaderDefault back contact help title="Oportunidades" />
+      <HeaderDefault
+        back
+        contact
+        help
+        title="Oportunidades"
+        onPressBack={index === 0 ? undefined : gotToPreviousTab}
+      />
 
       <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
         <TabView
@@ -141,7 +152,6 @@ export default function InvestPage({ route }: Props) {
               contentContainerStyle={{ height: 40 }}
               android_ripple={{ borderless: false, color: "transparent" }}
               onTabPress={({ preventDefault }) => preventDefault()}
-              // gap={14}
               renderTabBarItem={(props) => (
                 <TabBarItem
                   {...props}
