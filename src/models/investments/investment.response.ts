@@ -1,11 +1,11 @@
 export type InvestmentResponse = {
   message: string;
-  data: Data;
+  data: InvestmentResponseData;
 };
 
-export type Data = {
+export type InvestmentResponseData = {
   id: number;
-  status: string;
+  status: keyof typeof InvestmentStatus;
   qr_code: QrCode;
 };
 
@@ -16,3 +16,7 @@ export type QrCode = {
   expires_at: Date;
   created_at: Date;
 };
+
+export enum InvestmentStatus {
+  waiting_payment = "Aguardado Pagamento",
+}

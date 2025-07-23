@@ -3,6 +3,8 @@ import { AxiosError } from "axios";
 
 declare module "@tanstack/react-query" {
   interface Register {
-    defaultError: AxiosError<{ errors: { message: string }[] }>;
+    defaultError: AxiosError<
+      { errors: { message: string }[] } | { message: string }
+    >;
   }
 }

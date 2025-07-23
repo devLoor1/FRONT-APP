@@ -7,6 +7,7 @@ export default function useCustomStyles() {
     container: {
       flexGrow: 1,
       padding: 16,
+      paddingTop: 24,
       gap: 8,
     },
     accordionStyle: {

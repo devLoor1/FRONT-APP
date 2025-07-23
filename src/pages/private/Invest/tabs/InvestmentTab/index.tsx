@@ -88,6 +88,7 @@ const InvestmentTab: React.FC<
       anonymous,
       user_agreed_at: new Date(),
       user_agreed_to_continue: true,
+      opportunity_id: opportunityId.toString(),
     });
     jumpTo("personal_data");
   }

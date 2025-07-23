@@ -28,11 +28,11 @@ export const getInvestments = async (params: OpportunitiesRequest) => {
 };
 
 export const postInvestments = async (data: InvestmentRequest) => {
+  console.log(data);
   const response = await api.post<InvestmentResponse>(
     "/investors/investments",
     data
   );
-
   return response.data.data;
 };
 

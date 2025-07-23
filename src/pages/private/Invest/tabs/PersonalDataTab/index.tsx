@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Checkbox, List, Text } from "react-native-paper";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
@@ -22,7 +22,12 @@ import BtnDefault from "@/components/BtnDefault";
 import { getOpportunityPix } from "@/services/opportunities";
 import { Me } from "@/models/user/me.response";
 import { OpportunityPix } from "@/models/opportunities/pix";
-import { nationality, maritalStatus, pixKeyTypes } from "@/utils/options";
+import {
+  nationality,
+  maritalStatus,
+  pixKeyTypes,
+  countryCodes,
+} from "@/utils/options";
 import { InvestmentRequest } from "@/models/investments/investment.request";
 
 type PersonalDataTabProps = {
@@ -30,7 +35,7 @@ type PersonalDataTabProps = {
   onNext: (data: Partial<InvestmentRequest>) => void;
 } & SceneRendererProps;
 
-const initValues = (obj: any) => {
+/* const initValues = (obj: any) => {
   let newObj: Record<string, string | number | object> = {};
   Object.entries(obj as Record<string, string | number | object>).map(
     ([field, value]) => {
@@ -45,12 +50,100 @@ const initValues = (obj: any) => {
   );
 
   return newObj;
-};
+}; */
+type AnyObject = Record<string, any>;
+
+function initValues<T extends AnyObject>(obj: T): T {
+  const newObj = {} as T;
+
+  Object.entries(obj).forEach(([key, value]) => {
+    if (value === null || value === undefined) {
+      (newObj as AnyObject)[key] = "";
+    } else if (Array.isArray(value)) {
+      (newObj as AnyObject)[key] = value.map((item) =>
+        typeof item === "object" && item !== null
+          ? initValues(item as AnyObject)
+          : item
+      );
+    } else if (value instanceof Date) {
+      (newObj as AnyObject)[key] = value;
+    } else if (typeof value === "object") {
+      (newObj as AnyObject)[key] = initValues(value as AnyObject);
+    } else {
+      (newObj as AnyObject)[key] = value;
+    }
+  });
+
+  return newObj;
+}
 
 export type PersonalDataForm = PersonalInfo & Me & { pix: OpportunityPix };
 
+const defaultValues: PersonalDataForm = {
+  // PersonalInfo
+  full_name: "",
+  phone: "",
+  nationality: "",
+  gender: "",
+  cpf: "",
+  rg: "",
+  issuing_entity: "",
+  marital_status: "",
+  company: "",
+  job: "",
+  role: "",
+  annual_income: 0,
+  exposed_politically: 0,
+  birth_date: "",
+  investor_company_information: null,
+  address: {
+    id: 0,
+    street_name: "",
+    city: "",
+    complement: "",
+    district: "",
+    number: "",
+    state: "",
+    zip_code: "",
+    country: {
+      id: 0,
+      name: "",
+      abbreviation: "",
+    },
+  },
+  bank_account: {
+    bank_id: 0,
+    agency: "",
+    account: "",
+    account_digit: "",
+  },
+
+  // Me
+  email: "",
+  type: "",
+  account_validation_status: "",
+  reason_for_deny: null,
+  has_completed_personal_information: false,
+  investor_profile: {
+    id: 0,
+    title: "",
+    description: "",
+    created_at: new Date(), // or new Date(0)
+  },
+  face_match: {
+    status: "",
+  },
+
+  // OpportunityPix
+  pix: {
+    type: "",
+    key: "",
+  },
+};
+
 const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
   const styles = useCustomStyles();
+  const [countryCode, setCountryCode] = useState(countryCodes[0].id);
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
     queryKey: [getCountries.name],
     queryFn: getCountries,
@@ -68,11 +161,21 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     queryFn: () => getOpportunityPix(props.opportunityId),
   });
   const { control, getValues, reset, watch, register, handleSubmit } =
-    useForm<PersonalDataForm>({ mode: "all", disabled: true });
-  const next: SubmitHandler<PersonalDataForm> = async (data) => {
+    useForm<PersonalDataForm>({
+      disabled: true,
+      defaultValues,
+      shouldUnregister: false,
+    });
+
+  const next: SubmitHandler<PersonalDataForm> = async () => {
     Analytics({
       eventName: "OportInvestirAgora_ConfirmaDadosPessoais",
     });
+    const data = getValues();
+    if (data.pix.type === "phone" && !data.pix.key.includes("+")) {
+      data.pix.key = countryCode + data.pix.key;
+    }
+
     props.jumpTo("crowdfunding");
     props.onNext({
       ...data,
@@ -93,22 +196,29 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
         ...data.address,
         country_id: data.address.country.id.toString(),
       },
-      investor_company_information: undefined,
+      investor_company_information: { cnpj: "" },
     });
   };
 
   useEffect(() => {
-    if (personalInfo && me && pix) {
-      reset(initValues({ ...personalInfo, ...me, pix }));
-    }
-  }, [personalInfo, me, pix]);
+    register("pix.type", { required: "Selecione um tipo" });
+    register("pix.key", { required: "Campo obrigatório" });
+  }, [register]);
+
+  useEffect(() => {
+    if (!personalInfo || !me || !pix) return;
+    reset(initValues({ ...personalInfo, ...me, pix }));
+  }, [personalInfo, me, pix, reset]);
 
   if (isLoading || isLoadingMe || isLoadingPix || isLoadingCountries)
     return <LoadingComp />;
 
   return (
-    <SafeAreaView edges={["bottom"]} style={{ flex: 1, gap: 8 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, gap: 8, paddingBottom: 16 }}
+    >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <List.AccordionGroup>
           <List.Accordion
             style={styles.accordionStyle}
@@ -383,6 +493,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
                   <Controller
                     name="address.country"
                     control={control}
+                    defaultValue={{} as (typeof countries)[0]}
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -564,35 +675,52 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
                   )}
                 />
               </View>
-              <View style={{ flex: 1 }}>
-                <Controller
-                  name="pix.key"
-                  control={control}
-                  rules={{ required: "Campo obrigatório" }}
-                  render={({ field, fieldState }) => (
-                    <Input
-                      {...field}
-                      {...register("pix.key", { required: true })}
-                      outlinedLabel
-                      disabled={!watch("pix.type")}
-                      mask={
-                        getValues("pix.type") as React.ComponentProps<
-                          typeof Input
-                        >["mask"]
-                      }
-                      label="Chave *"
-                      placeholder="Chave"
-                      onChangeText={field.onChange}
-                      error={fieldState.invalid}
-                      txtError={fieldState.error?.message}
-                    />
-                  )}
-                />
+              <View style={styles.formRowContainer}>
+                {watch("pix.type") === "phone" && (
+                  <Select
+                    outlinedLabel
+                    form={undefined}
+                    disabled={false}
+                    arr={{ list: countryCodes }}
+                    value={
+                      countryCodes.find((item) => item.id === countryCode)
+                        ?.value || ""
+                    }
+                    fieldName="Selecione o código do país"
+                    label=""
+                    placeholder="Código do país"
+                    onSelect={setCountryCode}
+                  />
+                )}
+                <View style={{ flex: 1 }}>
+                  <Controller
+                    name="pix.key"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        {...field}
+                        outlinedLabel
+                        disabled={!watch("pix.type")}
+                        mask={
+                          watch("pix.type") as React.ComponentProps<
+                            typeof Input
+                          >["mask"]
+                        }
+                        label="Chave *"
+                        placeholder="Chave"
+                        onChangeText={field.onChange}
+                        error={fieldState.invalid}
+                        txtError={fieldState.error?.message}
+                      />
+                    )}
+                  />
+                </View>
               </View>
             </View>
           </List.Accordion>
         </List.AccordionGroup>
       </ScrollView>
+
       <BtnDefault
         label="Salvar e avançar"
         style={{ marginHorizontal: 16 }}

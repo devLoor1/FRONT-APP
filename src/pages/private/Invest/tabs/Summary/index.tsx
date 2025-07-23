@@ -1,16 +1,6 @@
-import { useEffect, useState } from "react";
-import {
-  Alert,
-  Linking,
-  Platform,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Platform, ScrollView, Text, View } from "react-native";
 import * as FileSystem from "expo-file-system";
-import { Controller, useForm } from "react-hook-form";
 import { Checkbox, List } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SceneRendererProps } from "react-native-tab-view";
@@ -37,7 +27,7 @@ import LoadingComp from "@/components/Loading";
 import { getInvestmentContract } from "@/services/investments";
 import { getPersonalInfo } from "@/services/user";
 import ModalDefault from "@/components/ModalDefault";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 type Summary = InvestmentRequest & {
   full_name: string;
@@ -49,16 +39,17 @@ type SumamryProps = {
   summary: Partial<Summary>;
   onNext: (data: Partial<InvestmentRequest>) => void;
   opportunityId: number;
+  currentTab: boolean;
 } & SceneRendererProps;
 
 const Summary: React.FC<SumamryProps> = ({
   summary,
   opportunityId,
+  currentTab,
   onNext,
+  jumpTo,
 }) => {
-  const isFocused = useIsFocused();
   const styles = useCustomStyles();
-  const { control, getValues, reset } = useForm<Summary>({ disabled: true });
   const [checked, setChecked] = useState(false);
   const [invalidIncome, setInvalidIncome] = useState(false);
   const [showInvalidIncome, setShowInvalidIncome] = useState(false);
@@ -136,43 +127,50 @@ const Summary: React.FC<SumamryProps> = ({
     } catch {}
   };
 
-  useEffect(() => {
-    reset(summary);
-  }, [summary]);
+  useFocusEffect(
+    useCallback(() => {
+      if (personalInfo && opportunity) {
+        const value =
+          ((summary.quota_quantity || 0) *
+            opportunity.monetary.min_investment_value) /
+          100;
+        const income = personalInfo.annual_income / 100;
+        const insufficient = value / income > 0.1;
 
-  useEffect(() => {
-    if (personalInfo && opportunity) {
-      const value =
-        (summary.quota_quantity || 0) *
-        opportunity.monetary.min_investment_value;
-      const income = personalInfo.annual_income / 100;
-      const insufficient = value / income < 0.1;
-      let declarationValue = 0;
-      switch (summary.declaration) {
-        case "less_than_or_equal_200_thousand":
-          declarationValue = 200000;
-          break;
-        case "greater_than_200_thousand_less_than_1_million":
-          declarationValue = 999999;
-          break;
-        case "greater_than_or_equal_1_million":
-          declarationValue = 1000000;
-          break;
-        default:
-          break;
+        let consistentDeclaration = false;
+        switch (summary.declaration) {
+          case "less_than_or_equal_200_thousand":
+            consistentDeclaration = income <= 200000;
+            break;
+          case "greater_than_200_thousand_less_than_1_million":
+            consistentDeclaration = income > 200000 && income < 1000000;
+            break;
+          case "greater_than_or_equal_1_million":
+            consistentDeclaration = income >= 1000000;
+            break;
+          default:
+            break;
+        }
+        const invalid = !consistentDeclaration || insufficient;
+        setInvalidIncome(invalid);
+        if (invalid && currentTab) {
+          setShowInvalidIncome(true);
+        }
       }
 
-      setInvalidIncome(insufficient);
-      if (declarationValue < income || (insufficient && isFocused)) {
-        setShowInvalidIncome(true);
-      }
-    }
-  }, [isFocused, opportunity, personalInfo, summary]);
+      return () => {
+        setShowInvalidIncome(false);
+      };
+    }, [currentTab, opportunity, personalInfo, summary])
+  );
 
   if (loading || isLoadingCountries || isLoading) return <LoadingComp />;
 
   return (
-    <SafeAreaView edges={["bottom"]} style={{ flex: 1, gap: 8 }}>
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, gap: 8, paddingBottom: 16 }}
+    >
       {isPending && (
         <View style={styles.loading}>
           <LoadingComp transparent />
@@ -187,192 +185,124 @@ const Summary: React.FC<SumamryProps> = ({
             title={<Text style={styles.titleStyle}>Dados pessoais</Text>}
           >
             <View style={{ paddingVertical: 16, gap: 0 }}>
-              <Controller
-                name="full_name"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Nome:"
-                    placeholder="Nome"
-                    onChangeText={field.onChange}
-                    setValue={field.onChange}
-                  />
-                )}
+              <Input
+                value={summary.full_name!}
+                label="Nome:"
+                placeholder="Nome"
               />
+
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.birth_date"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={moment(field.value).format("DD/MM/YYYY")}
-                        placeholder="Data de nascimento"
-                        label="Data de nascimento:"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={moment(
+                      summary.investor_personal_information?.birth_date
+                    ).format("DD/MM/YYYY")}
+                    placeholder="Data de nascimento"
+                    label="Data de nascimento:"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.nationality"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        form={undefined}
-                        value={
-                          nationality.find((item) => item.id === field.value)
-                            ?.value || ""
-                        }
-                        arr={{ list: nationality }}
-                        label="Nacionalidade"
-                        fieldName="nacionalidade"
-                        placeholder="Nacionalidade"
-                        onSelect={field.onChange}
-                      />
-                    )}
+                  <Select
+                    disabled
+                    form={undefined}
+                    value={
+                      nationality.find(
+                        (item) =>
+                          item.id ===
+                          summary.investor_personal_information?.nationality
+                      )?.value || ""
+                    }
+                    arr={{ list: nationality }}
+                    label="Nacionalidade"
+                    fieldName="nacionalidade"
+                    placeholder="Nacionalidade"
                   />
                 </View>
               </View>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.rg"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="RG:"
-                        placeholder="RG"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.investor_personal_information?.rg!}
+                    label="RG:"
+                    placeholder="RG"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.cpf"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={CommonMask.cpf(field.value)}
-                        label="CPF:"
-                        placeholder="CPF"
-                        setValue={field.onChange}
-                      />
+                  <Input
+                    value={CommonMask.cpf(
+                      summary.investor_personal_information?.cpf!
                     )}
+                    label="CPF:"
+                    placeholder="CPF"
                   />
                 </View>
               </View>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.issuing_entity"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Orgão Emissor:"
-                        placeholder="Orgão Emissor"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={
+                      summary.investor_personal_information?.issuing_entity!
+                    }
+                    label="Orgão Emissor:"
+                    placeholder="Orgão Emissor"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.marital_status"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        //
-                        form={undefined}
-                        value={
-                          maritalStatus.find((item) => item.id === field.value)
-                            ?.value || ""
-                        }
-                        arr={{ list: maritalStatus }}
-                        fieldName="estado civil"
-                        label="Estado Civil:"
-                        placeholder="Estado Civil"
-                        onSelect={field.onChange}
-                      />
-                    )}
+                  <Select
+                    disabled
+                    form={undefined}
+                    value={
+                      maritalStatus.find(
+                        (item) =>
+                          item.id ===
+                          summary.investor_personal_information?.marital_status
+                      )?.value || ""
+                    }
+                    arr={{ list: maritalStatus }}
+                    fieldName="estado civil"
+                    label="Estado Civil:"
+                    placeholder="Estado Civil"
                   />
                 </View>
               </View>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.company"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Empresa:"
-                        placeholder="Empresa"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.investor_personal_information?.company!}
+                    label="Empresa:"
+                    placeholder="Empresa"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.job"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Profissão:"
-                        placeholder="Profissão"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.investor_personal_information?.job!}
+                    label="Profissão:"
+                    placeholder="Profissão"
                   />
                 </View>
               </View>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="investor_personal_information.role"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Cargo:"
-                        placeholder="Cargo"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.investor_personal_information?.role!}
+                    label="Cargo:"
+                    placeholder="Cargo"
                   />
                 </View>
               </View>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="investor_personal_information.exposed_politically"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox.Item
-                      mode="android"
-                      rippleColor="transparent"
-                      onPress={field.onChange}
-                      status={field.value ? "checked" : "unchecked"}
-                      label="Sou uma pessoa politicamente exposta:"
-                      style={styles.checkbox}
-                      labelStyle={styles.checkboxLabelStyle}
-                    />
-                  )}
+                <Checkbox.Item
+                  mode="android"
+                  rippleColor="transparent"
+                  disabled
+                  status={
+                    summary.investor_personal_information?.exposed_politically
+                      ? "checked"
+                      : "unchecked"
+                  }
+                  label="Sou uma pessoa politicamente exposta:"
+                  style={styles.checkbox}
+                  labelStyle={styles.checkboxLabelStyle}
                 />
               </View>
             </View>
@@ -386,33 +316,17 @@ const Summary: React.FC<SumamryProps> = ({
             <View style={{ paddingVertical: 16 }}>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="E-mail:"
-                        placeholder="E-mail"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.email!}
+                    label="E-mail:"
+                    placeholder="E-mail"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="phone"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={CommonMask.phone(field.value)}
-                        label="Telefone:"
-                        placeholder="Telefone"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={CommonMask.phone(summary.phone!)}
+                    label="Telefone:"
+                    placeholder="Telefone"
                   />
                 </View>
               </View>
@@ -428,142 +342,79 @@ const Summary: React.FC<SumamryProps> = ({
             <View style={{ paddingVertical: 16 }}>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.country_id"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        //
-                        form={undefined}
-                        arr={{
-                          list: countries.map?.((country) => ({
-                            id: country.id.toString(),
-                            value: country.name,
-                          })),
-                        }}
-                        value={
-                          countries?.find(
-                            (item) => item.id.toString() === field.value
-                          )?.name || ""
-                        }
-                        placeholder="País"
-                        label="País:"
-                        fieldName="País"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Select
+                    //
+                    form={undefined}
+                    arr={{
+                      list: countries.map?.((country) => ({
+                        id: country.id.toString(),
+                        value: country.name,
+                      })),
+                    }}
+                    value={
+                      countries?.find(
+                        (item) =>
+                          item.id.toString() === summary.address?.country_id
+                      )?.name || ""
+                    }
+                    placeholder="País"
+                    label="País:"
+                    fieldName="País"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.zip_code"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={CommonMask.cep(field.value)}
-                        label="CEP:"
-                        placeholder="CEP"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={CommonMask.cep(summary.address?.zip_code!)}
+                    label="CEP:"
+                    placeholder="CEP"
                   />
                 </View>
               </View>
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.city"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Cidade:"
-                        placeholder="Cidade"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.address?.city!}
+                    label="Cidade:"
+                    placeholder="Cidade"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.state"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Estado:"
-                        placeholder="Estado"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.address?.state!}
+                    label="Estado:"
+                    placeholder="Estado"
                   />
                 </View>
               </View>
 
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="address.street_name"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      value={field.value}
-                      label="Endereço:"
-                      placeholder="Endereço"
-                      setValue={field.onChange}
-                    />
-                  )}
+                <Input
+                  value={summary.address?.street_name!}
+                  label="Endereço:"
+                  placeholder="Endereço"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="address.district"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      value={field.value}
-                      label="Bairro:"
-                      placeholder="Bairro"
-                      setValue={field.onChange}
-                    />
-                  )}
+                <Input
+                  value={summary.address?.district!}
+                  label="Bairro:"
+                  placeholder="Bairro"
                 />
               </View>
 
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.number"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Número:"
-                        placeholder="Número"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.address?.number!}
+                    label="Número:"
+                    placeholder="Número"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    name="address.complement"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={field.value}
-                        label="Complemento:"
-                        placeholder="Complemento"
-                        setValue={field.onChange}
-                      />
-                    )}
+                  <Input
+                    value={summary.address?.complement!}
+                    label="Complemento:"
+                    placeholder="Complemento"
                   />
                 </View>
               </View>
@@ -577,47 +428,28 @@ const Summary: React.FC<SumamryProps> = ({
           >
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="pix.type"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      form={undefined}
-                      arr={{ list: pixKeyTypes }}
-                      value={
-                        pixKeyTypes.find((item) => item.id === field.value)
-                          ?.value || ""
-                      }
-                      fieldName="Tipo de chave PIX"
-                      label="Tipo de chave PIX:"
-                      placeholder="Tipo de chave PIX"
-                      onSelect={field.onChange}
-                    />
-                  )}
+                <Select
+                  form={undefined}
+                  arr={{ list: pixKeyTypes }}
+                  value={
+                    pixKeyTypes.find((item) => item.id === summary.pix?.type)
+                      ?.value || ""
+                  }
+                  fieldName="Tipo de chave PIX"
+                  label="Tipo de chave PIX:"
+                  placeholder="Tipo de chave PIX"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="pix.key"
-                  control={control}
-                  rules={{ required: "Campo obrigatório" }}
-                  render={({ field, fieldState }) => (
-                    <Input
-                      {...field}
-                      mask={
-                        getValues("pix.type") as React.ComponentProps<
-                          typeof Input
-                        >["mask"]
-                      }
-                      label="Chave:"
-                      placeholder="Chave"
-                      onChangeText={field.onChange}
-                      error={fieldState.invalid}
-                      txtError={fieldState.error?.message}
-                    />
-                  )}
+                <Input
+                  mask={
+                    summary.pix?.type as React.ComponentProps<
+                      typeof Input
+                    >["mask"]
+                  }
+                  value={summary.pix?.key!}
+                  label="Chave:"
+                  placeholder="Chave"
                 />
               </View>
             </View>
@@ -632,39 +464,25 @@ const Summary: React.FC<SumamryProps> = ({
           >
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="quota_quantity"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      value={
-                        "R$ " +
-                        CommonMask.currency(
-                          (
-                            (field.value || 1) *
-                            (opportunity?.monetary.min_investment_value || 0)
-                          )?.toString() || ""
-                        )
-                      }
-                      label="Valor do investimento:"
-                      placeholder="Valor do investimento"
-                    />
-                  )}
+                <Input
+                  value={
+                    "R$ " +
+                    CommonMask.currency(
+                      (
+                        (summary.quota_quantity || 1) *
+                        (opportunity?.monetary.min_investment_value || 0)
+                      )?.toString() || ""
+                    )
+                  }
+                  label="Valor do investimento:"
+                  placeholder="Valor do investimento"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="anonymous"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      value={field.value ? "Sim" : "Não"}
-                      label="Investir de forma anônima:"
-                      placeholder="Investir de forma anônima"
-                    />
-                  )}
+                <Input
+                  value={summary.anonymous ? "Sim" : "Não"}
+                  label="Investir de forma anônima:"
+                  placeholder="Investir de forma anônima"
                 />
               </View>
             </View>
@@ -681,41 +499,23 @@ const Summary: React.FC<SumamryProps> = ({
           >
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="declaration"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Input
-                      multiline
-                      {...field}
-                      value={
-                        declaration[field.value as keyof typeof declaration]
-                      }
-                      label="Possui renda financeira:"
-                      placeholder="Possui renda financeira"
-                    />
-                  )}
+                <Input
+                  multiline
+                  value={declaration[summary.declaration!]}
+                  label="Possui renda financeira:"
+                  placeholder="Possui renda financeira"
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Controller
-                  name="other_crowdfunding_platforms"
-                  control={control}
-                  rules={{ required: "Campo obrigatório" }}
-                  render={({ field, fieldState }) => (
-                    <Input
-                      {...field}
-                      value={
-                        "R$ " + CommonMask.currency(field.value.toString())
-                      }
-                      label="Valor investido em outras plataformas:"
-                      placeholder="Valor investido em outras plataformas"
-                      onChangeText={field.onChange}
-                      error={fieldState.invalid}
-                      txtError={fieldState.error?.message}
-                    />
-                  )}
+                <Input
+                  value={
+                    "R$ " +
+                    CommonMask.currency(
+                      summary.other_crowdfunding_platforms!.toString()
+                    )
+                  }
+                  label="Valor investido em outras plataformas:"
+                  placeholder="Valor investido em outras plataformas"
                 />
               </View>
             </View>
@@ -744,7 +544,10 @@ const Summary: React.FC<SumamryProps> = ({
         label="Avançar"
         disabled={!checked || invalidIncome}
         style={{ marginHorizontal: 16 }}
-        onPress={() => onNext({ user_agreed_at: new Date() })}
+        onPress={() => {
+          jumpTo("finish");
+          onNext({ user_agreed_at: new Date() });
+        }}
       />
 
       <ModalDefault

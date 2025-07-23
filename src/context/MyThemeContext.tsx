@@ -133,6 +133,13 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
             letterSpacing: 0,
             lineHeight: 16,
           },
+          bodyLarge: {
+            fontFamily: theme.fonts.semiBold,
+            fontWeight: "normal",
+            fontSize: 14,
+            letterSpacing: 0,
+            lineHeight: 16,
+          },
         },
       }),
     }),

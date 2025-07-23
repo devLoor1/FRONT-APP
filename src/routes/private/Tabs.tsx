@@ -25,9 +25,6 @@ function MyTabBar({
 }: BottomTabBarProps & { theme: AppTheme }) {
   const { bottom } = useSafeAreaInsets();
 
-  const gradientColors = [76, 128, 204, 255].map(
-    (alpha) => `${theme.colors.background}${alpha.toString(16)}`
-  );
   const tabBarStyle =
     descriptors[state?.routes[state?.index || 0]?.key].options?.tabBarStyle ||
     {};
@@ -42,14 +39,14 @@ function MyTabBar({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        // left: 0,
-        // right: 0,
-        // top: 0,
         bottom: 16 + bottom,
         zIndex: 0,
-        // paddingBottom: 38,
         borderRadius: 32,
-        backgroundColor: "red",
+        elevation: 3,
+        shadowColor: "rgba(0, 0, 0, 1)",
+        shadowOffset: { width: -1, height: 3 },
+        shadowRadius: 32,
+        shadowOpacity: 0.15,
         height: "height" in tabBarStyle ? tabBarStyle["height"] : "auto",
       }}
     >
@@ -60,11 +57,6 @@ function MyTabBar({
           gap: 16,
           borderRadius: 32,
           flexDirection: "row",
-          elevation: 3,
-          shadowColor: "rgba(0, 0, 0, 1)",
-          shadowOffset: { width: -1, height: 3 },
-          shadowRadius: 32,
-          shadowOpacity: 0.15,
         }}
       >
         {state.routes.map((route: any, index: any) => {
@@ -149,7 +141,6 @@ function MyTabBar({
 
 export default function Tabs() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
