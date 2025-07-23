@@ -35,7 +35,7 @@ const MainStack = createNativeStackNavigator<RootStackParamList>();
 export default function AppRoutes({
   firstPage,
 }: {
-  firstPage: "Refused" | "Tabs" | "DailySummary";
+  firstPage: keyof RootStackParamList;
 }) {
   return (
     <MainStack.Navigator
@@ -57,9 +57,9 @@ export default function AppRoutes({
       <MainStack.Screen
         name="OpportunitiesDetail"
         component={OpportunitiesDetailPage}
-        />
+      />
       <MainStack.Screen name="Invest" component={InvestPage} />
-        {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
+      {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
       {/* <MainStack.Screen
         name="InvestmentDetail"
         component={InvestmentDetailPage}

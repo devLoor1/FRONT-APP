@@ -6,11 +6,11 @@ import {
 import { TouchableOpacity, View } from "react-native";
 import OpportunityIcon from "~/../assets/newSvgs/icons/monitoring.svg";
 import WalletIcon from "~/../assets/newSvgs/icons/account_balance_wallet.svg";
-import InvestmentIcon from "~/../assets/newSvgs/icons/account_balance.svg";
+import HomeIcon from "~/../assets/newSvgs/icons/home.svg";
 import { useTheme } from "@/context/MyThemeContext";
 import WalletPage from "@/pages/private/Wallet";
 import OpportunitiesPage from "@/pages/private/Opportunities";
-// import InvestmentPage from '~/pages/private/Investments';
+import InvestmentPage from "@/pages/private/Investments";
 import { Analytics } from "@/helpers/analytics";
 import { AppTheme } from "@/styles/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,6 +23,8 @@ function MyTabBar({
   navigation,
   theme,
 }: BottomTabBarProps & { theme: AppTheme }) {
+  const { bottom } = useSafeAreaInsets();
+
   const gradientColors = [76, 128, 204, 255].map(
     (alpha) => `${theme.colors.background}${alpha.toString(16)}`
   );
@@ -40,12 +42,15 @@ function MyTabBar({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        left: 0,
-        right: 0,
-        bottom: 0,
+        // left: 0,
+        // right: 0,
+        // top: 0,
+        bottom: 16 + bottom,
         zIndex: 0,
-        paddingBottom: 38,
-        height: "height" in tabBarStyle ? tabBarStyle["height"] : 0,
+        // paddingBottom: 38,
+        borderRadius: 32,
+        backgroundColor: "red",
+        height: "height" in tabBarStyle ? tabBarStyle["height"] : "auto",
       }}
     >
       <View
@@ -114,7 +119,7 @@ function MyTabBar({
               }}
             >
               {route.name === "HomeTabs" && (
-                <WalletIcon
+                <HomeIcon
                   color={isFocused ? focusedColor : baseWhite}
                   width={32}
                   height={32}
@@ -128,7 +133,7 @@ function MyTabBar({
                 />
               )}
               {route.name === "InvestmentTabs" && (
-                <InvestmentIcon
+                <WalletIcon
                   color={isFocused ? focusedColor : baseWhite}
                   width={32}
                   height={32}
@@ -155,7 +160,7 @@ export default function Tabs() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          height: 94 + bottom,
+          height: 56,
         },
       }}
     >
@@ -173,7 +178,7 @@ export default function Tabs() {
 
       <Tab.Screen
         name="InvestmentTabs"
-        component={/* InvestmentPage */ React.Fragment}
+        component={InvestmentPage}
         options={{ tabBarLabel: "bank-outline" }}
       />
     </Tab.Navigator>

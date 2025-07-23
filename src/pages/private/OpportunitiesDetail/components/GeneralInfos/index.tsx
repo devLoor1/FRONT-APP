@@ -362,7 +362,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                 </View>
               </View>
             </View> */}
-            <View style={styles.blockBtnData}>
+            {/* <View style={styles.blockBtnData}>
               <BtnDefault
                 label="Ver dados financeiros"
                 white
@@ -373,7 +373,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                   setPage(2);
                 }}
               />
-            </View>
+            </View> */}
           </View>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Progresso</Text>
