@@ -144,7 +144,7 @@ export default function Navbar({ refRBSheet, resume }: Props) {
         <NavIcon
           onPress={() => {
             Analytics({ eventName: "HomeApp_Pix" });
-            nav.navigate("Pix");
+            // nav.navigate("Pix");
           }}
           disabled={!enablePIX}
           Icon={PIXIcon}
@@ -153,7 +153,7 @@ export default function Navbar({ refRBSheet, resume }: Props) {
         <NavIcon
           onPress={() => {
             Analytics({ eventName: "HomeApp_Results" });
-            nav.navigate("Results");
+            // nav.navigate("Results");
           }}
           Icon={BarChartIcon}
           label="Resultados"
@@ -161,7 +161,7 @@ export default function Navbar({ refRBSheet, resume }: Props) {
         <NavIcon
           onPress={() => {
             Analytics({ eventName: "HomeApp_Profitability" });
-            nav.navigate("Profitability");
+            // nav.navigate("Profitability");
           }}
           Icon={QueryStatsIcon}
           label={"Variação e\nrentabilidade"}

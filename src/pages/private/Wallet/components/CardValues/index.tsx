@@ -1,77 +1,70 @@
 /* eslint-disable react/self-closing-comp */
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import { useTheme } from "@/context/MyThemeContext";
 import { useCustomStyles } from "./style";
 import CommonMask from "@/helpers/masks";
-import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
 import ArrowUp from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
-import BlurValues from "@/components/BlurValues";
-import { useAppSelector } from "@/redux/hooks";
-import ModalDefault from "@/components/ModalDefault";
 import { useCommon } from "@/context/CommonContext";
 import { WalletResponse } from "@/models-old/investiment/wallet.response";
+import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
+import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 
 export default function CardValues({
   resume,
 }: {
-  resume: WalletResponse["data"];
+  resume?: WalletResponse["data"];
 }) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  // const { resume } = useAppSelector((state) => state.wallet);
-  const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalDesc, setModalDesc] = useState("");
-  const { showBalance } = useCommon();
+  const { showBalance, toogleBalance } = useCommon();
 
   return (
     <View style={styles.container}>
       <View style={styles.head}>
         <View>
-          <View style={styles.row}>
-            <Text style={styles.title}>Valor investido</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setModalTitle("Total investido");
-                setModalDesc(
-                  "Exibe o valor total investido, considerando o principal ativo da carteira."
-                );
-                setShowModal(true);
-              }}
-            >
-              <InfoIcon
-                color={theme.customColors.hyperlink}
-                width={12}
-                height={12}
-              />
+          <View style={[styles.row, styles.spaceBetween]}>
+            <Text style={styles.title}>Oportunidades investidas</Text>
+            <TouchableOpacity onPress={toogleBalance}>
+              {showBalance ? (
+                <EyeIcon
+                  width={18}
+                  height={18}
+                  color={theme.customColors.neutrals[500]}
+                />
+              ) : (
+                <EyeOffIcon
+                  width={18}
+                  height={18}
+                  color={theme.customColors.neutrals[500]}
+                />
+              )}
             </TouchableOpacity>
           </View>
-          <BlurValues
-            value={(resume?.total_invested / 100).toFixed(2) || "0"}
-          />
+          <Text
+            style={[
+              styles.itemTitle,
+              { fontSize: 20, fontFamily: theme.fonts.bold },
+            ]}
+          >
+            {resume?.total_investments || 0}
+          </Text>
         </View>
       </View>
       <View style={styles.list}>
-        <View style={{ flex: 0.33 }}>
-          {/* <View style={styles.row}>
-            <Text style={styles.itemTitle}>Lucro projetado</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setModalTitle('Lucro projetado');
-                setModalDesc(
-                  'Exibe o valor total investido, considerando o principal ativo da carteira.'
-                );
-                setShowModal(true);
-              }}>
-              <InfoIcon color={theme.customColors.hyperlink} width={12} height={12} />
-            </TouchableOpacity>
-          </View> */}
-          {/* <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.row}>
+            <Text numberOfLines={1} style={styles.itemTitle}>
+              Patrimônio estimado
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
             <Text style={{ ...styles.itemValue }}>
               R${" "}
               {showBalance
-                ? CommonMask.currency(resume?.expectedProfit?.toFixed(2) || "0")
+                ? CommonMask.currency(
+                    resume?.estimated_patrimony?.toFixed(2) || "0"
+                  )
                 : "-"}
             </Text>
             <ArrowUp
@@ -79,11 +72,11 @@ export default function CardValues({
               height={12}
               color={theme.customColors.risk.default}
             />
-          </View> */}
+          </View>
         </View>
-        {/* <View style={{ flex: 0.33, alignItems: "center" }}>
+        <View style={{ flex: 1, alignItems: "center" }}>
           <View style={styles.row}>
-            <Text style={styles.itemTitle}>Valor à Receber</Text>
+            <Text style={styles.itemTitle}>Total investido</Text>
           </View>
           <View
             style={{
@@ -95,9 +88,7 @@ export default function CardValues({
             <Text style={styles.itemValue}>
               R${" "}
               {showBalance
-                ? CommonMask.currency(
-                    resume?.totalValueToReceive.toFixed(2) || "0"
-                  )
+                ? CommonMask.currency(resume?.total_invested.toFixed(2) || "0")
                 : "-"}
             </Text>
             <ArrowUp
@@ -106,25 +97,12 @@ export default function CardValues({
               color={theme.customColors.risk.default}
             />
           </View>
-        </View> */}
-        <View style={{ flex: 0.33, alignItems: "flex-end" }}>
-          {/* <View style={styles.row}>
-            <Text style={styles.itemTitle}>T.I.R</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setModalTitle("Taxa Interna de Retorno - T.I.R");
-                setModalDesc(
-                  "TIR reflete o retorno efetivo obtido em relação ao capital investido, sendo um indicador essencial para avaliar a eficiência dos investimentos."
-                );
-                setShowModal(true);
-              }}
-            >
-              <InfoIcon
-                color={theme.customColors.hyperlink}
-                width={12}
-                height={12}
-              />
-            </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1, alignItems: "flex-end" }}>
+          <View style={styles.row}>
+            <Text style={[styles.itemTitle, { textAlign: "right" }]}>
+              Total recebido
+            </Text>
           </View>
           <Text
             style={[
@@ -133,18 +111,14 @@ export default function CardValues({
             ]}
           >
             {showBalance
-              ? CommonMask.percent(resume?.tir?.toFixed(2).toString() || "0")
+              ? CommonMask.percent(
+                  resume?.total_received?.toFixed(2).toString() || "0"
+                )
               : "-"}
             %
-          </Text> */}
+          </Text>
         </View>
       </View>
-      <ModalDefault
-        setVisible={setShowModal}
-        visible={showModal}
-        title={modalTitle}
-        desc={modalDesc}
-      />
     </View>
   );
 }

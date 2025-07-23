@@ -1,15 +1,12 @@
 import { getWalletResume } from "@/services-old/wallet";
 import { Analytics } from "@/helpers/analytics";
-import ProfileIcon from "@/../assets/newSvgs/icons/clinical_notes.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import HeaderPhoto from "@/components/HeaderPhoto";
 import { RefreshControl, ScrollView } from "react-native-gesture-handler";
-import { GetPaymentMethodAvailable, GetUserStatus } from "@/services/user";
 import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
-import Navbar from "./components/navbar";
 import { useTheme } from "@/context/MyThemeContext";
 import BackToTop from "@/components/BackToTop";
 import ReferFriend from "@/components/ReferFriend";
@@ -21,39 +18,24 @@ import Banner from "./components/Banner";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { getOpportunities } from "@/services/opportunities";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
-import CommonMask from "@/helpers/masks";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/models/routes/navigation.private";
-import News from "./components/news";
 import ModalDefault from "@/components/ModalDefault";
 // import PromoComponent from './components/Promo';
-import { useCommon } from "@/context/CommonContext";
-import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
-import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import InterestChart from "./components/InterestChart";
 import LoadingComp from "@/components/Loading";
-import { useAuth } from "@/context/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export default function WalletPage() {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  // const [refreshing, setRefreshing] = useState(false);
-  const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  // const { listOpportunities, loadingList } = useAppSelector(
-  //   (state) => state.opportunities
-  // );
   const refPage = useRef<ScrollView>(null);
   const [showToUp, setShowToUp] = useState(false);
   const refRBSheet = useRef<any>(null);
   const bottomTabBarHeight = useBottomTabBarHeight();
-  const { userStatus } = useAppSelector((state) => state.user);
   const loginData = useAppSelector((state) => state.auth.loginData?.data);
   const [showModal, setShowModal] = useState(false);
-  const { showBalance, toogleBalance } = useCommon();
-  const { deviceToken } = useAuth();
-
   const {
     data: resume,
     isLoading: loadingResume,
@@ -77,43 +59,14 @@ export default function WalletPage() {
   const refreshing = isRefetchingList || isRefetchingResume;
 
   function getAll() {
-    Promise.all([
-      // dispatch(GetUserStatus(deviceToken)),
-      // dispatch(getWalletResume()),
-      // dispatch(GetInterestReceivedGraph()),
-      // dispatch(GetResume()),
-      // dispatch(GetDebit()),
-      // dispatch(GetDebitWealth()),
-      // dispatch(GetPaymentMethodAvailable()),
-      // dispatch(GetFAQHightlights({ pageSize: 2 })),
-      // dispatch(getOpportunities({ page: 1, limit: 3 })),
-      // dispatch(GetCodeRecommendation()),
-      refetchResume(),
-      refetchList(),
-    ]);
+    Promise.all([refetchResume(), refetchList()]);
   }
 
   useEffect(() => {
     Analytics({ pageName: "HomeApp" });
-    // getAll();
   }, []);
 
-  /* useEffect(() => {
-    if (!highlightsList) {
-      (async () => {
-        await dispatch(GetFAQHightlights({ pageSize: 2 }));
-      })();
-    }
-  }, [highlightsList]); */
-
-  /* useEffect(() => {
-    if (summary || listOpportunities) {
-      // setRefreshing(false);
-    }
-  }, [summary, listOpportunities]); */
-
   const onRefresh = useCallback(async () => {
-    // setRefreshing(true);
     getAll();
   }, []);
 
@@ -157,7 +110,7 @@ export default function WalletPage() {
               /* userStatus?.status === "Aprovado" && !userStatus?.waitCaf */ loginData.personal_information_filled ===
               1 ? (
                 <>
-                  <Navbar refRBSheet={refRBSheet} resume={resume} />
+                  {/* <Navbar refRBSheet={refRBSheet} resume={resume} /> */}
                   {/* <View
                     style={[
                       styles.titleContainer,
@@ -181,7 +134,7 @@ export default function WalletPage() {
                       )}
                     </TouchableOpacity>
                   </View> */}
-                  {/* <CardValues /> */}
+                  <CardValues resume={resume} />
                   <InterestChart />
                   {/* <PromoComponent refRBSheet={refRBSheet} /> */}
                 </>
@@ -226,8 +179,8 @@ export default function WalletPage() {
             />
 
             {loginData.personal_information_filled === 1 && (
-              <View>
-                <TouchableOpacity
+              <View style={{ marginTop: 24 }}>
+                {/* <TouchableOpacity
                   style={styles.btnProfile}
                   onPress={() => {
                     Analytics({ eventName: "HomeApp_PerfilInvestidor" });
@@ -238,7 +191,7 @@ export default function WalletPage() {
                     <ProfileIcon color={theme.customColors.baseWhite} />
                   </View>
                   <Text style={styles.btnTxt}>Perfil de Investidor</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                   style={styles.btnIndicate}
                   onPress={() => {

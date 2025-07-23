@@ -35,7 +35,6 @@ export const useCustomStyles = () => {
       paddingVertical: 10,
       gap: 16,
       marginBottom: 16,
-      marginTop: 24,
     },
     btnTxt: {
       fontSize: 14,
