@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import {
   DimensionValue,
   KeyboardTypeOptions,
@@ -93,6 +93,7 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
   ref
 ) => {
   const { theme } = useTheme();
+  const [displayValue, setDisplayValue] = useState(value);
 
   const styles = StyleSheet.create({
     input: {
@@ -121,7 +122,9 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
     },
   });
 
-  function handleChange(txt: string) {
+  function setMask(txt?: string) {
+    if (!txt) return "";
+
     let maskValue = "";
     switch (mask) {
       case "cpf":
@@ -146,9 +149,21 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
         maskValue = txt;
         break;
     }
-    setValue?.(maskValue);
     return maskValue;
   }
+
+  useEffect(() => {
+    if (mask) {
+      setDisplayValue(setMask(value));
+    } else {
+      setDisplayValue(value);
+    }
+  }, [value, mask]);
+
+  const handleChange = (text: string) => {
+    const raw = mask ? text.replace(/\D/g, "") : text;
+    onChangeText ? onChangeText?.(raw) : setValue?.(raw);
+  };
 
   return (
     <View style={{ marginBottom }}>
@@ -168,13 +183,8 @@ const Input: React.ForwardRefRenderFunction<RNTextInput, InputType> = (
       )}
       <TextInput
         ref={ref}
-        value={value}
-        defaultValue={defaultValue}
-        onChangeText={
-          onChangeText
-            ? (txt) => (mask ? onChangeText(handleChange(txt)) : onChangeText)
-            : (txt) => (mask ? handleChange(txt) : setValue?.(txt))
-        }
+        value={displayValue}
+        onChangeText={handleChange}
         mode={mode}
         label={outlinedLabel ? label : undefined}
         autoComplete={autoComplete}

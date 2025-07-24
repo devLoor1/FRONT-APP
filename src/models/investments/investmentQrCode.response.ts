@@ -1,3 +1,5 @@
+import { InvestmentStatus } from "./investment.response";
+
 export type InvestmentQrCodeResponse = {
   data: Data;
 };
@@ -7,14 +9,14 @@ export type Data = {
   value: number;
   expires_at: Date;
   created_at: Date;
-  status: string;
+  status: keyof typeof InvestmentStatus;
   code: string;
   investment: Investment;
 };
 
 export type Investment = {
   id: number;
-  status: string;
+  status: keyof typeof InvestmentStatus;
   opportunity: Opportunity;
   refund: Refund;
 };

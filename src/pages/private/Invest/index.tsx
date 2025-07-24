@@ -27,8 +27,7 @@ import { BackHandler, Text } from "react-native";
 import CrowdfundingTab from "./tabs/Crowdfunding";
 import { InvestmentRequest } from "@/models/investments/investment.request";
 import Summary from "./tabs/Summary";
-
-type InvestmentData = InvestmentRequest;
+import FinishTab from "./tabs/FinishTab";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Invest">;
 
@@ -59,6 +58,7 @@ export default function InvestPage({ route }: Props) {
   }
 
   const onNext = (data: Partial<InvestmentRequest>) => {
+    console.log(data);
     setInvestmentData((prev) => (prev ? { ...prev, ...data } : data));
   };
 
@@ -86,17 +86,32 @@ export default function InvestPage({ route }: Props) {
       case "summary":
         return (
           <Summary
-            {...{ onNext, ...props, summary: investmentData, opportunityId }}
+            {...{
+              onNext,
+              ...props,
+              summary: investmentData,
+              opportunityId,
+              currentTab: index === 3,
+            }}
           />
         );
       case "finish":
+        return (
+          <FinishTab
+            {...{
+              ...props,
+              data: investmentData as InvestmentRequest,
+              currentTab: index === 4,
+            }}
+          />
+        );
       default:
         return null;
     }
   };
 
   const gotToPreviousTab = () => {
-    if (index === 0) return false;
+    if (index === 0 || index === 4) return false;
     setIndex((i) => i - 1);
     return true;
   };
@@ -110,7 +125,7 @@ export default function InvestPage({ route }: Props) {
     return () => {
       sub.remove();
     };
-  }, []);
+  }, [gotToPreviousTab]);
 
   useEffect(
     () => () => {
@@ -126,7 +141,7 @@ export default function InvestPage({ route }: Props) {
         contact
         help
         title="Oportunidades"
-        onPressBack={index === 0 ? undefined : gotToPreviousTab}
+        onPressBack={index === 0 || index === 4 ? undefined : gotToPreviousTab}
       />
 
       <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
