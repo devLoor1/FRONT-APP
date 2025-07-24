@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Loor",
-    "slug": "loor",
+    "slug": "app-loor-investor",
     "version": "1.0.0",
     "scheme": "loor",
     "orientation": "portrait",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "br.com.loor"
+      "bundleIdentifier": "vc.loor.investor"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "br.com.loor"
+      "package": "vc.loor.investor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -42,17 +42,12 @@
         }
       ]
     ],
-    "owner": "wise-money",
-    "extra": {
-      "eas": {
-        "projectId": "865565b6-4613-401e-b399-0b28fc5bc42e"
-      }
-    },
+    "owner": "loor-investimentos",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/865565b6-4613-401e-b399-0b28fc5bc42e"
+      "url": "https://u.expo.dev/d334ba17-8f78-4e6e-aa0e-2c8d3028fd3e"
     }
   }
 }
