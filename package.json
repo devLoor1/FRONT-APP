@@ -7,9 +7,12 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build-development": "eas build -e development",
-    "build-preview": "eas build -e preview",
-    "build-production": "eas build -e production"
+    "build-development": "cross-env ENV=DEV eas build --profile development",
+    "build-preview": "cross-env ENV=PROD eas build --profile preview",
+    "build-production": "cross-env ENV=PROD eas build --profile production",
+    "update-branch-development": "cross-env ENV=DEV eas update --branch development",
+    "update-branch-preview": "cross-env ENV=PROD eas update --branch preview",
+    "update-branch-production": "cross-env ENV=PROD eas update --branch production"
   },
   "dependencies": {
     "@expo-google-fonts/nunito-sans": "^0.4.1",
@@ -23,6 +26,7 @@
     "@tanstack/react-query": "^5.81.5",
     "axios": "^1.10.0",
     "axios-auth-refresh": "^3.3.6",
+    "cross-env": "^7.0.3",
     "expo": "53.0.18",
     "expo-analytics": "^1.0.18",
     "expo-camera": "~16.1.10",

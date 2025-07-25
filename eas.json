@@ -10,6 +10,9 @@
       "channel": "development",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "ENV": "DEV"
       }
     },
     "preview": {
@@ -17,11 +20,17 @@
       "channel": "preview",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "ENV": "PROD"
       }
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "ENV": "PROD"
+      }
     }
   },
   "submit": {
