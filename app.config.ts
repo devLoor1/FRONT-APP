@@ -4,10 +4,16 @@ import moment from 'moment';
 import * as environment from './src/environments/environment.json';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  let envVars = environment.prod;
-  if (process.env.ENV !== 'PROD') {
-    envVars = environment.dev;
-  }
+  
+  let envVars =
+      process.env.ENV == 'PROD'
+      ? environment.prod
+      : environment.dev;
+
+  envVars = {
+    ...environment.base,
+    ...envVars
+  };
 
   return {
     'name': 'Loor',
@@ -68,12 +74,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'url': 'https://u.expo.dev/d334ba17-8f78-4e6e-aa0e-2c8d3028fd3e'
     },
     'extra': {
-      'env': {
-        ...envVars,
-        "baseUrl_viacep": "https://viacep.com.br/ws/",
-        "appStore": "https://apps.apple.com/br/app/?",
-        "playStore": "https://play.google.com/store/apps/?"
-      },
+      'env': envVars,
       'version': moment.utc().format('YYYYMMDD-HHmm'),
       'eas': {
         'projectId': 'd334ba17-8f78-4e6e-aa0e-2c8d3028fd3e'

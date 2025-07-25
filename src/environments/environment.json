@@ -1,4 +1,9 @@
 {
+  "base": {
+    "baseUrl_viacep": "https://viacep.com.br/ws/",
+    "appStore": "https://apps.apple.com/br/app/?",
+    "playStore": "https://play.google.com/store/apps/?"
+  },
   "dev": {
     "env": "dev",
     "production": false,
