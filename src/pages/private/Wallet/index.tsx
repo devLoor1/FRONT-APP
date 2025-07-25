@@ -9,11 +9,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
 import { useTheme } from "@/context/MyThemeContext";
 import BackToTop from "@/components/BackToTop";
-import ReferFriend from "@/components/ReferFriend";
+// import ReferFriend from "@/components/ReferFriend";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardValues from "./components/CardValues";
 import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
-import ReferIcon from "@/../assets/newSvgs/icons/featured_seasonal_and_gifts.svg";
+// import ReferIcon from "@/../assets/newSvgs/icons/featured_seasonal_and_gifts.svg";
 import Banner from "./components/Banner";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { getOpportunities } from "@/services/opportunities";
@@ -192,7 +192,7 @@ export default function WalletPage() {
                   </View>
                   <Text style={styles.btnTxt}>Perfil de Investidor</Text>
                 </TouchableOpacity> */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.btnIndicate}
                   onPress={() => {
                     Analytics({ eventName: "HomeApp_IndiqueAmigo" });
@@ -205,7 +205,7 @@ export default function WalletPage() {
                   <Text style={{ ...styles.btnTxt }}>
                     Indique seus amigos e ganhe cashback
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             )}
 
@@ -216,7 +216,7 @@ export default function WalletPage() {
       {showToUp && (
         <BackToTop scrollRef={refPage} mb={bottomTabBarHeight / 2} />
       )}
-      <ReferFriend refRBSheet={refRBSheet} />
+      {/* <ReferFriend refRBSheet={refRBSheet} /> */}
       <ModalDefault
         setVisible={setShowModal}
         visible={showModal}
