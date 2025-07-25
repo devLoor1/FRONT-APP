@@ -58,7 +58,6 @@ export default function InvestPage({ route }: Props) {
   }
 
   const onNext = (data: Partial<InvestmentRequest>) => {
-    console.log(data);
     setInvestmentData((prev) => (prev ? { ...prev, ...data } : data));
   };
 

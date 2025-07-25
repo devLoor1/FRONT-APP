@@ -2,21 +2,19 @@ import React, { memo, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Checkbox, List, Text } from "react-native-paper";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-
-import useCustomStyles from "./style";
 import { SceneRendererProps } from "react-native-tab-view";
 import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
+
+import useCustomStyles from "./style";
 import { getPersonalInfo } from "@/services/user";
 import { PersonalInfo } from "@/models/user/personalInformation";
 import Input from "@/components/Input";
-import moment from "moment";
-import SelectSearch from "@/components/SelectSearch";
 import { getCountries } from "@/services/common";
 import Select from "@/components/Select";
 import CommonMask from "@/helpers/masks";
 import LoadingComp from "@/components/Loading";
 import { getMe } from "@/services/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Analytics } from "@/helpers/analytics";
 import BtnDefault from "@/components/BtnDefault";
 import { getOpportunityPix } from "@/services/opportunities";
@@ -35,22 +33,6 @@ type PersonalDataTabProps = {
   onNext: (data: Partial<InvestmentRequest>) => void;
 } & SceneRendererProps;
 
-/* const initValues = (obj: any) => {
-  let newObj: Record<string, string | number | object> = {};
-  Object.entries(obj as Record<string, string | number | object>).map(
-    ([field, value]) => {
-      if (!value) {
-        newObj[field] = "";
-      } else if (typeof value === "object") {
-        newObj[field] = initValues(value);
-      } else {
-        newObj[field] = value;
-      }
-    }
-  );
-
-  return newObj;
-}; */
 type AnyObject = Record<string, any>;
 
 function initValues<T extends AnyObject>(obj: T): T {
@@ -214,11 +196,11 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     return <LoadingComp />;
 
   return (
-    <SafeAreaView
-      edges={["bottom"]}
-      style={{ flex: 1, gap: 8, paddingBottom: 16 }}
-    >
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+    <View style={{ flex: 1, gap: 8, paddingBottom: 16 }}>
+      <ScrollView
+        style={{ flexGrow: 1 }}
+        contentContainerStyle={styles.container}
+      >
         <List.AccordionGroup>
           <List.Accordion
             style={styles.accordionStyle}
@@ -723,10 +705,11 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
 
       <BtnDefault
         label="Salvar e avançar"
+        marginBottom={0}
         style={{ marginHorizontal: 16 }}
         onPress={handleSubmit(next)}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

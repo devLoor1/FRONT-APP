@@ -98,33 +98,38 @@ const Summary: React.FC<SumamryProps> = ({
     }
   };
 
-  const openContract = async () => {
+  const convertBlobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result;
+        if (typeof result === "string") {
+          resolve(result.split(",")[1]);
+        } else {
+          reject(new Error("Tipo do resultado inesperado!"));
+        }
+      };
+
+      reader.onerror = () => reject(new Error("Falha ao ler blob!"));
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const postContract = async () => {
     try {
       const data = await mutateAsync({
         opportunity_id: opportunityId,
         quota_quantity: summary.quota_quantity || 0,
       });
+      return data;
+    } catch {
+      return null;
+    }
+  };
 
-      const convertBlobToBase64 = (blob: Blob): Promise<string> => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const result = reader.result;
-            if (typeof result === "string") {
-              resolve(result.split(",")[1]);
-            } else {
-              reject(new Error("Tipo do resultado inesperado!"));
-            }
-          };
-
-          reader.onerror = () => reject(new Error("Falha ao ler blob!"));
-          reader.readAsDataURL(blob);
-        });
-      };
-
-      const base64pdf = await convertBlobToBase64(data);
-      saveReportFile(base64pdf);
-    } catch {}
+  const postAndShareContract = async () => {
+    const blob = await postContract();
+    if (blob) saveReportFile(await convertBlobToBase64(blob));
   };
 
   useFocusEffect(
@@ -167,10 +172,7 @@ const Summary: React.FC<SumamryProps> = ({
   if (loading || isLoadingCountries || isLoading) return <LoadingComp />;
 
   return (
-    <SafeAreaView
-      edges={["bottom"]}
-      style={{ flex: 1, gap: 8, paddingBottom: 16 }}
-    >
+    <View style={{ flex: 1, gap: 8, paddingBottom: 16 }}>
       {isPending && (
         <View style={styles.loading}>
           <LoadingComp transparent />
@@ -186,6 +188,7 @@ const Summary: React.FC<SumamryProps> = ({
           >
             <View style={{ paddingVertical: 16, gap: 0 }}>
               <Input
+                disabled
                 value={summary.full_name!}
                 label="Nome:"
                 placeholder="Nome"
@@ -194,6 +197,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={moment(
                       summary.investor_personal_information?.birth_date
                     ).format("DD/MM/YYYY")}
@@ -222,6 +226,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.investor_personal_information?.rg!}
                     label="RG:"
                     placeholder="RG"
@@ -229,6 +234,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={CommonMask.cpf(
                       summary.investor_personal_information?.cpf!
                     )}
@@ -240,6 +246,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={
                       summary.investor_personal_information?.issuing_entity!
                     }
@@ -268,6 +275,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.investor_personal_information?.company!}
                     label="Empresa:"
                     placeholder="Empresa"
@@ -275,6 +283,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.investor_personal_information?.job!}
                     label="Profissão:"
                     placeholder="Profissão"
@@ -284,6 +293,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.investor_personal_information?.role!}
                     label="Cargo:"
                     placeholder="Cargo"
@@ -317,6 +327,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.email!}
                     label="E-mail:"
                     placeholder="E-mail"
@@ -324,6 +335,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={CommonMask.phone(summary.phone!)}
                     label="Telefone:"
                     placeholder="Telefone"
@@ -343,7 +355,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Select
-                    //
+                    disabled
                     form={undefined}
                     arr={{
                       list: countries.map?.((country) => ({
@@ -364,6 +376,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={CommonMask.cep(summary.address?.zip_code!)}
                     label="CEP:"
                     placeholder="CEP"
@@ -373,6 +386,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.address?.city!}
                     label="Cidade:"
                     placeholder="Cidade"
@@ -380,6 +394,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.address?.state!}
                     label="Estado:"
                     placeholder="Estado"
@@ -389,6 +404,7 @@ const Summary: React.FC<SumamryProps> = ({
 
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   value={summary.address?.street_name!}
                   label="Endereço:"
                   placeholder="Endereço"
@@ -396,6 +412,7 @@ const Summary: React.FC<SumamryProps> = ({
               </View>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   value={summary.address?.district!}
                   label="Bairro:"
                   placeholder="Bairro"
@@ -405,6 +422,7 @@ const Summary: React.FC<SumamryProps> = ({
               <View style={styles.formRowContainer}>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.address?.number!}
                     label="Número:"
                     placeholder="Número"
@@ -412,6 +430,7 @@ const Summary: React.FC<SumamryProps> = ({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Input
+                    disabled
                     value={summary.address?.complement!}
                     label="Complemento:"
                     placeholder="Complemento"
@@ -429,6 +448,7 @@ const Summary: React.FC<SumamryProps> = ({
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
                 <Select
+                  disabled
                   form={undefined}
                   arr={{ list: pixKeyTypes }}
                   value={
@@ -442,6 +462,7 @@ const Summary: React.FC<SumamryProps> = ({
               </View>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   mask={
                     summary.pix?.type as React.ComponentProps<
                       typeof Input
@@ -465,6 +486,7 @@ const Summary: React.FC<SumamryProps> = ({
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   value={
                     "R$ " +
                     CommonMask.currency(
@@ -480,6 +502,7 @@ const Summary: React.FC<SumamryProps> = ({
               </View>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   value={summary.anonymous ? "Sim" : "Não"}
                   label="Investir de forma anônima:"
                   placeholder="Investir de forma anônima"
@@ -500,6 +523,7 @@ const Summary: React.FC<SumamryProps> = ({
             <View style={{ paddingVertical: 16 }}>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   multiline
                   value={declaration[summary.declaration!]}
                   label="Possui renda financeira:"
@@ -508,6 +532,7 @@ const Summary: React.FC<SumamryProps> = ({
               </View>
               <View style={{ flex: 1 }}>
                 <Input
+                  disabled
                   value={
                     "R$ " +
                     CommonMask.currency(
@@ -525,7 +550,10 @@ const Summary: React.FC<SumamryProps> = ({
           <Checkbox.Android
             android_ripple={{ color: "transparent" }}
             rippleColor="transparent"
-            onPress={() => setChecked(!checked)}
+            onPress={async () => {
+              postContract();
+              setChecked(!checked);
+            }}
             status={checked ? "checked" : "unchecked"}
             style={styles.checkbox}
           />
@@ -533,7 +561,7 @@ const Summary: React.FC<SumamryProps> = ({
             Eu li e aceito os{" "}
             <Text
               style={{ textDecorationLine: "underline" }}
-              onPress={openContract}
+              onPress={postAndShareContract}
             >
               Termos do Contrato.
             </Text>
@@ -556,7 +584,7 @@ const Summary: React.FC<SumamryProps> = ({
         title="Declaração não compatível"
         desc="Segundo as normas da Resolução CVM nº 88, o investidor só poderá investir até 10% de sua renda bruta anual, considerando os investimentos feitos nesta plataforma somados aos investimentos feitos em outras plataformas. Reconsidere o seu valor de investimento"
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

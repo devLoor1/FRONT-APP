@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SceneRendererProps } from "react-native-tab-view";
 import QrCode from "react-qr-code";
@@ -7,7 +7,7 @@ import * as Clipboard from "expo-clipboard";
 import LoadingComp from "@/components/Loading";
 import { InvestmentRequest } from "@/models/investments/investment.request";
 import { getInvestmentQrCode, postInvestments } from "@/services/investments";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
 import useCustomStyles from "./style";
 import BtnDefault from "@/components/BtnDefault";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -38,34 +38,40 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
     mutationKey: [postInvestments.name],
     mutationFn: postInvestments,
   });
-  const { data: investmentInfo, isLoading } = useQuery({
-    queryKey: [getInvestmentQrCode.name, investmentResult],
-    queryFn: () => getInvestmentQrCode(investmentResult?.id || -1),
-    enabled: !!investmentResult,
+
+  const {
+    data: investmentInfo,
+    isLoading,
+    isError: isQrError,
+    error: qrError,
+  } = useQuery({
+    queryKey: [getInvestmentQrCode.name, investmentResult?.qr_code.id],
+    queryFn: investmentResult?.qr_code.id
+      ? () => getInvestmentQrCode(investmentResult?.qr_code.id)
+      : skipToken,
   });
 
   useEffect(() => {
+    console.log("useEffect");
     if (!hasMutated.current && !!data && currentTab) {
       invest(data);
-      hasMutated.current = false;
+      hasMutated.current = true;
     }
 
     return () => {
       hasMutated.current = false;
     };
-  }, [currentTab, data, invest]);
+  }, [currentTab, data]);
 
   useEffect(() => {
     if (isError) setShowSnack(true);
   }, [isError]);
 
-  console.log(JSON.stringify(error?.response?.data, null, 2));
-
   if (isLoading || isPending) return <LoadingComp />;
 
   return (
     <View style={styles.container}>
-      {isError ? (
+      {isError || isQrError ? (
         <View style={styles.error}>
           <Text style={styles.congrats}>Ops! Algo deu errado...</Text>
           <Text style={styles.title}>Tente novamente mais tarde.</Text>
@@ -91,9 +97,7 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
               <Text style={styles.rowTitle}>Valor</Text>
               <Text style={styles.rowValue}>
                 R${" "}
-                {CommonMask.currency(
-                  ((investmentInfo?.value || 0) / 100).toString()
-                )}
+                {CommonMask.currency((investmentInfo?.value || 0).toString())}
               </Text>
             </View>
             <Divider />

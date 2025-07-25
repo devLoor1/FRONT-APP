@@ -155,7 +155,7 @@ export const useCustomStyles = () => {
       fontFamily: theme.fonts.bold,
     },
     footer: {
-      paddingBottom: 10,
+      paddingBottom: 16,
       paddingHorizontal: 16,
       paddingTop: 16,
     },

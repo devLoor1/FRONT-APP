@@ -28,7 +28,6 @@ export const getInvestments = async (params: OpportunitiesRequest) => {
 };
 
 export const postInvestments = async (data: InvestmentRequest) => {
-  console.log(data);
   const response = await api.post<InvestmentResponse>(
     "/investors/investments",
     data
@@ -37,10 +36,10 @@ export const postInvestments = async (data: InvestmentRequest) => {
 };
 
 export const getInvestmentQrCode = async (investmentId: number) => {
+  console.log("qr");
   const response = await api.get<InvestmentQrCodeResponse>(
     `/investors/qr-codes/${investmentId}`
   );
-
   return response.data.data;
 };
 

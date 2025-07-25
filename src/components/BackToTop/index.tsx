@@ -11,6 +11,7 @@ import ArrowIcon from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
 import Animated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import { Portal } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BackPageType = {
   listRef?: React.RefObject<FlatList<any> | SectionList<any> | null>;
@@ -21,6 +22,7 @@ type BackPageType = {
 const AnimatedPressable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function BackToTop({ listRef, scrollRef, mb }: BackPageType) {
+  const { bottom } = useSafeAreaInsets();
   const moveToTop = () => {
     if (scrollRef?.current) {
       scrollRef.current.scrollTo({ animated: true, y: 0 });
@@ -36,7 +38,7 @@ export default function BackToTop({ listRef, scrollRef, mb }: BackPageType) {
     toUpBtn: {
       position: "absolute",
       right: 36,
-      bottom: mb ?? 8,
+      bottom: (mb ?? 0) + bottom,
       width: 36,
       height: 36,
       borderRadius: 36,
