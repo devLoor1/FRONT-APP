@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build-development": "eas build -e development",
+    "build-preview": "eas build -e preview",
+    "build-production": "eas build -e production"
   },
   "dependencies": {
     "@expo-google-fonts/nunito-sans": "^0.4.1",
@@ -20,7 +23,6 @@
     "@tanstack/react-query": "^5.81.5",
     "axios": "^1.10.0",
     "axios-auth-refresh": "^3.3.6",
-    "clevertap-react-native": "^3.5.0",
     "expo": "53.0.18",
     "expo-analytics": "^1.0.18",
     "expo-camera": "~16.1.10",
