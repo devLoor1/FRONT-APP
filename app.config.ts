@@ -1,85 +1,92 @@
-import { ConfigContext, ExpoConfig } from '@expo/config';
-import 'dotenv/config';
-import moment from 'moment';
-import * as environment from './src/environments/environment.json';
+import { ConfigContext, ExpoConfig } from "@expo/config";
+import "dotenv/config";
+import moment from "moment";
+import * as environment from "./src/environments/environment.json";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  
-  let envVars =
-      process.env.ENV == 'PROD'
-      ? environment.prod
-      : environment.dev;
+  let envVars = process.env.ENV == "PROD" ? environment.prod : environment.dev;
 
   envVars = {
     ...environment.base,
-    ...envVars
+    ...envVars,
   };
 
   return {
-    'name': 'Loor',
-    'slug': 'app-loor-investor',
-    'version': '1.0.0',
-    'scheme': 'loor',
-    'orientation': 'portrait',
-    'icon': './assets/icons/icon-loor-v2.png',
-    'userInterfaceStyle': 'light',
-    'newArchEnabled': true,
-    'splash': {
-      'image': './assets/splash-loor.png',
-      'resizeMode': 'contain',
-      'backgroundColor': '#F8F9FB'
+    name: "Loor",
+    slug: "app-loor-investor",
+    version: "1.0.0",
+    scheme: "loor",
+    orientation: "portrait",
+    icon: "./assets/icons/icon.png",
+    userInterfaceStyle: "light",
+    newArchEnabled: true,
+    splash: {
+      image: "./assets/icons/splash-icon-light.png",
+      resizeMode: "contain",
+      backgroundColor: "#FAFAFA",
     },
-    'ios': {
-      'supportsTablet': true,
-      'bundleIdentifier': 'vc.loor.investor',
-      'infoPlist': {
-        'ITSAppUsesNonExemptEncryption': false,
-        "NSFaceIDUsageDescription": "A Loor pode utilizar o Face ID / Touch ID para autenticar você e simplificar a sua experiência.",
-        "NSLocationAlwaysUsageDescription": "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
-        "NSLocationWhenInUseUsageDescription": "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
-        "NSCameraUsageDescription": "A Loor pode utilizar a câmera para validação de documentação."
-      }
-    },
-    'android': {
-      'adaptiveIcon': {
-        'foregroundImage': './assets/icons/icon-adaptive.png',
-        'backgroundColor': '#ffffff'
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "vc.loor.investor",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+        NSFaceIDUsageDescription:
+          "A Loor pode utilizar o Face ID / Touch ID para autenticar você e simplificar a sua experiência.",
+        NSLocationAlwaysUsageDescription:
+          "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
+        NSLocationAlwaysAndWhenInUseUsageDescription:
+          "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
+        NSLocationWhenInUseUsageDescription:
+          "A Loor utiliza a sua localização para o sistema antifraude e garantir a segurança da sua conta.",
+        NSCameraUsageDescription:
+          "A Loor pode utilizar a câmera para validação de documentação.",
       },
-      'edgeToEdgeEnabled': true,
-      'package': 'vc.loor.investor'
+      icon: {
+        dark: "./assets/ios-dark.png",
+        light: "./assets/ios-light.png",
+        tinted: "./assets/ios-tinted.png",
+      },
     },
-    'web': {
-      'favicon': './assets/favicon.png'
+    android: {
+      icon: "./assets/icons/adaptive-icon.png",
+      adaptiveIcon: {
+        foregroundImage: "./assets/icons/adaptive-icon.png",
+        monochromeImage: "./assets/icons/monochrome-icon.png",
+        backgroundColor: "#ffffff",
+      },
+      edgeToEdgeEnabled: true,
+      package: "vc.loor.investor",
     },
-    'plugins': [
-      'expo-secure-store',
-      'expo-notifications',
-      '@logrocket/react-native',
+    web: {
+      favicon: "./assets/favicon.png",
+    },
+    plugins: [
+      "expo-secure-store",
+      "expo-notifications",
+      "@logrocket/react-native",
       [
-        'expo-build-properties',
+        "expo-build-properties",
         {
-          'android': {
-            'minSdkVersion': 25,
-            'ndkVersion': '27.2.12479018'
-          }
-        }
-      ]
+          android: {
+            minSdkVersion: 25,
+            ndkVersion: "27.2.12479018",
+          },
+        },
+      ],
     ],
-    'owner': 'loor-investimentos',
-    'runtimeVersion': {
-      'policy': 'appVersion'
+    owner: "loor-investimentos",
+    runtimeVersion: {
+      policy: "appVersion",
     },
-    'updates': {
-      'url': 'https://u.expo.dev/d334ba17-8f78-4e6e-aa0e-2c8d3028fd3e'
+    updates: {
+      url: "https://u.expo.dev/d334ba17-8f78-4e6e-aa0e-2c8d3028fd3e",
     },
-    'extra': {
-      'env': envVars,
-      'version': moment.utc().format('YYYYMMDD-HHmm'),
-      'eas': {
-        'projectId': 'd334ba17-8f78-4e6e-aa0e-2c8d3028fd3e'
-      }
-    }
+    extra: {
+      env: envVars,
+      version: moment.utc().format("YYYYMMDD-HHmm"),
+      eas: {
+        projectId: "d334ba17-8f78-4e6e-aa0e-2c8d3028fd3e",
+      },
+    },
   };
-
 };
