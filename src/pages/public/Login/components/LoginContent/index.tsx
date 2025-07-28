@@ -3,14 +3,13 @@ import { Text, TouchableOpacity, View, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
 import Input from "@/components/Input";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import CommonValidators from "@/helpers/validators/common.validators";
 import { postLogin } from "@/services/auth";
 import { PublicNavigation } from "@/models/routes/navigation.public";
-import { reset, setLoginData } from "@/redux/reducers/auth";
+import { setLoginData, fetchUserData } from "@/redux/reducers/auth";
 import { Analytics, handleAnalyticsUserProfile } from "@/helpers/analytics";
 import Version from "@/helpers/version/version";
-import NeedHelp from "@/components/NeedHelp";
 import { useTheme } from "@/context/MyThemeContext";
 import Logo from "@/../assets/newSvgs/LogoClaro.svg";
 import BtnDefault from "@/components/BtnDefault";
@@ -19,9 +18,12 @@ import Snack from "@/components/Snack";
 import EyeIcon from "@/../assets/newSvgs/icons/visibility.svg";
 import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import { useMutation } from "@tanstack/react-query";
+import api from "@/services/api";
+import AuthStorage from "@/storages/auth-storage";
 
 export default function LoginContent() {
   const { theme } = useTheme();
+  const { isAuthenticated, loadingUser } = useAppSelector((state) => state.auth);
 
   const styles = useCustomStyles();
   const [hidePassword, setHidePassword] = useState(true);
@@ -90,7 +92,16 @@ export default function LoginContent() {
 
   useEffect(() => {
     if (data) {
+      // Configurar token na API
+      const { token } = data.data;
+      api.defaults.headers.Authorization = `Bearer ${token}`;
+      AuthStorage.SetPrivateToken(token);
+      
+      // Salvar dados no Redux (será persistido automaticamente)
       dispatch(setLoginData(data));
+      
+      // Buscar dados do usuário
+      dispatch(fetchUserData());
     }
   }, [data, dispatch]);
 
@@ -160,8 +171,8 @@ export default function LoginContent() {
           <Text style={styles.forgotTxt}>Esqueci minha senha</Text>
         </TouchableOpacity>
         <BtnDefault
-          label={loading ? "Entrando..." : "Entrar"}
-          disabled={loading || !isFormValid}
+          label={loading || loadingUser ? "Entrando..." : "Entrar"}
+          disabled={loading || loadingUser || !isFormValid}
           onPress={() => {
             handleAnalyticsUserProfile("signOut", {});
             Analytics({ eventName: "HomeLogin_Entrar" });
@@ -187,19 +198,12 @@ export default function LoginContent() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{ alignItems: "center" }}>
-          <NeedHelp
-            marginTop={80}
-            onPress={() => Analytics({ eventName: "HomeLogin_PrecisaDeAjuda" })}
-          />
-        </View>
       </View>
       <Text style={styles.version}>Versão {Version()}</Text>
       <Snack
         visible={showSnack}
         txt={snackMessage}
         setShowSnack={setShowSnack}
-        reset={reset}
         type="error"
         duration={5000}
       />

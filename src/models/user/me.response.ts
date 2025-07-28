@@ -8,7 +8,7 @@ export type Me = {
   phone: string;
   type: string;
   account_validation_status: string;
-  reason_for_deny: null;
+  reason_for_deny: string | null;
   has_completed_personal_information: boolean;
   investor_profile: InvestorProfile;
   face_match: FaceMatch;

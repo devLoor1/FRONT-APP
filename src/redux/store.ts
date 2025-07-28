@@ -1,25 +1,36 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from "./reducers/auth";
 import authBiometric from "./reducers/authBiometric";
 import user from "./reducers/user";
-import forget from "./reducers/forget";
-import register from "./reducers/register";
-import lead from "./reducers/lead";
 import error from "./reducers/errorState";
-// import { logoutMiddleware } from './middlewares/logout';
+
+// Configuração do persist para o reducer de autenticação
+const authPersistConfig = {
+  key: 'auth',
+  storage: AsyncStorage,
+  whitelist: ['isAuthenticated', 'token', 'personalInformationFilled', 'user'], // Persiste apenas estes campos
+};
+
+const persistedAuthReducer = persistReducer(authPersistConfig, auth);
 
 const store = configureStore({
   reducer: {
-    auth,
+    auth: persistedAuthReducer,
     authBiometric,
     user,
-    forget,
-    register,
-    lead,
     error,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
 });
+
+export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

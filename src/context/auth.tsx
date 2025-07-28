@@ -7,187 +7,141 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { GetUserPicture, GetUserStatus } from "@/services/user";
-import { GetPublicTerms, GetPublicToken, GetRisks } from "@/services/common";
-import { reset } from "@/redux/reducers/user";
-import * as resetAuth from "@/redux/reducers/auth";
-import { setUser as setAuthUser } from "@/redux/reducers/user";
-import { hasAuth } from "@/helpers/auth/biometry";
-import { ValidateBiometric } from "@/services-old/authBiometric";
-import { resetBiometric } from "@/redux/reducers/authBiometric";
-import DoBiometryValidation from "@/helpers/auth/doBiometry";
-// import SecureStorage from '@/storages/secure-storage';
-import { GetProfileStatus } from "@/services-old/investorProfile";
-import { UserType } from "@/models-old/types/User";
-import { Platform } from "react-native";
+import { logout, fetchUserData } from "@/redux/reducers/auth";
+import { fetchPersonalInformation } from "@/redux/reducers/user";
+import { postLogout } from "@/services/auth";
+import { useMutation } from "@tanstack/react-query";
+import api from "@/services/api";
+import AuthStorage from "@/storages/auth-storage";
 import { handleAnalyticsUserProfile } from "@/helpers/analytics";
-// import * as SecureStore from 'expo-secure-store';
+import { Platform } from "react-native";
 
 interface AuthContextData {
-  user: UserType | null;
-  onSignOut(): void;
-  onSignIn(): Promise<void>;
-  loadingSingIn: string;
-  enableAuth: boolean;
-  logoutMsg: string;
+  // Device Token (para autenticação biométrica e identificação do dispositivo)
   deviceToken: string;
-  setDeviceToken: React.Dispatch<React.SetStateAction<string>>;
+  setDeviceToken: (token: string) => Promise<void>;
+  
+  // Logout
+  onSignOut: () => Promise<void>;
+  logoutLoading: boolean;
+  
+  // Estado de autenticação
+  enableAuth: boolean;
+  setEnableAuth: (enabled: boolean) => void;
+  
+  // Estado de verificação inicial
+  isInitializing: boolean;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
+const DEVICE_TOKEN_KEY = "@WiseInvestor:deviceToken";
+const ENABLE_AUTH_KEY = "@WiseInvestor:enableAuth";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [loadingSignIn, setloadingSignIn] = useState("");
-  const [enableAuth, setEnableAuth] = useState(false);
-  const [logoutMsg, setLogoutMsg] = useState("");
-  const [deviceToken, setDeviceToken] = useState<string>("");
   const dispatch = useAppDispatch();
+  const [deviceToken, setDeviceTokenState] = useState<string>("");
+  const [enableAuth, setEnableAuthState] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+
   const {
-    userStatus,
-    userStatusError,
-    user: _user,
-  } = useAppSelector((state) => state.user);
-  const { succesBiometry } = useAppSelector((state) => state.authBiometric);
+    mutateAsync: logoutMutation,
+    isPending: logoutLoading,
+  } = useMutation({
+    mutationKey: [postLogout.name],
+    mutationFn: postLogout,
+  });
 
-  async function onSignIn() {
-    setloadingSignIn("Carregando perfil...");
-    await dispatch(GetUserStatus(deviceToken));
-    await dispatch(GetProfileStatus());
-    await dispatch(GetUserPicture());
-  }
-
-  async function clearStates() {
-    dispatch(resetAuth.reset());
-    dispatch(reset());
-    dispatch(
-      setAuthUser({
-        logged: false,
-      })
-    );
-    await dispatch(GetPublicToken());
-    setloadingSignIn("");
-  }
-
-  function onSignOut() {
-    dispatch(resetAuth.reset());
-    AsyncStorage.clear();
-    clearStates();
-    dispatch(
-      setAuthUser({
-        logged: false,
-      })
-    );
-    if (Platform.OS !== "ios") {
-      AsyncStorage.getAllKeys()
-        .then(AsyncStorage.multiRemove)
-        .then(() => {
-          clearStates();
-        });
-    }
-    handleAnalyticsUserProfile("signOut", {});
-  }
-
+  // Verificar autenticação ao iniciar o app
   useEffect(() => {
-    if (userStatus) {
-      (async () => {
-        await dispatch(
-          setAuthUser({
-            name: userStatus.valueFields.name,
-            email: userStatus.valueFields.email,
-            cellphone: userStatus.valueFields.cellphone || "",
-            balance: userStatus.valueFields.balance || null,
-            balanceBonus: userStatus.valueFields.balanceBonus || 0,
-            balanceTot:
-              userStatus.valueFields.balanceBonus +
-                userStatus.valueFields.balance || 0,
-            logged: true,
-          })
-        );
-        await setloadingSignIn("");
-      })();
-    }
-  }, [userStatus]);
+    const checkAuthOnStart = async () => {
+      try {
+        setIsInitializing(true);
+        
+        // Carregar dados salvos
+        const [storedToken, storedEnableAuth] = await Promise.all([
+          AsyncStorage.getItem(DEVICE_TOKEN_KEY),
+          AsyncStorage.getItem(ENABLE_AUTH_KEY),
+        ]);
 
-  useEffect(() => {
-    // TODO refatorar para remover o acesso ao usuário do contexto e acessá-lo somente pelo reducer
-    setUser(_user);
-  }, [dispatch, _user]);
-
-  useEffect(() => {
-    if (userStatusError) {
-      onSignOut();
-      setloadingSignIn("");
-    }
-  }, [userStatusError]);
-
-  useEffect(() => {
-    // onSingOut();
-    // SecureStore.deleteItemAsync('LoorInvestorSecure_investBiometry');
-    // SecureStore.deleteItemAsync('LoorInvestorSecure_loginBiometry');
-    (async () => {
-      /* try {
-        await dispatch(GetPublicToken());
-        await dispatch(GetRisks());
-        await dispatch(GetPublicTerms());
-        await setloadingSignIn("Carregando fontes...");
-        const auth = await hasAuth();
-        const verifyAuth = await DoBiometryValidation();
-
-        if (auth) {
-          setEnableAuth(auth);
+        if (storedToken) {
+          setDeviceTokenState(storedToken);
         }
 
-        if (verifyAuth === true) {
-          await setloadingSignIn("Carregando perfil...");
-          dispatch(
-            ValidateBiometric({
-              authenticationType: "FacialRecognition",
-              isChangeBiometry: false,
-              operation: "Login",
-              deviceToken,
-            })
-          );
-        } else {
-          if (verifyAuth !== false) {
-            setLogoutMsg(verifyAuth);
+        if (storedEnableAuth) {
+          setEnableAuthState(storedEnableAuth === "true");
+        }
+
+        // Se há token no Redux (persistido), configurar na API
+        if (token) {
+          api.defaults.headers.Authorization = `Bearer ${token}`;
+          await AuthStorage.SetPrivateToken(token);
+          
+          // Buscar dados do usuário se não estiver autenticado
+          if (!isAuthenticated) {
+            await dispatch(fetchUserData());
+            // Também buscar dados pessoais
+            await dispatch(fetchPersonalInformation());
           }
-          onSignOut();
-          setloadingSignIn("");
         }
       } catch (error) {
-        console.log("Error", error);
-        onSignOut();
-      } */
-    })();
+        console.error("Erro ao verificar autenticação:", error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    checkAuthOnStart();
   }, []);
 
-  useEffect(() => {
-    if (logoutMsg) {
-      setTimeout(() => {
-        setLogoutMsg("");
-      }, 3000);
-    }
-  }, [logoutMsg]);
+  const setDeviceToken = async (token: string) => {
+    setDeviceTokenState(token);
+    await AsyncStorage.setItem(DEVICE_TOKEN_KEY, token);
+  };
 
-  useEffect(() => {
-    if (succesBiometry && !user?.logged) {
-      onSignIn();
-      dispatch(resetBiometric());
+  const setEnableAuth = async (enabled: boolean) => {
+    setEnableAuthState(enabled);
+    await AsyncStorage.setItem(ENABLE_AUTH_KEY, enabled.toString());
+  };
+
+  async function onSignOut() {
+    try {
+      // Chamar o serviço de logout
+      await logoutMutation();
+    } catch (error) {
+      console.error("Erro no logout:", error);
+      // Mesmo se falhar, continuar com o logout local
+    } finally {
+      // Limpar dados locais
+      await AsyncStorage.clear();
+      dispatch(logout());
+      
+      // Limpar headers da API
+      delete api.defaults.headers.Authorization;
+      
+      if (Platform.OS !== "ios") {
+        AsyncStorage.getAllKeys()
+          .then(AsyncStorage.multiRemove)
+          .then(() => {
+            dispatch(logout());
+          });
+      }
+      
+      handleAnalyticsUserProfile("signOut", {});
     }
-  }, [succesBiometry]);
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        loadingSingIn: loadingSignIn,
-        user,
-        onSignIn,
-        onSignOut,
-        enableAuth,
-        logoutMsg,
         deviceToken,
         setDeviceToken,
+        onSignOut,
+        logoutLoading,
+        enableAuth,
+        setEnableAuth,
+        isInitializing,
       }}
     >
       {children}
@@ -197,6 +151,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+  }
 
   return context;
 }

@@ -21,6 +21,8 @@ export type RootStackParamList = {
     opportunityId: OpportunitiesResponse["data"][0]["id"];
     quotasRoute?: number;
   };
+  Refused: undefined;
+  DailySummary: undefined;
 
   // TermsPage: undefined;
   // Excerpt: undefined;
@@ -48,10 +50,8 @@ export type RootStackParamList = {
   // Caf: {
   //   routeConfig?: boolean;
   // };
-  // Refused: undefined;
   // Profile: undefined;
   // ProfilePicture: undefined;
-  // DailySummary: undefined;
   // InvestmentDetail: {
   //   investment: InvestimentsResponse[0];
   // };

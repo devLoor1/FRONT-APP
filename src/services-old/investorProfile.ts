@@ -4,7 +4,6 @@ import { AnswerRequest } from '@/models-old/Investor/answer.request';
 import { ProfileStatusResponse } from '@/models-old/Investor/profileStatus.response';
 import { QuestionResponse } from '@/models-old/Investor/question.response';
 
-// eslint-disable-next-line import/prefer-default-export
 export const GetProfileStatus = createAsyncThunk('investor/status', async () => {
   const response = await api
     .get(`/member/suitability/status/v2`)

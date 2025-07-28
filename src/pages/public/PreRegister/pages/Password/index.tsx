@@ -11,7 +11,6 @@ import { Analytics } from "@/helpers/analytics";
 import { postRegister } from "@/services/auth";
 import { RegisterRequest } from "@/models/auth/register.request";
 import { useCustomStyles } from "../../style";
-import { reset } from "@/redux/reducers/register";
 
 type Props = {
   readonly registerPayload: RegisterRequest;
@@ -112,7 +111,6 @@ export default function Password({ registerPayload, onComplete }: Props) {
         visible={showSnack}
         txt={snackMessage}
         setShowSnack={setShowSnack}
-        reset={reset}
         type="error"
         duration={5000}
       />

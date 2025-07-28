@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getOpportunities } from "@/services/opportunities";
 import BackToTop from "@/components/BackToTop";
 import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
-import { GetUserStatus } from "@/services/user";
+
 import { Analytics } from "@/helpers/analytics";
 import { useAuth } from "@/context/auth";
 import { useTheme } from "@/context/MyThemeContext";

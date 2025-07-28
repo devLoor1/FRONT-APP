@@ -10,7 +10,6 @@ import { useNavigation } from "@react-navigation/native";
 import { postRecover } from "@/services/auth";
 import { useMutation } from "@tanstack/react-query";
 import Snack from "@/components/Snack";
-import { reset } from "@/redux/reducers/forget";
 
 type GeneralProps = {
   readonly onSuccess: () => void;
@@ -108,7 +107,6 @@ export default function GeneralPage({ onSuccess }: GeneralProps) {
         visible={showSnack}
         txt={snackMessage}
         setShowSnack={setShowSnack}
-        reset={reset}
         type="error"
         duration={5000}
       />

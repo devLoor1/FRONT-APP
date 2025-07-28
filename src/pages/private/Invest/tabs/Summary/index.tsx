@@ -25,7 +25,7 @@ import BtnDefault from "@/components/BtnDefault";
 import { getOpportunity } from "@/services/opportunities";
 import LoadingComp from "@/components/Loading";
 import { getInvestmentContract } from "@/services/investments";
-import { getPersonalInfo } from "@/services/user";
+import { getPersonalInformation } from "@/services/user";
 import ModalDefault from "@/components/ModalDefault";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
@@ -67,8 +67,8 @@ const Summary: React.FC<SumamryProps> = ({
     mutationFn: getInvestmentContract,
   });
   const { data: personalInfo, isLoading } = useQuery({
-    queryKey: [getPersonalInfo.name],
-    queryFn: getPersonalInfo,
+    queryKey: [getPersonalInformation.name],
+    queryFn: getPersonalInformation,
   });
 
   const saveReportFile = async (base64pdf: any) => {

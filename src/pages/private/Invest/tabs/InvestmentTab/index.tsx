@@ -22,7 +22,6 @@ import { Checkbox } from "react-native-paper";
 import InvestorProfileBottom from "../../components/InvestorProfile";
 import { SceneRendererProps } from "react-native-tab-view";
 import { getOpportunity } from "@/services/opportunities";
-import { getMe } from "@/services/auth";
 import { useQuery } from "@tanstack/react-query";
 import { InvestmentRequest } from "@/models/investments/investment.request";
 
@@ -42,7 +41,7 @@ const InvestmentTab: React.FC<
   const [anonymous, setAnonymous] = useState(false);
   const [subtractDisabled, setSubtractDisabled] = useState(false);
   // const maxQuota = opportunity.qtdTotalCotas / 2;
-  const loginData = useAppSelector((state) => state.auth.loginData.data);
+  const { user, personalInformationFilled } = useAppSelector((state) => state.auth);
   const refRBSheet = useRef<RBSheetRef>(null);
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState("");
@@ -53,11 +52,6 @@ const InvestmentTab: React.FC<
     queryKey: [getOpportunity.name, opportunityId],
     queryFn: () => getOpportunity(opportunityId),
     enabled: !!opportunityId,
-  });
-
-  const { data: me, isLoading: loadingMe } = useQuery({
-    queryKey: [getMe.name],
-    queryFn: getMe,
   });
 
   useEffect(() => {
@@ -311,12 +305,12 @@ const InvestmentTab: React.FC<
       </ScrollView>
 
       <View style={styles.footer}>
-        {!!loginData?.personal_information_filled && (
+        {!!personalInformationFilled && (
           <BtnDefault
             label="Salvar e avançar"
             onPress={() => {
               if (
-                me?.investor_profile.title !==
+                user?.investor_profile.title !==
                 opportunity?.investor_profile.title
               ) {
                 refRBSheetInvestorProfile.current?.open();
@@ -345,7 +339,7 @@ const InvestmentTab: React.FC<
         )}
       </View>
       <InvestorProfileBottom
-        investorProfile={me?.investor_profile}
+        investorProfile={user?.investor_profile}
         refRBSheet={refRBSheetInvestorProfile}
         handleContinue={handleOnNext}
       />

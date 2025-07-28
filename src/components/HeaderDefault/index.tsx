@@ -1,11 +1,8 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 import { useCustomStyles } from "./style";
 import ArrowBack from "@/../assets/newSvgs/icons/keyboard_arrow_left.svg";
 import { useNavigation } from "@react-navigation/native";
-import FAQIcon from "@/../assets/newSvgs/icons/help.svg";
-import HelpIcon from "@/../assets/newSvgs/icons/forum.svg";
-import { Text, View } from "react-native";
 import { useTheme } from "@/context/MyThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -13,22 +10,18 @@ import { RootStackParamList } from "@/models/routes/navigation.private";
 import { Analytics } from "@/helpers/analytics";
 
 type HeaderProps = {
-  title?: string;
-  back?: boolean;
-  help?: boolean;
-  contact?: boolean;
-  analytics?: string;
+  readonly title?: string;
+  readonly back?: boolean;
+  readonly analytics?: string;
   onPressBack?: () => void;
 };
 
 export default function HeaderDefault({
   title,
   back,
-  help,
-  contact,
   analytics,
   onPressBack,
-}: HeaderProps) {
+}: Readonly<HeaderProps>) {
   const { theme } = useTheme();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useCustomStyles();
@@ -54,37 +47,6 @@ export default function HeaderDefault({
             {title && <Text style={styles.title}>{title}</Text>}
           </TouchableOpacity>
         )}
-
-        <View style={styles.iconList}>
-          {help && (
-            <TouchableOpacity
-              onPress={() => {
-                Analytics({ eventName: `${analytics}_PrecisaDeAjuda` });
-                nav.navigate("FAQ");
-              }}
-            >
-              <FAQIcon
-                width={24}
-                height={24}
-                color={theme.customColors.baseWhite}
-              />
-            </TouchableOpacity>
-          )}
-          {contact && (
-            <TouchableOpacity
-              onPress={() => {
-                Analytics({ eventName: `${analytics}_Contato` });
-                nav.navigate("Contact");
-              }}
-            >
-              <HelpIcon
-                color={theme.customColors.baseWhite}
-                width={24}
-                height={24}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
       </View>
     </SafeAreaView>
   );

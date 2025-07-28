@@ -7,11 +7,11 @@ import LockOpen from '@/../assets/newSvgs/icons/lock_open.svg';
 import Finger from '@/../assets/newSvgs/icons/Biometria.svg';
 import SecureStorage from '@/storages/secure-storage';
 import BottomSheet from '@/components/BottomSheet';
-import { useAuth } from '@/context/auth';
 import { Analytics } from '@/helpers/analytics';
 import { useAppDispatch } from '@/redux/hooks';
 import { setLoginData } from '@/redux/reducers/auth';
 import { postLogin } from '@/services/auth';
+import { useMutation } from '@tanstack/react-query';
 
 type Props = {
   readonly refRBSheet: any;
@@ -21,8 +21,15 @@ type Props = {
 export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
-  const { onSignIn } = useAuth();
   const dispatch = useAppDispatch();
+
+  const {
+    mutateAsync: loginMutation,
+    isPending: loading,
+  } = useMutation({
+    mutationKey: [postLogin.name],
+    mutationFn: postLogin,
+  });
 
   async function setStorage(status: boolean) {
     try {
@@ -36,20 +43,24 @@ export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
         const password = await AsyncStorage.getItem("userPasswordLogin");
 
         if (email && password) {
-          const loginResponse = await postLogin({
-            email: email,
-            password: password,
-          });
+          try {
+            const loginResponse = await loginMutation({
+              email: email.toLowerCase(),
+              password: password,
+            });
 
-          dispatch(setLoginData(loginResponse));
-          await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
+            dispatch(setLoginData(loginResponse));
+            await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
+          } catch (error) {
+            console.error("Erro no login automático:", error);
+          }
         }
       }
 
-      onSignIn();
+      onClose();
     } catch (error) {
       console.error("Erro ao configurar autenticação:", error);
-      onSignIn();
+      onClose();
     }
   }
 
@@ -70,16 +81,20 @@ export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
             Analytics({ eventName: 'TABAutenticacao_Habilitar' });
             setStorage(true);
           }}
-          style={styles.enableBtn}>
+          style={styles.enableBtn}
+          disabled={loading}>
           <Finger width={24} color={theme.customColors.secondary.default} />
-          <Text style={styles.enableBtnTxt}>Habilitar autenticação automática</Text>
+          <Text style={styles.enableBtnTxt}>
+            {loading ? 'Habilitando...' : 'Habilitar autenticação automática'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             Analytics({ eventName: 'TABAutenticacao_NaoHabilitar' });
             setStorage(false);
           }}
-          style={styles.disableBtn}>
+          style={styles.disableBtn}
+          disabled={loading}>
           <Text style={styles.disableBtnTxt}>Não habilitar login automático</Text>
         </TouchableOpacity>
       </View>

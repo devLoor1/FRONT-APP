@@ -1,49 +1,107 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { getMe } from '@/services/user';
+import { Me } from '@/models/user/me.response';
 
 interface AuthState {
-  loginData: any | null;
+  // Estado de autenticação
+  isAuthenticated: boolean;
+  token: string | null;
+  personalInformationFilled: boolean;
+  
+  // Dados do usuário
+  user: Me | null;
+  
+  // Estados de loading
   loading: boolean;
-  requestError: string | null;
-  succesGetCode: boolean;
-  loginError: string | null;
+  loadingUser: boolean;
+  
+  // Estados de erro
+  error: string | null;
 }
 
 const initialState: AuthState = {
-  loginData: null,
+  isAuthenticated: false,
+  token: null,
+  personalInformationFilled: false,
+  user: null,
   loading: false,
-  requestError: null,
-  succesGetCode: false,
-  loginError: null,
+  loadingUser: false,
+  error: null,
 };
+
+// Thunk para buscar dados do usuário
+export const fetchUserData = createAsyncThunk(
+  'auth/fetchUserData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const userData = await getMe();
+      return userData;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Erro ao buscar dados do usuário');
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     setLoginData: (state, action: PayloadAction<any>) => {
-      state.loginData = action.payload;
+      const { token, personal_information_filled } = action.payload.data;
+      state.token = token;
+      state.personalInformationFilled = personal_information_filled === 1;
+      state.isAuthenticated = true;
+      state.error = null;
+    },
+    setUserData: (state, action: PayloadAction<Me>) => {
+      state.user = action.payload;
+      state.loadingUser = false;
+      state.error = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setRequestError: (state, action: PayloadAction<string | null>) => {
-      state.requestError = action.payload;
+    setLoadingUser: (state, action: PayloadAction<boolean>) => {
+      state.loadingUser = action.payload;
     },
-    setSuccesGetCode: (state, action: PayloadAction<boolean>) => {
-      state.succesGetCode = action.payload;
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
-    setLoginError: (state, action: PayloadAction<string | null>) => {
-      state.loginError = action.payload;
-    },
-    reset: (state) => {
-      state.loginData = null;
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.token = null;
+      state.personalInformationFilled = false;
+      state.user = null;
       state.loading = false;
-      state.requestError = null;
-      state.succesGetCode = false;
-      state.loginError = null;
+      state.loadingUser = false;
+      state.error = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUserData.pending, (state) => {
+        state.loadingUser = true;
+        state.error = null;
+      })
+      .addCase(fetchUserData.fulfilled, (state, action) => {
+        state.loadingUser = false;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchUserData.rejected, (state, action) => {
+        state.loadingUser = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const { setLoginData, setLoading, setRequestError, setSuccesGetCode, setLoginError, reset } = authSlice.actions;
+export const { 
+  setLoginData, 
+  setUserData, 
+  setLoading, 
+  setLoadingUser, 
+  setError, 
+  logout 
+} = authSlice.actions;
+
 export default authSlice.reducer;

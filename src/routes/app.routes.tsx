@@ -23,6 +23,7 @@ import OpportunitiesDetailPage from "@/pages/private/OpportunitiesDetail";
 // import { RootStackParamList } from '~/models/routes/navigation';
 import InvestPage from "@/pages/private/Invest";
 import RegisterPage from "@/pages/private/Register";
+import MenuPage from "@/pages/private/Menu";
 // import ProfilePage from '~/pages/private/Profile';
 // import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
 // import ProfilePicturePage from '~/pages/private/ProfilePicture';
@@ -54,6 +55,7 @@ export default function AppRoutes({
         component={RegisterPage}
         options={{ gestureEnabled: false }}
       />
+      <MainStack.Screen name="Menu" component={MenuPage} />
       <MainStack.Screen
         name="OpportunitiesDetail"
         component={OpportunitiesDetailPage}
@@ -71,7 +73,7 @@ export default function AppRoutes({
         component={InvestorProfilePage}
       />
       <MainStack.Screen name="FAQ" component={FaqPage} />
-      <MainStack.Screen name="Menu" component={MenuPage} />
+      
       <MainStack.Screen name="Pix" component={PixPage} />
       <MainStack.Screen name="Results" component={ResultsPage} />
       <MainStack.Screen name="Deposit" component={DepositPage} />

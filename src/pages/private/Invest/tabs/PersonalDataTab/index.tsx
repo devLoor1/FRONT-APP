@@ -7,14 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 
 import useCustomStyles from "./style";
-import { getPersonalInfo } from "@/services/user";
-import { PersonalInfo } from "@/models/user/personalInformation";
+import { getMe, getPersonalInformation } from "@/services/user";
+import { PersonalInformationResponse } from "@/models/user/personalInformation.response";
 import Input from "@/components/Input";
 import { getCountries } from "@/services/common";
 import Select from "@/components/Select";
 import CommonMask from "@/helpers/masks";
 import LoadingComp from "@/components/Loading";
-import { getMe } from "@/services/auth";
 import { Analytics } from "@/helpers/analytics";
 import BtnDefault from "@/components/BtnDefault";
 import { getOpportunityPix } from "@/services/opportunities";
@@ -59,7 +58,7 @@ function initValues<T extends AnyObject>(obj: T): T {
   return newObj;
 }
 
-export type PersonalDataForm = PersonalInfo & Me & { pix: OpportunityPix };
+export type PersonalDataForm = PersonalInformationResponse & Me & { pix: OpportunityPix };
 
 const defaultValues: PersonalDataForm = {
   // PersonalInfo
@@ -135,8 +134,8 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = (props) => {
     queryFn: getMe,
   });
   const { data: personalInfo, isLoading } = useQuery({
-    queryKey: [getPersonalInfo.name],
-    queryFn: getPersonalInfo,
+    queryKey: [getPersonalInformation.name],
+    queryFn: getPersonalInformation,
   });
   const { data: pix, isLoading: isLoadingPix } = useQuery({
     queryKey: [getOpportunityPix.name],

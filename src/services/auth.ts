@@ -5,18 +5,13 @@ import LogRocketHelper from "@/helpers/logRocket";
 import {
   AuthRequest,
   AuthResponse,
+  LogoutResponse,
   RecoverRequest,
   RecoverResponse,
   RegisterRequest,
 } from "@/models/auth";
-import { MeResponse } from "@/models/user/me.response";
 import AuthStorage from "@/storages/auth-storage";
 import { formatPersonType, formatPhone } from "@/utils/formatters";
-
-export const getMe = async () => {
-  const response = await api.get<MeResponse>("/auth/investor/me");
-  return response.data.data;
-};
 
 export const postRecover = async (request: RecoverRequest) => {
   const response = await api.post<RecoverResponse>(
@@ -41,6 +36,15 @@ export const postLogin = async (request: AuthRequest) => {
   await AuthStorage.SetPrivateToken(token);
 
   handleAnalyticsUserProfile("sigIn", { Identity: token });
+
+  console.log("AuthResponse:", response.data.data);
+  return response.data;
+};
+
+export const postLogout = async () => {
+  const response = await api.post<LogoutResponse>(
+    `/auth/investor/logout`
+  );
 
   return response.data;
 };

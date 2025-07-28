@@ -9,32 +9,27 @@ import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
 import { useTheme } from "@/context/MyThemeContext";
 import BackToTop from "@/components/BackToTop";
-// import ReferFriend from "@/components/ReferFriend";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardValues from "./components/CardValues";
 import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
-// import ReferIcon from "@/../assets/newSvgs/icons/featured_seasonal_and_gifts.svg";
-import Banner from "./components/Banner";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { getOpportunities } from "@/services/opportunities";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/models/routes/navigation.private";
 import ModalDefault from "@/components/ModalDefault";
-// import PromoComponent from './components/Promo';
 import InterestChart from "./components/InterestChart";
 import LoadingComp from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
 
 export default function WalletPage() {
-  const styles = useCustomStyles();
   const { theme } = useTheme();
+  const styles = useCustomStyles();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const refPage = useRef<ScrollView>(null);
   const [showToUp, setShowToUp] = useState(false);
-  const refRBSheet = useRef<any>(null);
   const bottomTabBarHeight = useBottomTabBarHeight();
-  const loginData = useAppSelector((state) => state.auth.loginData?.data);
+  const { personalInformationFilled } = useAppSelector((state) => state.auth);
   const [showModal, setShowModal] = useState(false);
   const {
     data: resume,
@@ -79,10 +74,6 @@ export default function WalletPage() {
     }
   }
 
-  // if (rDailySummary?.hasTransactions) {
-  // return <DailySummaryComp />;
-  // }
-
   return (
     <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
       <HeaderPhoto analytics="HomeApp" />
@@ -107,116 +98,54 @@ export default function WalletPage() {
         >
           <View style={styles.container}>
             {
-              /* userStatus?.status === "Aprovado" && !userStatus?.waitCaf */ loginData.personal_information_filled ===
-              1 ? (
+              personalInformationFilled && (
                 <>
-                  {/* <Navbar refRBSheet={refRBSheet} resume={resume} /> */}
-                  {/* <View
-                    style={[
-                      styles.titleContainer,
-                      { justifyContent: "space-between" },
-                    ]}
-                  >
-                    <Text style={styles.titleOpportunity}>Patrimônio</Text>
-                    <TouchableOpacity onPress={toogleBalance}>
-                      {showBalance ? (
-                        <EyeIcon
-                          width={18}
-                          height={18}
-                          color={theme.customColors.neutrals[500]}
-                        />
-                      ) : (
-                        <EyeOffIcon
-                          width={18}
-                          height={18}
-                          color={theme.customColors.neutrals[500]}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View> */}
                   <CardValues resume={resume} />
                   <InterestChart />
-                  {/* <PromoComponent refRBSheet={refRBSheet} /> */}
+                  <FlatList
+                    scrollEnabled={false}
+                    data={listOpportunities?.data}
+                    contentContainerStyle={{ gap: 8 }}
+                    keyExtractor={(item) => String(item.id)}
+                    ListHeaderComponent={
+                      <View style={[styles.titleContainer, { marginBottom: 0 }]}>
+                        <Text style={styles.titleOpportunity}>
+                          Oportunidades disponíveis
+                        </Text>
+                        <TouchableOpacity onPress={() => setShowModal(true)}>
+                          <InfoIcon
+                            color={theme.customColors.hyperlink}
+                            width={12}
+                            height={12}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    }
+                    renderItem={({ item }) => (
+                      <OpportunityNewCard white opportunity={item} />
+                    )}
+                    ListFooterComponent={
+                      <TouchableOpacity
+                        style={{ marginHorizontal: "auto" }}
+                        onPress={() => {
+                          Analytics({ eventName: "HomeApp_OportunidadeVejaMais" });
+                          nav.navigate("Tabs", { screen: "InvestTabs" });
+                        }}
+                      >
+                        <Text style={styles.moreTxt}>veja mais</Text>
+                      </TouchableOpacity>
+                    }
+                  />
                 </>
-              ) : (
-                <Banner />
               )
             }
-
-            <FlatList
-              scrollEnabled={false}
-              data={listOpportunities?.data}
-              contentContainerStyle={{ gap: 8 }}
-              keyExtractor={(item) => String(item.id)}
-              ListHeaderComponent={
-                <View style={[styles.titleContainer, { marginBottom: 0 }]}>
-                  <Text style={styles.titleOpportunity}>
-                    Oportunidades disponíveis
-                  </Text>
-                  <TouchableOpacity onPress={() => setShowModal(true)}>
-                    <InfoIcon
-                      color={theme.customColors.hyperlink}
-                      width={12}
-                      height={12}
-                    />
-                  </TouchableOpacity>
-                </View>
-              }
-              renderItem={({ item }) => (
-                <OpportunityNewCard white opportunity={item} />
-              )}
-              ListFooterComponent={
-                <TouchableOpacity
-                  style={{ marginHorizontal: "auto" }}
-                  onPress={() => {
-                    Analytics({ eventName: "HomeApp_OportunidadeVejaMais" });
-                    nav.navigate("Tabs", { screen: "InvestTabs" });
-                  }}
-                >
-                  <Text style={styles.moreTxt}>veja mais</Text>
-                </TouchableOpacity>
-              }
-            />
-
-            {loginData.personal_information_filled === 1 && (
-              <View style={{ marginTop: 24 }}>
-                {/* <TouchableOpacity
-                  style={styles.btnProfile}
-                  onPress={() => {
-                    Analytics({ eventName: "HomeApp_PerfilInvestidor" });
-                    nav.navigate("InvestorProfile");
-                  }}
-                >
-                  <View style={styles.btnIcon}>
-                    <ProfileIcon color={theme.customColors.baseWhite} />
-                  </View>
-                  <Text style={styles.btnTxt}>Perfil de Investidor</Text>
-                </TouchableOpacity> */}
-                {/* <TouchableOpacity
-                  style={styles.btnIndicate}
-                  onPress={() => {
-                    Analytics({ eventName: "HomeApp_IndiqueAmigo" });
-                    refRBSheet.current.open();
-                  }}
-                >
-                  <View style={styles.btnIcon}>
-                    <ReferIcon color={theme.customColors.baseWhite} />
-                  </View>
-                  <Text style={{ ...styles.btnTxt }}>
-                    Indique seus amigos e ganhe cashback
-                  </Text>
-                </TouchableOpacity> */}
-              </View>
-            )}
-
-            {/* <News /> */}
           </View>
         </ScrollView>
       )}
+
       {showToUp && (
         <BackToTop scrollRef={refPage} mb={bottomTabBarHeight / 2} />
       )}
-      {/* <ReferFriend refRBSheet={refRBSheet} /> */}
       <ModalDefault
         setVisible={setShowModal}
         visible={showModal}
