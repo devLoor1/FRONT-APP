@@ -42,9 +42,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           "A Loor pode utilizar a câmera para validação de documentação.",
       },
       icon: {
-        dark: "./assets/ios-dark.png",
-        light: "./assets/ios-light.png",
-        tinted: "./assets/ios-tinted.png",
+        dark: "./assets/icons/ios-dark.png",
+        light: "./assets/icons/ios-light.png",
+        tinted: "./assets/icons/ios-tinted.png",
       },
     },
     android: {
