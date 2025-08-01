@@ -12,7 +12,10 @@
     "build-production": "cross-env ENV=PROD eas build --profile production",
     "update-branch-development": "cross-env ENV=DEV eas update --branch development",
     "update-branch-preview": "cross-env ENV=PREVIEW eas update --branch preview",
-    "update-branch-production": "cross-env ENV=PROD eas update --branch production"
+    "update-branch-production": "cross-env ENV=PROD eas update --branch production",
+    "submit-development": "cross-env ENV=DEV eas submit",
+    "submit-preview": "cross-env ENV=PREVIEW eas submit",
+    "submit-production": "cross-env ENV=PROD eas submit"
   },
   "dependencies": {
     "@expo-google-fonts/nunito-sans": "^0.4.1",
