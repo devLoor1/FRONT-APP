@@ -18,6 +18,6 @@
     "basicAuth": "Basic RmpkMDlFYjU5akQzVXkzVUtxUmtpOkc5YmRYN0s3SzZPVGp2MGFKU1Z6Qg==",
     "publicScopesAuth": "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
     "publicGrantTypeAuth": "client_credentials",
-    "baseUrl": "https://boss-equity-api.herokuapp.com/"
+    "baseUrl": "https://api.loor.vc/"
   }
 }
