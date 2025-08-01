@@ -60,7 +60,7 @@ const initialState = {
   // Outros dados
   pixStatus: <PixAvailableResponse | null>null,
   paymentMethodStatus: <PaymentMethodAvailableResponse | null>null,
-  userStatus: <UserStatusResponse | null>null,
+  // userStatus: <UserStatusResponse | null>null,
   userHash: <GetHashResponse | null>null,
   storeAppVersion: <GetVersionResponse | null>null,
   listUserDetail: <UserDetailsResponse | null>null,

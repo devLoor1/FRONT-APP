@@ -1,11 +1,11 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "./api";
-import { CepResponse } from "@/models/register/cep.response";
+
 import { 
   MeResponse,
   PersonalInformationRequest, 
   PersonalInformationResponse 
 } from "@/models/user";
+
 
 export const getMe = async () => {
   const response = await api.get<MeResponse>("/auth/investor/me");
@@ -13,18 +13,47 @@ export const getMe = async () => {
 };
 
 export const getPersonalInformation = async () => {
-  const { data } = await api.get<{ data: PersonalInformationResponse }>(
-    "/investors/personal-information"
-  );
-  return data.data;
+  const response = await api.get<PersonalInformationResponse>("/investors/profile/personal-information");
+  return response.data;
 };
 
 export const postPersonalInformation = async (request: PersonalInformationRequest) => {
-  await api.post(
-    `/investors/profile/personal-information`,
+  console.log('request', request);
+  const response = await api.post<PersonalInformationResponse>(
+    "/investors/profile/personal-information",
     request
   );
+  return response.data;
 };
+
+export const submitFaceMatch = async (document: any, selfie: any) => {
+  const formData = new FormData();
+  
+  // Adicionar documento
+  const documentFileName = document.uri.split('/').pop();
+  formData.append('document', {
+    uri: document.uri,
+    type: 'image/jpeg',
+    name: documentFileName,
+  } as any);
+  
+  // Adicionar selfie
+  const selfieFileName = selfie.uri.split('/').pop();
+  formData.append('selfie', {
+    uri: selfie.uri,
+    type: 'image/jpeg',
+    name: selfieFileName,
+  } as any);
+
+  const response = await api.post('/investors/face-match', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  
+  return response.data;
+};
+
 
 // export const GetUserStatus = createAsyncThunk(
 //   "user/GetUserStatus",
@@ -170,15 +199,4 @@ export const postPersonalInformation = async (request: PersonalInformationReques
 //   }
 // );
 
-export const GetAddress = createAsyncThunk(
-  "user/getAddress",
-  async (request: string) => {
-    const response = await api
-      .get(`https://viacep.com.br/ws/${request}/json`)
-      .then((r): CepResponse => r.data)
-      .catch((error) => {
-        return error.response.data;
-      });
-    return response;
-  }
-);
+

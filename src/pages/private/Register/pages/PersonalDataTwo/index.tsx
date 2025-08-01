@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import CommonValidators from '@/helpers/validators/common.validators';
-// import { CompleteRegister } from '@/services/register';
 import Select from '@/components/Select';
 import Input from '@/components/Input';
 import RadioButton from '@/components/RadioButton';
@@ -9,6 +6,28 @@ import BtnDefault from '@/components/BtnDefault';
 import { Text, View } from 'react-native';
 import { useCustomStyles } from '../../style';
 import { Analytics } from '@/helpers/analytics';
+import CommonMask from '@/helpers/masks';
+
+interface PersonalDataTwoProps {
+  formData: {
+    gender: string;
+    marital_status: string;
+    job: string;
+    role: string;
+    annual_income: number;
+    exposed_politically: number;
+  };
+  updateFormData: (data: Partial<{
+    gender: string;
+    marital_status: string;
+    job: string;
+    role: string;
+    annual_income: number;
+    exposed_politically: number;
+  }>) => void;
+  onNext: () => void;
+  onPrev: () => void;
+}
 
 type SelectProps = {
   list: {
@@ -20,147 +39,120 @@ type SelectProps = {
 const gender: SelectProps = {
   list: [
     {
-      id: '1',
-      value: 'Eu me identifico Homem',
+      id: 'male',
+      value: 'Homem',
     },
     {
-      id: '2',
-      value: 'Eu me identifico Mulher',
-    },
-    {
-      id: '3',
-      value: 'Eu me identifico Homem Trans',
-    },
-    {
-      id: '4',
-      value: 'Eu me identifico Mulher Trans',
-    },
-    {
-      id: '5',
-      value: 'Eu me identifico Agênero',
-    },
-    {
-      id: '6',
-      value: 'Eu me identifico Não binário',
-    },
-    {
-      id: '7',
-      value: 'Eu me identifico Travesti',
-    },
-    {
-      id: '8',
-      value: 'Eu me identifico Queer',
-    },
-    {
-      id: '9',
-      value: 'Outro',
-    },
+      id: 'female',
+      value: 'Mulher',
+    }
   ],
 };
 
 const civilStatus: SelectProps = {
   list: [
     {
-      id: '1',
+      id: 'single',
       value: 'Solteiro',
     },
     {
-      id: '2',
+      id: 'married',
       value: 'Casado',
     },
     {
-      id: '3',
+      id: 'separated',
       value: 'Separado',
     },
     {
-      id: '4',
+      id: 'divorced',
       value: 'Divorciado',
     },
     {
-      id: '5',
+      id: 'widowed',
       value: 'Viúvo',
     },
     {
-      id: '6',
+      id: 'common_law',
       value: 'União estável',
     },
   ],
 };
 
-export default function PersonalDataTwo() {
+export default function PersonalDataTwo({ formData, updateFormData, onNext, onPrev }: PersonalDataTwoProps) {
   const styles = useCustomStyles();
-  const dispatch = useAppDispatch();
-  const { loading } = useAppSelector(state => state.register);
   const [error, setError] = useState({
     gender: '',
-    maritalStatus: '',
-    spouse: '',
-    hasOwnResidence: '',
+    marital_status: '',
+    job: '',
+    role: '',
+    annual_income: '',
+    exposed_politically: '',
   });
-  const [form, setForm] = useState({
-    gender: '',
-    maritalStatus: '',
-    spouse: '',
-    hasOwnResidence: null,
-  });
-  const { userStatus } = useAppSelector(state => state.user);
 
-  function handleField(value: React.SetStateAction<string>, field: string) {
-    setForm({ ...form, [field]: value });
+  const [displayAnnualIncome, setDisplayAnnualIncome] = useState('');
+
+  function handleField(value: string, field: string) {
+    updateFormData({ [field]: value });
+    
+    if (error[field as keyof typeof error]) {
+      setError({ ...error, [field]: '' });
+    }
   }
 
-  useEffect(() => {
-    if (form.maritalStatus !== 'Casado' && form.maritalStatus !== 'União estável') {
-      setForm({ ...form, spouse: '' });
+  function formatCurrencyForDisplay(value: string): string {
+    if (!value) return '';
+    
+    const numericValue = value.replace(/\D/g, '');
+    
+    // Converter para número e formatar
+    const numberValue = parseFloat(numericValue) / 100;
+    return CommonMask.currency(numberValue.toFixed(2));
+  }
+
+  function formatCurrencyForAPI(value: string): number {
+    if (!value) return 0;
+    
+    const numericValue = value.replace(/\D/g, '');
+    
+    const numberValue = parseFloat(numericValue) / 100;
+    return numberValue;
+  }
+
+  function handleAnnualIncomeChange(value: string) {
+    const formattedValue = formatCurrencyForDisplay(value);
+    setDisplayAnnualIncome(formattedValue);
+    
+    const numericValue = formatCurrencyForAPI(value);
+    updateFormData({ annual_income: numericValue });
+    
+    if (error.annual_income) {
+      setError({ ...error, annual_income: '' });
     }
-  }, [form.maritalStatus]);
+  }
 
   useEffect(() => {
     Analytics({ pageName: 'CadastroDadosPessoaisInfos' });
   }, []);
 
-  function validateField(
-    name: any,
-    field: 'gender' | 'maritalStatus' | 'hasOwnResidence' | 'spouse',
-    txt: string
-  ) {
-    return userStatus?.emptyFields.includes(name)
-      ? CommonValidators.isEmptyField(form[field], txt)
-      : { status: true, error: '' };
+  function validateFields() {
+    const newErrors = {
+      gender: !formData.gender ? 'Gênero obrigatório' : '',
+      marital_status: !formData.marital_status ? 'Estado civil obrigatório' : '',
+      job: !formData.job ? 'Profissão obrigatória' : '',
+      role: !formData.role ? 'Função obrigatória' : '',
+      annual_income: !formData.annual_income ? 'Faturamento anual obrigatório' : '',
+      exposed_politically: formData.exposed_politically === undefined ? 'Campo obrigatório' : '',
+    };
+
+    setError(newErrors);
+    return Object.values(newErrors).every(error => !error);
   }
 
   async function onConfirm() {
     Analytics({ eventName: 'CadastroDadosPessoaisInfos_Continuar' });
-    const genderValidator = validateField('Gender', 'gender', 'gênero');
-    const maritalStatusValidator = validateField('MaritalStatus', 'maritalStatus', 'estado civil');
-    const spouseValidator = CommonValidators.isEmptyField(form.spouse, 'nome do cônjuge');
-
-    const hasOwnResidenceValidator = validateField('HasOwnResidence', 'hasOwnResidence', '');
-
-    setError({
-      gender: genderValidator.error,
-      maritalStatus: maritalStatusValidator.error,
-      spouse: spouseValidator.error,
-      hasOwnResidence: hasOwnResidenceValidator.error,
-    });
-
-    if (form.maritalStatus !== 'Casado' && form.maritalStatus !== 'União estável') {
-      spouseValidator.status = true;
-      spouseValidator.error = '';
-    }
-
-    if (
-      genderValidator.status &&
-      maritalStatusValidator.status &&
-      hasOwnResidenceValidator.status &&
-      spouseValidator.status
-    ) {
-      // await dispatch(
-      //   CompleteRegister({
-      //     ...form,
-      //     hasOwnResidence: form.hasOwnResidence ? 1 : 0,
-      //   })
-      // );
+    
+    if (validateFields()) {
+      onNext();
     }
   }
 
@@ -168,77 +160,86 @@ export default function PersonalDataTwo() {
     <View style={{ flex: 1 }}>
       <View style={styles.content}>
         <Text style={styles.title}>Dados Pessoais</Text>
-        {userStatus?.emptyFields.includes('Gender') ? (
-          <Select
-            label="Qual o seu gênero *"
-            placeholder="Selecione uma opção *"
-            value={form.gender || ''}
-            setValue={setForm}
-            form={form}
-            arr={gender}
-            fieldName="gender"
-            error={!!error.gender}
-            txtError={error.gender}
-            marginBottom={48}
+        
+        <Select
+          label="Qual o seu gênero *"
+          placeholder="Selecione uma opção *"
+          value={formData.gender || ''}
+          setValue={updateFormData}
+          form={formData}
+          arr={gender}
+          fieldName="gender"
+          error={!!error.gender}
+          txtError={error.gender}
+          marginBottom={48}
+        />
+
+        <Select
+          label="Estado Civil*"
+          placeholder="Selecione uma opção *"
+          value={formData.marital_status || ''}
+          setValue={updateFormData}
+          form={formData}
+          arr={civilStatus}
+          fieldName="marital_status"
+          error={!!error.marital_status}
+          txtError={error.marital_status}
+        />
+
+        <Input
+          placeholder="Profissão *"
+          value={formData.job || ''}
+          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.job), 'job')}
+          error={!!error.job}
+          txtError={error.job}
+          autoCapitalize="words"
+        />
+
+        <Input
+          placeholder="Função *"
+          value={formData.role || ''}
+          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.role), 'role')}
+          error={!!error.role}
+          txtError={error.role}
+          autoCapitalize="words"
+        />
+
+        <Input
+          placeholder="Faturamento anual *"
+          value={displayAnnualIncome}
+          setValue={(value) => handleAnnualIncomeChange(typeof value === 'string' ? value : value(displayAnnualIncome))}
+          error={!!error.annual_income}
+          txtError={error.annual_income}
+          keyboardType="numeric"
+        />
+        <Text style={{ ...styles.subDesc }}>Ex.: R$ 50.000,00</Text>
+
+        <View style={{ marginTop: 48 }}>
+          <RadioButton
+            onValueChange={value => updateFormData({ exposed_politically: value ? 1 : 0 })}
+            value={formData.exposed_politically === 1}
+            legend="Você é uma pessoa politicamente exposta (PEP)? *"
+            error={!!error.exposed_politically}
+            txtError={error.exposed_politically}
+            data={[
+              {
+                label: 'Sim, eu sou uma pessoa politicamente exposta',
+                value: true,
+              },
+              {
+                label: 'Não, eu não sou uma pessoa politicamente exposta',
+                value: false,
+              },
+            ]}
           />
-        ) : (
-          <></>
-        )}
-        {userStatus?.emptyFields.includes('MaritalStatus') ? (
-          <Select
-            label="Estado Civil*"
-            placeholder="Selecione uma opção *"
-            value={form.maritalStatus || ''}
-            setValue={setForm}
-            form={form}
-            arr={civilStatus}
-            fieldName="maritalStatus"
-            error={!!error.maritalStatus}
-            txtError={error.maritalStatus}
-          />
-        ) : (
-          <></>
-        )}
-        {(form.maritalStatus === 'Casado' || form.maritalStatus === 'União estável') &&
-          userStatus?.emptyFields.includes('MaritalStatus') ? (
-          <Input
-            placeholder="Nome completo do cônjuge*"
-            value={form.spouse || ''}
-            setValue={value => handleField(value, 'spouse')}
-            error={!!error.spouse}
-            txtError={error.spouse}
-          />
-        ) : (
-          <></>
-        )}
-        {userStatus?.emptyFields.includes('HasOwnResidence') ? (
-          <View style={{ marginTop: 48 }}>
-            <RadioButton
-              onValueChange={value => handleField(value, 'hasOwnResidence')}
-              value={form.hasOwnResidence === null ? '' : !!form.hasOwnResidence}
-              legend="Possui casa própria?*"
-              error={!!error.hasOwnResidence}
-              txtError={error.hasOwnResidence}
-              row
-              data={[
-                {
-                  boldLabel: 'Sim',
-                  label: '',
-                  value: true,
-                },
-                {
-                  boldLabel: 'Não',
-                  label: '',
-                  value: false,
-                },
-              ]}
-            />
-          </View>
-        ) : (
-          <></>
-        )}
+        </View>
       </View>
-      <BtnDefault label="Continuar" onPress={onConfirm} loading={loading} style={{ marginBottom: 15 }} />
+      
+      <BtnDefault 
+        label="Continuar" 
+        onPress={onConfirm} 
+        style={{ marginBottom: 15 }} 
+      />
     </View>
   );
 }

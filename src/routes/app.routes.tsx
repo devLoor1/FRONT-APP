@@ -13,7 +13,7 @@ import { RootStackParamList } from "@/models/routes/navigation.private";
 // import ResultsPage from '~/pages/private/Results';
 // import EditAccountPage from '~/pages/private/EditAccount';
 // import ChangePasswordPage from '~/pages/private/ChangePassword';
-// import RemoveAccountPage from '~/pages/private/RemoveAccount';
+import RemoveAccountPage from '@/pages/private/RemoveAccount';
 // import SettingsAuthPage from '~/pages/private/SettingsAuth';
 // import BillingCenterPage from '~/pages/private/BillingCenter';
 // import SettingsNotificationPage from '~/pages/private/SettingsNotification';
@@ -61,6 +61,7 @@ export default function AppRoutes({
         component={OpportunitiesDetailPage}
       />
       <MainStack.Screen name="Invest" component={InvestPage} />
+      <MainStack.Screen name="RemoveAccount" component={RemoveAccountPage} />
       {/* <MainStack.Screen name="DailySummary" component={DailySummaryPage} /> */}
       {/* <MainStack.Screen
         name="InvestmentDetail"
@@ -80,7 +81,7 @@ export default function AppRoutes({
       <MainStack.Screen name="Withdraw" component={WithdrawPage} />
       <MainStack.Screen name="EditAccount" component={EditAccountPage} />
       <MainStack.Screen name="ChangePassword" component={ChangePasswordPage} />
-      <MainStack.Screen name="RemoveAccount" component={RemoveAccountPage} />
+      
       <MainStack.Screen name="SettingsAuth" component={SettingsAuthPage} />
       <MainStack.Screen name="BillingCenter" component={BillingCenterPage} />
       <MainStack.Screen

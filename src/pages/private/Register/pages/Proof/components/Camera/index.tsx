@@ -2,15 +2,14 @@ import { CameraView } from 'expo-camera';
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePageStyles } from './style';
-import { useAppSelector } from '~/redux/hooks';
-import BtnDefault from '~/components/BtnDefault';
+import BtnDefault from '@/components/BtnDefault';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ImageBackground, Text, View } from 'react-native';
-import { useTheme } from '~/context/MyThemeContext';
-import ArrowIcon from '~/../assets/newSvgs/icons/arrow_back.svg';
-import CloseIcon from '~/../assets/newSvgs/icons/close_small.svg';
-import CameraIcon from '~/../assets/newSvgs/icons/photo_camera.svg';
-import { Analytics } from '~/helpers/analytics';
+import { useTheme } from '@/context/MyThemeContext';
+import ArrowIcon from '@/../assets/newSvgs/icons/arrow_back.svg';
+import CloseIcon from '@/../assets/newSvgs/icons/close_small.svg';
+import CameraIcon from '@/../assets/newSvgs/icons/photo_camera.svg';
+import { Analytics } from '@/helpers/analytics';
 
 type CameraProps = {
   takePicture(): Promise<void>;
@@ -22,6 +21,7 @@ type CameraProps = {
   closeCamera(): void;
   onSubmitPicture(): Promise<void>;
   progress: number;
+  isLoading?: boolean;
 };
 
 export default function CameraComp({
@@ -34,10 +34,10 @@ export default function CameraComp({
   onSubmitPicture,
   closeCamera,
   progress,
+  isLoading = false,
 }: CameraProps) {
   const styles = usePageStyles();
   const { theme } = useTheme();
-  const { loadingDoc } = useAppSelector(state => state.register);
 
   useEffect(() => {
     if (previewVisible && capturedImage) {
@@ -70,16 +70,16 @@ export default function CameraComp({
               </View>
               <View style={styles.confirmImgFooter}>
                 <BtnDefault
-                  label={loadingDoc ? 'Enviando Documento...' : 'Enviar Documento'}
+                  label={isLoading ? 'Enviando Documento...' : 'Enviar Documento'}
                   onPress={() => {
                     Analytics({ eventName: 'CadastroResImgConfirmar_Enviar' });
                     onSubmitPicture();
                   }}
                   marginBottom={8}
-                  disabled={loadingDoc}
+                  disabled={isLoading}
                 />
                 <BtnDefault
-                  disabled={loadingDoc}
+                  disabled={isLoading}
                   label="Tirar outra foto"
                   icon={
                     <CameraIcon
@@ -97,7 +97,7 @@ export default function CameraComp({
               </View>
             </View>
           </SafeAreaView>
-          {loadingDoc && (
+          {isLoading && (
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
                 <View style={{ ...styles.progressFill, width: `${progress}%` }} />

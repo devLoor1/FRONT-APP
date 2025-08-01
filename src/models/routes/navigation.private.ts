@@ -21,8 +21,9 @@ export type RootStackParamList = {
     opportunityId: OpportunitiesResponse["data"][0]["id"];
     quotasRoute?: number;
   };
-  Refused: undefined;
-  DailySummary: undefined;
+  RemoveAccount: undefined;
+  // Refused: undefined;
+  // DailySummary: undefined;
 
   // TermsPage: undefined;
   // Excerpt: undefined;
@@ -41,7 +42,6 @@ export type RootStackParamList = {
   // EditInvestorProfile: undefined;
   // EditAccount: undefined;
   // ChangePassword: undefined;
-  // RemoveAccount: undefined;
   // SettingsAuth: undefined;
   // BillingCenter: undefined;
   // Anticipate: undefined;

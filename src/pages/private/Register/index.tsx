@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAvoidingView, Platform, View, TouchableOpacity } from 'react-native';
-import { GetUserStatus } from '@/services/user';
-import refreshToken from '@/helpers/refreshToken';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { useAuth } from '@/context/auth';
 import Steps from '@/components/Steps';
 import PersonalDataOne from './pages/PersonalDataOne';
@@ -16,96 +14,232 @@ import Proof from './pages/Proof';
 import SuccessPage from './pages/Success';
 import { useTheme } from '@/context/MyThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/models/routes/navigation.private';
 import BankData from './pages/BankData';
+import { postPersonalInformation } from '@/services/user';
+import { useMutation } from '@tanstack/react-query';
+
+interface RegisterFormData {
+  cpf: string;
+  full_name: string;
+  birth_date: string;
+  rg: string;
+  issuing_entity: string;
+  nationality: string;
+  
+  gender: string;
+  marital_status: string;
+  job: string;
+  role: string;
+  annual_income: number;
+  exposed_politically: number;
+  
+  zip_code: string;
+  city: string;
+  state: string;
+  district: string;
+  street_name: string;
+  number: string;
+  complement: string;
+  
+  bank_id: number;
+  agency: string;
+  account: string;
+  account_digit: string;
+}
 
 export default function RegisterPage() {
   const dispatch = useAppDispatch();
   const styles = useCustomStyles();
-  const { userStatus } = useAppSelector(state => state.user);
-  const { responseComplete, requestError } = useAppSelector(state => state.register);
-  const [page, setPage] = useState(1);
-  const { deviceToken } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
+  const [page, setPage] = useState(0);
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { theme } = useTheme();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  useEffect(() => {
-    setShowSnack(false);
-    setMsgError('');
+  const [formData, setFormData] = useState<RegisterFormData>({
+    cpf: '',
+    full_name: '',
+    birth_date: '',
+    rg: '',
+    issuing_entity: '',
+    nationality: '',
+    gender: '',
+    marital_status: '',
+    job: '',
+    role: '',
+    annual_income: 0,
+    exposed_politically: 0,
+    zip_code: '',
+    city: '',
+    state: '',
+    district: '',
+    street_name: '',
+    number: '',
+    complement: '',
+    bank_id: 0,
+    agency: '',
+    account: '',
+    account_digit: '',
+  });
 
-    if (userStatus) {
-      const bankFields: ('BankNumber' | 'Bank' | 'AccountDigit' | 'AccountNumber' | 'AccountType' | 'Agency')[] = ['BankNumber', 'Bank', 'AccountDigit', 'AccountNumber', 'AccountType', 'Agency'];
-      const hasEmptyBankFields = bankFields.some(field => userStatus.emptyFields.includes(field));
+  const {
+    mutateAsync: submitPersonalInformation,
+    isPending: loadingSubmit,
+  } = useMutation({
+    mutationKey: ['postPersonalInformation'],
+    mutationFn: postPersonalInformation,
+  });
 
-      if (
-        userStatus.emptyFields.includes('Profession') ||
-        userStatus.emptyFields.includes('Nationality') ||
-        userStatus.emptyFields.includes('IsPep') ||
-        userStatus.emptyFields.includes('BirthCity') ||
-        userStatus.emptyFields.includes('Scholarity')
-      ) {
-        setPage(0);
-      } else if (
-        userStatus.emptyFields.includes('Gender') ||
-        userStatus.emptyFields.includes('MaritalStatus') ||
-        userStatus.emptyFields.includes('HasOwnResidence')
-      ) {
-        setPage(2);
-      } else if (
-        userStatus.emptyFields.includes('City') ||
-        userStatus.emptyFields.includes('State') ||
-        userStatus.emptyFields.includes('Country') ||
-        userStatus.emptyFields.includes('Street') ||
-        userStatus.emptyFields.includes('StreetNumber') ||
-        userStatus.emptyFields.includes('PostalCode') ||
-        userStatus.emptyFields.includes('Neighborhood')
-      ) {
-        setPage(4);
-      } else if (userStatus.emptyFields.includes('UploadAddressDocument')) {
-        setPage(5);
-      } else if(hasEmptyBankFields) {
-        setPage(1);
-      } else {
-        setPage(6);
+  const updateFormData = (newData: Partial<RegisterFormData>) => {
+    setFormData(prev => ({ ...prev, ...newData }));
+  };
+
+  const nextPage = () => {
+    const nextPageIndex = page + 1;
+    
+    if (nextPageIndex >= 6) {
+      submitForm();
+    } else {
+      setPage(nextPageIndex);
+    }
+  };
+
+  const handleBankDataNext = async () => {
+    setIsSubmitting(true);
+    try {
+      await submitForm();
+      setPage(4);
+    } catch (error: any) {
+      if (error.response?.status === 403 && 
+          error.response?.data?.message === "Informações pessoais já cadastradas") {
+        setPage(4); // Proof
+        return;
       }
-    }
-
-  }, [userStatus]);
-
-  useEffect(() => {
-    if (responseComplete) {
-      (async () => {
-        await refreshToken();
-        await dispatch(GetUserStatus(deviceToken));
-      })();
-    }
-  }, [responseComplete]);
-
-  useEffect(() => {
-    if (requestError) {
-      setMsgError(requestError);
+      
+      if (error.response?.data?.errors) {
+        const errorMessages = error.response.data.errors.map((err: any) => err.message).join(', ');
+        setMsgError(`Erro na validação: ${errorMessages}`);
+      } else {
+        setMsgError('Erro ao enviar dados. Tente novamente.');
+      }
       setShowSnack(true);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [requestError]);
+  };
+
+  const prevPage = () => {
+    setPage(prev => Math.max(0, prev - 1));
+  };
+
+  const submitForm = async () => {
+    const requiredFields = {
+      full_name: formData.full_name,
+      cpf: formData.cpf,
+      birth_date: formData.birth_date,
+      rg: formData.rg,
+      issuing_entity: formData.issuing_entity,
+      nationality: formData.nationality,
+      gender: formData.gender,
+      marital_status: formData.marital_status,
+      job: formData.job,
+      role: formData.role,
+      annual_income: formData.annual_income,
+      zip_code: formData.zip_code,
+      city: formData.city,
+      state: formData.state,
+      district: formData.district,
+      street_name: formData.street_name,
+      number: formData.number,
+      bank_id: formData.bank_id,
+      agency: formData.agency,
+      account: formData.account,
+      account_digit: formData.account_digit,
+    };
+
+    const emptyFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value || value === 0)
+      .map(([key]) => key);
+
+    if (!user?.phone) {
+      setMsgError('Telefone do usuário não encontrado. Faça login novamente.');
+      setShowSnack(true);
+      return;
+    }
+
+    if (emptyFields.length > 0) {
+      setMsgError(`Campos obrigatórios não preenchidos: ${emptyFields.join(', ')}`);
+      setShowSnack(true);
+      return;
+    }
+
+    try {
+      const payload = {
+        full_name: formData.full_name,
+        phone: user?.phone || "",
+        investor_personal_information: {
+          nationality: formData.nationality.toLowerCase() === 'brasileiro' || formData.nationality.toLowerCase() === 'brasileira' ? 'brazilian' : formData.nationality,
+          gender: formData.gender,
+          cpf: formData.cpf,
+          birth_date: formData.birth_date,
+          rg: formData.rg,
+          issuing_entity: formData.issuing_entity,
+          marital_status: formData.marital_status,
+          company: "",
+          job: formData.job,
+          role: formData.role,
+          annual_income: formData.annual_income,
+          exposed_politically: formData.exposed_politically
+        },
+        address: {
+          country_id: 29,
+          zip_code: formData.zip_code.replace(/\D/g, ''),
+          street_name: formData.street_name,
+          number: formData.number,
+          district: formData.district,
+          city: formData.city,
+          state: formData.state,
+          complement: formData.complement || null
+        },
+        investor_company_information: {
+          name: "",
+          fantasy_name: "",
+          cnpj: "",
+          type: ""
+        },
+        bank_account: {
+          bank_id: formData.bank_id,
+          agency: formData.agency,
+          account: formData.account,
+          account_digit: formData.account_digit
+        }
+      };
+
+      await submitPersonalInformation(payload);
+      
+    } catch (error: any) {
+      throw error;
+    }
+  };
 
   function renderContent() {
     switch (page) {
       case 1:
-        return <BankData />;
+        return <PersonalDataTwo formData={formData} updateFormData={updateFormData} onNext={nextPage} onPrev={prevPage} />;
       case 2:
-        return <PersonalDataTwo />;
+        return <Address formData={formData} updateFormData={updateFormData} onNext={nextPage} onPrev={prevPage} />;
+      case 3:
+        return <BankData formData={formData} updateFormData={updateFormData} onNext={handleBankDataNext} onPrev={prevPage} isSubmitting={isSubmitting} />;
       case 4:
-        return <Address />;
+        return <Proof onContinue={() => setPage(5)} />;
       case 5:
-        return <Proof />;
-      case 6:
         return <SuccessPage />;
       default:
-        return <PersonalDataOne />;
+        return <PersonalDataOne formData={formData} updateFormData={updateFormData} onNext={nextPage} />;
     }
   }
 
@@ -114,9 +248,9 @@ export default function RegisterPage() {
       style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        {/* <View style={{ paddingHorizontal: 16 }}>
-          {!(page === 4) && <Steps qtd={3} index={page} />}
-        </View> */}
+        <View style={{ paddingHorizontal: 16 }}>
+          {page !== 5 && <Steps qtd={4} index={page + 1} />}
+        </View>
         
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}

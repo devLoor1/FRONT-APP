@@ -23,7 +23,7 @@ import AuthStorage from "@/storages/auth-storage";
 
 export default function LoginContent() {
   const { theme } = useTheme();
-  const { isAuthenticated, loadingUser } = useAppSelector((state) => state.auth);
+  const { loadingUser } = useAppSelector((state) => state.auth);
 
   const styles = useCustomStyles();
   const [hidePassword, setHidePassword] = useState(true);
@@ -76,7 +76,17 @@ export default function LoginContent() {
 
   useEffect(() => {
     if (loginError) {
-      const errorMessage = loginError?.response?.data?.errors?.[0]?.message;
+      let errorMessage = '';
+      
+      if (loginError?.response?.data) {
+        const responseData = loginError.response.data;
+        if ('message' in responseData) {
+          errorMessage = responseData.message;
+        } else if ('errors' in responseData && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
+          errorMessage = responseData.errors[0].message;
+        }
+      }
+      
       if (errorMessage) {
         setSnackMessage(errorMessage);
         setShowSnack(true);

@@ -1,8 +1,9 @@
 export type CepResponse = {
-  bairro: string;
-  cep: string;
-  complemento: string;
-  localidade: string;
-  logradouro: string;
-  uf: string;
+  data: {
+    city: string;
+    district: string;
+    state: string;
+    street_name: string;
+    zip_code: string;
+  };
 };

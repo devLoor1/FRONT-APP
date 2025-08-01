@@ -54,27 +54,27 @@ export default function Menu() {
   }, []);
 
   const menu: MenuProps = [
-    {
-      title: "Meu perfil",
-      desc: "Altere seus dados, foto e outros detalhes",
-      icon: <AccountIcon color={theme.colors.text} width={30} height={30} />,
-      link: "Profile",
-      analytics: "MinhaContaPerfil_MeuPerfil",
-    },
-    {
-      title: "Alterar senha",
-      desc: "Alterar senha e dados de acesso",
-      icon: <KeyIcon color={theme.colors.text} width={30} height={30} />,
-      link: "ChangePassword",
-      analytics: "MinhaContaPerfil_AlterarSenha",
-    },
-    {
-      title: "Dados bancários",
-      desc: "Alterar seus dados bancários",
-      icon: <PaidIcon color={theme.colors.text} width={30} height={30} />,
-      link: "EditAccount",
-      analytics: "MinhaContaPerfil_DadosBancarios",
-    },
+    // {
+    //   title: "Meu perfil",
+    //   desc: "Altere seus dados e outros detalhes",
+    //   icon: <AccountIcon color={theme.colors.text} width={30} height={30} />,
+    //   link: "Profile",
+    //   analytics: "MinhaContaPerfil_MeuPerfil",
+    // },
+    // {
+    //   title: "Alterar senha",
+    //   desc: "Alterar senha e dados de acesso",
+    //   icon: <KeyIcon color={theme.colors.text} width={30} height={30} />,
+    //   link: "ChangePassword",
+    //   analytics: "MinhaContaPerfil_AlterarSenha",
+    // },
+    // {
+    //   title: "Dados bancários",
+    //   desc: "Alterar seus dados bancários",
+    //   icon: <PaidIcon color={theme.colors.text} width={30} height={30} />,
+    //   link: "EditAccount",
+    //   analytics: "MinhaContaPerfil_DadosBancarios",
+    // },
     {
       title: "Encerrar conta",
       desc: "Ao excluir sua conta, todos os seus dados serão permanentemente removidos",

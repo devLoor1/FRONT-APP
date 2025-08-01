@@ -3,7 +3,6 @@ import { Camera } from 'expo-camera';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import Snack from '@/components/Snack';
 import CameraComp from './components/Camera';
-// import { UploadDoc, VerifyDoc } from '@/services/register';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, Text, View } from 'react-native';
 import SuccessPage from './components/Success';
@@ -14,39 +13,54 @@ import BtnDefault from '@/components/BtnDefault';
 import InfoIcon from '@/../assets/newSvgs/icons/info.svg';
 import WarningIcon from '@/../assets/newSvgs/icons/warning.svg';
 import CameraIcon from '@/../assets/newSvgs/icons/photo_camera.svg';
-import AddIcon from '@/../assets/newSvgs/icons/add.svg';
 import { Analytics } from '@/helpers/analytics';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/models/routes/navigation.private';
+import { submitFaceMatch } from '@/services/user';
+import { useMutation } from '@tanstack/react-query';
+import LoadingComp from '@/components/Loading';
 
 type Props = {
   onActionAfterSubmit?: (docResponse: any) => void
   hideRetakeIcon?: boolean
+  onContinue?: () => void;
 };
 
-export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: Props) {
+type PhotoType = 'document' | 'selfie';
+
+export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onContinue }: Props) {
   const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const styles = useCustomStyles();
   const pageStyles = usePageStyles();
   const { theme } = useTheme();
-  const { requestError, docResponse, docStatus } = useAppSelector(state => state.register);
   const [showSnack, setShowSnack] = useState(false);
-  const cameraRef = useRef<Camera>(null);
+  const [snackMessage, setSnackMessage] = useState('');
+  const cameraRef = useRef<any>(null);
   const [isOpenCamera, setIsOpenCamera] = React.useState(false);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<any>(null);
+  const [currentPhotoType, setCurrentPhotoType] = useState<PhotoType>('document');
+  const [documentPhoto, setDocumentPhoto] = useState<any>(null);
+  const [selfiePhoto, setSelfiePhoto] = useState<any>(null);
   const [progress, setProgress] = useState(0);
 
-  async function startCamera() {
+  const {
+    mutateAsync: faceMatchMutation,
+    isPending: isSubmitting,
+  } = useMutation({
+    mutationKey: ['submitFaceMatch'],
+    mutationFn: ({ document, selfie }: { document: any; selfie: any }) => submitFaceMatch(document, selfie),
+  });
+
+  async function startCamera(photoType: PhotoType) {
     Analytics({ pageName: 'ComprovanteResidencia_TirarFoto' });
     const { status } = await Camera.requestCameraPermissionsAsync();
 
     if (status === 'granted') {
+      setCurrentPhotoType(photoType);
       setIsOpenCamera(true);
     } else {
       await Camera.requestCameraPermissionsAsync();
@@ -62,30 +76,43 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
     const photo = await cameraRef.current.takePictureAsync({ base64: false });
 
     if (photo) {
-      setPreviewVisible(true);
-      setCapturedImage(photo);
+      if (currentPhotoType === 'document') {
+        setDocumentPhoto(photo);
+      } else {
+        setSelfiePhoto(photo);
+      }
+      setIsOpenCamera(false);
     }
   }
 
-  function retakePicture() {
-    startCamera();
-    setCapturedImage(null);
-    setPreviewVisible(false);
+  function retakePicture(photoType: PhotoType) {
+    if (photoType === 'document') {
+      setDocumentPhoto(null);
+    } else {
+      setSelfiePhoto(null);
+    }
+    startCamera(photoType);
   }
 
-  async function onSubmitPicture() {
-    const fileName = capturedImage.uri.split('/').pop();
+  async function onSubmitPictures() {
+    if (!documentPhoto || !selfiePhoto) {
+      setSnackMessage('É necessário capturar tanto o documento quanto a selfie');
+      setShowSnack(true);
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append('file', {
-      uri: capturedImage.uri,
-      type: 'image/jpeg',
-      name: fileName,
-    } as any);
-
-    // await dispatch(UploadDoc({ request: formData, setProgress }));
-    if (onActionAfterSubmit) {
-      await onActionAfterSubmit(docResponse);
+    try {
+      await faceMatchMutation({ document: documentPhoto, selfie: selfiePhoto });
+      
+      // Se chegou até aqui, foi bem-sucedido
+      if (onActionAfterSubmit) {
+        await onActionAfterSubmit({ success: true });
+      }
+    } catch (error: any) {
+      console.error('Erro ao enviar fotos:', error);
+      const errorMessage = error?.response?.data?.message || 'Erro ao enviar fotos. Tente novamente.';
+      setSnackMessage(errorMessage);
+      setShowSnack(true);
     }
   }
 
@@ -93,44 +120,27 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
     Analytics({ pageName: 'CadastroComprovante' });
   }, []);
 
-  useEffect(() => {
-    if (docResponse) {
-      (async () => {
-        // await dispatch(VerifyDoc());
-      })();
-    }
-  }, [docResponse]);
-
-  useEffect(() => {
-    if (docStatus) {
-      setIsOpenCamera(false);
-    }
-  }, [docStatus]);
-
-  useEffect(() => {
-    if (requestError) {
-      setShowSnack(true);
-    }
-  }, [requestError]);
-
   if (isOpenCamera) {
     return (
       <CameraComp
         takePicture={takePicture}
         cameraRef={cameraRef}
-        capturedImage={capturedImage}
-        previewVisible={previewVisible}
-        retakePicture={retakePicture}
-        onSubmitPicture={onSubmitPicture}
+        capturedImage={currentPhotoType === 'document' ? documentPhoto : selfiePhoto}
+        previewVisible={false}
+        retakePicture={() => {
+          retakePicture(currentPhotoType);
+        }}
+        onSubmitPicture={async () => {}}
         closeCamera={closeCamera}
         progress={progress}
         hideRetakeIcon={hideRetakeIcon}
+        isLoading={isSubmitting}
       />
     );
   }
 
-  if (previewVisible && capturedImage && docStatus) {
-    return <SuccessPage />;
+  if (documentPhoto && selfiePhoto && !isSubmitting) {
+    return <SuccessPage onContinue={onContinue} />;
   }
 
   return (
@@ -185,24 +195,92 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false }: P
             </View>
           </View>
 
-          <BtnDefault
-            label="Tirar foto"
-            icon={<CameraIcon color={theme.customColors.baseWhite} width={24} height={24} />}
-            // marginBottom={8}
-            onPress={startCamera}
-          />
+          {/* Documento */}
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Documento de Residência</Text>
+            {documentPhoto ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ 
+                  width: 60, 
+                  height: 60, 
+                  backgroundColor: theme.colors.border, 
+                  borderRadius: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  <Text style={{ fontSize: 12, color: theme.colors.text }}>✓</Text>
+                </View>
+                <BtnDefault
+                  label="Nova foto"
+                  white
+                  onPress={() => retakePicture('document')}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            ) : (
+              <BtnDefault
+                label="Tirar foto do documento"
+                icon={<CameraIcon color={theme.customColors.baseWhite} width={24} height={24} />}
+                onPress={() => startCamera('document')}
+              />
+            )}
+          </View>
 
-          {/* <BtnDefault
-            label="Anexar comprovante"
-            white
-            icon={<AddIcon color={theme.customColors.secondary.default} />}
-            onPress={() => {
-              Analytics({ eventName: 'ComprovanteResidencia_AnexarComprovante' });
-              setActiveCamera(true);
-            }}
-          /> */}
+          {/* Selfie */}
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Selfie</Text>
+            {selfiePhoto ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ 
+                  width: 60, 
+                  height: 60, 
+                  backgroundColor: theme.colors.border, 
+                  borderRadius: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  <Text style={{ fontSize: 12, color: theme.colors.text }}>✓</Text>
+                </View>
+                <BtnDefault
+                  label="Nova foto"
+                  white
+                  onPress={() => retakePicture('selfie')}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            ) : (
+              <BtnDefault
+                label="Tirar selfie"
+                icon={<CameraIcon color={theme.customColors.baseWhite} width={24} height={24} />}
+                onPress={() => startCamera('selfie')}
+              />
+            )}
+          </View>
+
+          {/* Botão de enviar */}
+          {documentPhoto && selfiePhoto && (
+            <BtnDefault
+              label={isSubmitting ? "Enviando..." : "Enviar fotos"}
+              onPress={onSubmitPictures}
+              disabled={isSubmitting}
+            />
+          )}
         </View>
-        {/* <Snack visible={showSnack} txt={requestError} setShowSnack={setShowSnack} /> */}
+        
+        {isSubmitting && (
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000,
+          }}>
+            <LoadingComp transparent />
+          </View>
+        )}
+        
+        <Snack visible={showSnack} txt={snackMessage} setShowSnack={setShowSnack} />
       </ScrollView>
     </SafeAreaView>
   );

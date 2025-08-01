@@ -3,22 +3,18 @@ import React, { useEffect } from 'react';
 import { useCustomStyles } from './style';
 import BtnDefault from '../../../../../components/BtnDefault';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '~/context/MyThemeContext';
+import { useTheme } from '@/context/MyThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAppDispatch, useAppSelector } from '~/redux/hooks';
-import { useAuth } from '~/context/auth';
-import { GetUserStatus } from '~/services/user';
+import { useAppSelector } from '@/redux/hooks';
 import LottieView from 'lottie-react-native';
-import { Analytics } from '~/helpers/analytics';
+import { Analytics } from '@/helpers/analytics';
 
 export default function SuccessPage() {
   const styles = useCustomStyles();
   const nav = useNavigation();
   const { theme } = useTheme();
-  const dispatch = useAppDispatch();
   const { loadingUserStatus } = useAppSelector(state => state.user);
-  const { deviceToken } = useAuth();
-  const animation = require('~/../assets/animations/Confetti.json');
+  const animation = require('@/../assets/animations/Confetti.json');
 
   useEffect(() => {
     Analytics({ pageName: 'CadastroSucesso' });
@@ -63,7 +59,6 @@ export default function SuccessPage() {
             onPress={() => {
               Analytics({ eventName: 'CadastroSucesso_Continuar' });
               (async () => {
-                await dispatch(GetUserStatus(deviceToken));
                 await nav.navigate('Tabs' as never);
               })();
             }}

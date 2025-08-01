@@ -112,7 +112,7 @@ const CommonValidators = {
     if (cep.length < 1) {
       return { status: false, error: 'CEP obrigatório!' };
     }
-    if (cep.length > 8) {
+    if (cep.length === 8) {
       return { status: true, error: '' };
     }
     return { status: false, error: 'CEP inválido!' };

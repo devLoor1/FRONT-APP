@@ -13,7 +13,6 @@ import {
   Divider,
   RadioButton,
 } from "react-native-paper";
-import RBSheet from "react-native-raw-bottom-sheet";
 import { useTheme } from "@/context/MyThemeContext";
 import { useCustomStyles } from "./style";
 import ArrowIcon from "@/../assets/newSvgs/icons/keyboard_arrow_down.svg";
@@ -69,6 +68,11 @@ export default function Select({
 
   const onChangeSearch = (query: string) => setSearchField(query);
 
+  const getDisplayValue = (id: string) => {
+    const item = arr.list.find((item: { value: string; id: string }) => item.id === id);
+    return item ? item.value : id;
+  };
+
   useEffect(() => {
     const data = arr.list.filter((item: { value: string; id: string }) =>
       item.value.toLocaleLowerCase().includes(searchField.toLocaleLowerCase())
@@ -93,7 +97,7 @@ export default function Select({
         }}
       >
         <TextInput
-          value={value}
+          value={getDisplayValue(value)}
           placeholder={placeholder}
           placeholderTextColor={theme.colors.text}
           mode="outlined"
@@ -172,10 +176,10 @@ export default function Select({
                 color={theme.customColors.secondary.default}
                 uncheckedColor={theme.colors.text}
                 value={item.id}
-                status={item.value === value ? "checked" : "unchecked"}
+                status={item.id === value ? "checked" : "unchecked"}
                 onPress={() => {
                   btSheetRef.current?.close();
-                  setValue?.({ ...form, [fieldName]: item.value });
+                  setValue?.({ ...form, [fieldName]: item.id });
                   onSelect?.(item.id);
                 }}
               />

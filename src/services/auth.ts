@@ -37,14 +37,11 @@ export const postLogin = async (request: AuthRequest) => {
 
   handleAnalyticsUserProfile("sigIn", { Identity: token });
 
-  console.log("AuthResponse:", response.data.data);
   return response.data;
 };
 
 export const postLogout = async () => {
-  const response = await api.post<LogoutResponse>(
-    `/auth/investor/logout`
-  );
+  const response = await api.post<LogoutResponse>(`/auth/investor/logout`);
 
   return response.data;
 };
@@ -71,6 +68,12 @@ export const postRegister = async (request: RegisterRequest) => {
     `/auth/investor/register`,
     body
   );
+
+  return response.data;
+};
+
+export const deleteInvestor = async () => {
+  const response = await api.delete(`/investors`);
 
   return response.data;
 };
