@@ -5,7 +5,7 @@ import * as environment from "./src/environments/environment.json";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   let envVars = environment.DEV;
-  envVars = environment[process.env.ENV];
+  envVars = environment[process.env.ENV || "DEV"];
 
   envVars = {
     ...environment.base,
