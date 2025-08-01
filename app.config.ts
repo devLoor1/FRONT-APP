@@ -4,7 +4,8 @@ import moment from "moment";
 import * as environment from "./src/environments/environment.json";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  let envVars = process.env.ENV == "PROD" ? environment.prod : environment.dev;
+  let envVars = environment.DEV;
+  envVars = environment[process.env.ENV];
 
   envVars = {
     ...environment.base,
@@ -12,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   };
 
   return {
-    name: "Loor",
+    name: envVars.name,
     slug: "app-loor-investor",
     version: "1.0.0",
     scheme: "loor",
@@ -27,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "vc.loor.investor",
+      bundleIdentifier: envVars.bundle,
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSFaceIDUsageDescription:
@@ -55,7 +56,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         backgroundColor: "#ffffff",
       },
       edgeToEdgeEnabled: true,
-      package: "vc.loor.investor",
+      package: envVars.bundle,
     },
     web: {
       favicon: "./assets/favicon.png",

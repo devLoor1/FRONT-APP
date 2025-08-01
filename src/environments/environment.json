@@ -4,15 +4,29 @@
     "appStore": "https://apps.apple.com/br/app/?",
     "playStore": "https://play.google.com/store/apps/?"
   },
-  "dev": {
-    "env": "dev",
+  "DEV": {
+    "name": "Loor Preview",
+    "bundle": "vc.loor.investor.dev",
+    "env": "preview",
     "production": false,
     "basicAuth": "Basic QUpESEZVUU5WQk5aRDkxODIzR0E6RDRFMVFKRE5WQTZFNzRBNUQyMVk=",
     "publicScopesAuth": "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
     "publicGrantTypeAuth": "client_credentials",
     "baseUrl": "https://boss-equity-api.herokuapp.com/"
   },
-  "prod": {
+  "PREVIEW": {
+    "name": "Loor Preview",
+    "bundle": "vc.loor.investor.preview",
+    "env": "preview",
+    "production": false,
+    "basicAuth": "Basic QUpESEZVUU5WQk5aRDkxODIzR0E6RDRFMVFKRE5WQTZFNzRBNUQyMVk=",
+    "publicScopesAuth": "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
+    "publicGrantTypeAuth": "client_credentials",
+    "baseUrl": "https://boss-equity-api.herokuapp.com/"
+  },
+  "PROD": {
+    "name": "Loor",
+    "bundle": "vc.loor.investor",
     "env": "prod",
     "production": true,
     "basicAuth": "Basic RmpkMDlFYjU5akQzVXkzVUtxUmtpOkc5YmRYN0s3SzZPVGp2MGFKU1Z6Qg==",

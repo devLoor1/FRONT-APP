@@ -8,10 +8,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "build-development": "cross-env ENV=DEV eas build --profile development",
-    "build-preview": "cross-env ENV=PROD eas build --profile preview",
+    "build-preview": "cross-env ENV=PREVIEW eas build --profile preview",
     "build-production": "cross-env ENV=PROD eas build --profile production",
     "update-branch-development": "cross-env ENV=DEV eas update --branch development",
-    "update-branch-preview": "cross-env ENV=PROD eas update --branch preview",
+    "update-branch-preview": "cross-env ENV=PREVIEW eas update --branch preview",
     "update-branch-production": "cross-env ENV=PROD eas update --branch production"
   },
   "dependencies": {
