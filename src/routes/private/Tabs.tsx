@@ -23,7 +23,7 @@ function MyTabBar({
   navigation,
   theme,
 }: BottomTabBarProps & { theme: AppTheme }) {
-  const { bottom } = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   const tabBarStyle =
     descriptors[state?.routes[state?.index || 0]?.key].options?.tabBarStyle ||
@@ -39,7 +39,7 @@ function MyTabBar({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        bottom: 16 + bottom,
+        bottom: insets.bottom,
         zIndex: 0,
         borderRadius: 32,
         elevation: 3,

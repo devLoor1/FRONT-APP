@@ -1,16 +1,19 @@
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@/context/MyThemeContext';
+import { EdgeInsets } from "react-native-safe-area-context";
 
-export const useCustomStyles = () => {
+export const useCustomStyles = (insets: EdgeInsets) => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
     container: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingVertical: 8,
+      paddingTop: insets.top + 12,
+      paddingBottom: 12,
       paddingHorizontal: 16,
       alignItems: 'center',
+      backgroundColor: theme.customColors.secondary.default,
     },
     leftContent: {
       flexDirection: 'row',

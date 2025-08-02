@@ -1,13 +1,15 @@
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@/context/MyThemeContext';
+import { EdgeInsets } from "react-native-safe-area-context";
 
-export const useCustomStyles = () => {
+export const useCustomStyles = (insets: EdgeInsets) => {
   const { theme } = useTheme();
 
   return StyleSheet.create({
     container: {
       backgroundColor: theme.customColors.secondary.default,
-      paddingVertical: 12,
+      paddingTop: insets.top + 12,
+      paddingBottom: 12,
       paddingHorizontal: 16,
     },
     content: {
@@ -15,14 +17,16 @@ export const useCustomStyles = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
     },
+    profileContainer: {
+      flexDirection: 'row',
+      gap: 8,
+      alignItems: 'center',
+    },
     photo: {
-      width: 52,
-      height: 52,
-      borderRadius: 52,
+      width: 42,
+      height: 42,
+      borderRadius: 42,
       backgroundColor: theme.customColors.baseBlack,
-      borderWidth: 1,
-      borderColor: theme.customColors.baseWhite,
-      marginBottom: 10,
       alignItems: 'center',
       justifyContent: 'center',
     },

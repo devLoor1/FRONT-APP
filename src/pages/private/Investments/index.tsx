@@ -5,38 +5,26 @@ import {
   RefreshControl,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { getOpportunities } from "@/services/opportunities";
+import { useAppDispatch } from "@/redux/hooks";
 import BackToTop from "@/components/BackToTop";
-import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
-
 import { Analytics } from "@/helpers/analytics";
 import { useAuth } from "@/context/auth";
 import { useTheme } from "@/context/MyThemeContext";
 import { useCustomStyles } from "./style";
 import HeaderPhoto from "@/components/HeaderPhoto";
-import BalanceSmall from "@/components/BalanceSmall";
 import Card from "./components/Card";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Chip, TextInput } from "react-native-paper";
 import SearchIcon from "@/../assets/newSvgs/icons/search.svg";
-import FilterIcon from "@/../assets/newSvgs/icons/filter_list.svg";
-import FilterBottomSheet from "@/components/FilterBottomSheet";
-import { getWalletResume } from "@/services-old/wallet";
 import { debounce } from "lodash";
 import { OpportunitiesRequest } from "@/models/opportunities/opportunities.request";
-
-import ArrowDownAltIcon from "@/../assets/newSvgs/icons/arrow_downward_alt.svg";
-import ArrowUpAltIcon from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import OpportunityNewCard from "@/components/OpportunityNewCard";
 import { getSegments } from "@/services/common";
 import { getInvestments } from "@/services/investments";
 import { InvestmentsResponse } from "@/models/investments/investments.response";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function InvestmentPage() {
   const dispatch = useAppDispatch();
@@ -60,6 +48,7 @@ export default function InvestmentPage() {
   const [shortOrder, setShortOrder] = useState("");
   const [searchQuery, setSearchQuery] =
     useState<OpportunitiesRequest["searchQuery"]>("");
+  const insets = useSafeAreaInsets();
 
   const filterSheetRef = useRef<any>(null);
 
@@ -203,7 +192,7 @@ export default function InvestmentPage() {
   }, [pageNumber, refetchList]);
 
   return (
-    <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <HeaderPhoto analytics="OportEntr" />
 
       <FlatList<(typeof data)[0]>
@@ -219,7 +208,7 @@ export default function InvestmentPage() {
         keyExtractor={(item, index) => `${item.opportunity_id}-${index}`}
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: bottomTabBarHeight,
+          paddingBottom: insets.bottom + bottomTabBarHeight + 10,
           paddingHorizontal: 16,
           gap: 16,
         }}
@@ -306,6 +295,6 @@ export default function InvestmentPage() {
       />
 
       {showToUp && <BackToTop listRef={refPage} mb={bottomTabBarHeight / 2} />}
-    </SafeAreaView>
+    </View>
   );
 }

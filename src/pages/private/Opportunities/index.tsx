@@ -5,10 +5,9 @@ import {
   RefreshControl,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { getOpportunities } from "@/services/opportunities";
 import BackToTop from "@/components/BackToTop";
 import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
@@ -17,23 +16,16 @@ import { useAuth } from "@/context/auth";
 import { useTheme } from "@/context/MyThemeContext";
 import { useCustomStyles } from "./style";
 import HeaderPhoto from "@/components/HeaderPhoto";
-import BalanceSmall from "@/components/BalanceSmall";
-import Card from "./components/Card";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Chip, TextInput } from "react-native-paper";
 import SearchIcon from "@/../assets/newSvgs/icons/search.svg";
-import FilterIcon from "@/../assets/newSvgs/icons/filter_list.svg";
-import FilterBottomSheet from "@/components/FilterBottomSheet";
 import { getWalletResume } from "@/services-old/wallet";
 import { debounce } from "lodash";
 import { OpportunitiesRequest } from "@/models/opportunities/opportunities.request";
-
-import ArrowDownAltIcon from "@/../assets/newSvgs/icons/arrow_downward_alt.svg";
-import ArrowUpAltIcon from "@/../assets/newSvgs/icons/arrow_upward_alt.svg";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import { getSegments } from "@/services/common";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function OpportunitiesPage() {
   const dispatch = useAppDispatch();
@@ -51,6 +43,7 @@ export default function OpportunitiesPage() {
   // const [refreshing, setRefreshing] = React.useState(false);
   const { deviceToken } = useAuth();
   const refPage = useRef<FlatList>(null);
+  const insets = useSafeAreaInsets();
 
   const [filter, setFilter] = useState<any>({});
   const [segmentsFilter, setSegmentsFilter] = useState<number[]>([]);
@@ -212,7 +205,7 @@ export default function OpportunitiesPage() {
   }, [pageNumber, refetchList, refetchResume]);
 
   return (
-    <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <HeaderPhoto analytics="OportEntr" />
 
       <FlatList<(typeof data)[0]>
@@ -230,7 +223,7 @@ export default function OpportunitiesPage() {
         keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: bottomTabBarHeight,
+          paddingBottom: insets.bottom + bottomTabBarHeight + 10,
           paddingHorizontal: 16,
           gap: 16,
         }}
@@ -317,6 +310,6 @@ export default function OpportunitiesPage() {
       />
 
       {showToUp && <BackToTop listRef={refPage} mb={bottomTabBarHeight / 2} />}
-    </SafeAreaView>
+    </View>
   );
 }

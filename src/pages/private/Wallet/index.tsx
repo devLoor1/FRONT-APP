@@ -9,7 +9,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
 import { useTheme } from "@/context/MyThemeContext";
 import BackToTop from "@/components/BackToTop";
-import { SafeAreaView } from "react-native-safe-area-context";
 import CardValues from "./components/CardValues";
 import InfoIcon from "@/../assets/newSvgs/icons/info.svg";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -21,6 +20,7 @@ import ModalDefault from "@/components/ModalDefault";
 import InterestChart from "./components/InterestChart";
 import LoadingComp from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function WalletPage() {
   const { theme } = useTheme();
@@ -31,6 +31,7 @@ export default function WalletPage() {
   const bottomTabBarHeight = useBottomTabBarHeight();
   const { personalInformationFilled } = useAppSelector((state) => state.auth);
   const [showModal, setShowModal] = useState(false);
+  const insets = useSafeAreaInsets();
   const {
     data: resume,
     isLoading: loadingResume,
@@ -75,7 +76,7 @@ export default function WalletPage() {
   }
 
   return (
-    <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <HeaderPhoto analytics="HomeApp" />
       {loadingList || loadingResume ? (
         <LoadingComp transparent />
@@ -83,7 +84,7 @@ export default function WalletPage() {
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            paddingBottom: bottomTabBarHeight,
+            paddingBottom: insets.bottom + bottomTabBarHeight + 10,
           }}
           onMomentumScrollEnd={(e) => getTopScroll(e)}
           scrollEventThrottle={16}
@@ -152,6 +153,6 @@ export default function WalletPage() {
         title="Novas oportunidades"
         desc="Apresenta o valor total investido, detalhando todos os custos envolvidos."
       />
-    </SafeAreaView>
+    </View>
   );
 }

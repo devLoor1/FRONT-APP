@@ -1,7 +1,7 @@
 /* eslint-disable react/self-closing-comp */
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@/context/MyThemeContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,7 +16,8 @@ type HeaderProps = {
 };
 
 export default function HeaderPhoto({ analytics }: HeaderProps) {
-  const styles = useCustomStyles();
+  const insets = useSafeAreaInsets();
+  const styles = useCustomStyles(insets);
   const { theme } = useTheme();
   const { user } = useAppSelector((state) => state.auth);
 
@@ -24,8 +25,8 @@ export default function HeaderPhoto({ analytics }: HeaderProps) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['top']}>
-        <View style={styles.content}>
+      <View style={styles.content}>
+        <View style={styles.profileContainer}>
           <TouchableOpacity
             style={styles.photo}
             onPress={() => {
@@ -34,9 +35,9 @@ export default function HeaderPhoto({ analytics }: HeaderProps) {
             }}>
             <UserIcon color={theme.customColors.baseWhite} width={32} height={32} />
           </TouchableOpacity>
+          <Text style={styles.name}>Olá, {user?.full_name}</Text>
         </View>
-        <Text style={styles.name}>Olá, {user?.full_name}</Text>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
