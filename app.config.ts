@@ -3,9 +3,10 @@ import "dotenv/config";
 import moment from "moment";
 import * as environment from "./src/environments/environment.json";
 
+export type EnvType = "PROD" | "PREVIEW" | "DEV";
+
 export default ({ config }: ConfigContext): ExpoConfig => {
-  let envVars = environment.DEV;
-  envVars = environment[process.env.ENV || "DEV"];
+  let envVars = environment[process.env.ENV as EnvType || "DEV"];
 
   envVars = {
     ...environment.base,

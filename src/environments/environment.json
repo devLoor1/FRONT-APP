@@ -5,7 +5,7 @@
     "playStore": "https://play.google.com/store/apps/?"
   },
   "DEV": {
-    "name": "Loor Preview",
+    "name": "Loor Dev",
     "bundle": "vc.loor.investor.dev",
     "env": "preview",
     "production": false,
