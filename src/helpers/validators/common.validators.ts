@@ -103,7 +103,10 @@ const CommonValidators = {
     if (cellphone.length < 1) {
       return { status: false, error: 'Celular obrigatório!' };
     }
-    if (cellphone.length > 14) {
+
+    const numbersOnly = cellphone.replace(/\D/g, '');
+    
+    if (numbersOnly.length >= 10 && numbersOnly.length <= 11) {
       return { status: true, error: '' };
     }
     return { status: false, error: 'Celular inválido!' };
