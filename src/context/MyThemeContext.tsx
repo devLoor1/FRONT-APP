@@ -13,7 +13,7 @@ import {
   useNavigationContainerRef,
 } from "@react-navigation/native";
 import { StatusBar, useColorScheme } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+
 import { createURL } from "expo-linking";
 import {
   Provider as PaperProvider,
@@ -52,7 +52,7 @@ export function MyThemeProvider({ children }: { children: ReactNode }) {
   const getBarStyle = () => {
     const background = getColorStatusBar();
     const isDark = [
-      Colors.darker,
+      "#222",
       lightTheme.customColors.secondary.default,
     ].includes(background);
 
