@@ -5,16 +5,26 @@ import AuthStorage from "@/storages/auth-storage";
 import * as Updates from "expo-updates";
 import Debug from "@/helpers/debug";
 
+const isWeb = typeof window !== "undefined";
+
+const getBaseURL = () => {
+  if (isWeb && process.env.API_BASE_URL) {
+    return process.env.API_BASE_URL;
+  }
+  return Constants?.expoConfig?.extra?.env?.baseUrl || "https://sua-url-padrao.com";
+};
+
 const api = axios.create({
-  baseURL:
-    Constants?.expoConfig?.extra?.env?.baseUrl || "https://sua-url-padrao.com",
+  baseURL: getBaseURL(),
   headers: {
     "device-info": deviceData,
-    "app-version": [
-      Updates.channel,
-      Constants.expoConfig?.extra?.env?.env,
-      Constants.expoConfig?.extra?.version,
-    ].join(" - "),
+    "app-version": isWeb
+      ? "web"
+      : [
+          Updates.channel,
+          Constants.expoConfig?.extra?.env?.env,
+          Constants.expoConfig?.extra?.version,
+        ].join(" - "),
     "Content-Type": "application/json",
   },
 });

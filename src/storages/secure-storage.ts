@@ -1,26 +1,68 @@
 import * as SecureStore from "expo-secure-store";
 
+const isWeb = typeof window !== "undefined" && !globalThis.nativeModules;
+
 const SecureStorage = {
-  SetLoginBiometry({ checked }: { checked: boolean }) {
-    SecureStore.setItemAsync(
-      "LoorInvestorSecure_loginBiometry",
-      checked.toString()
-    );
+  async SetLoginBiometry({ checked }: { checked: boolean }) {
+    try {
+      if (isWeb) {
+        localStorage.setItem(
+          "LoorInvestorSecure_loginBiometry",
+          checked.toString()
+        );
+      } else {
+        SecureStore.setItemAsync(
+          "LoorInvestorSecure_loginBiometry",
+          checked.toString()
+        );
+      }
+    } catch (e) {
+      console.warn("Failed to set login biometry:", e);
+    }
   },
 
-  GetLoginBiometry(): Promise<string | null> {
-    return SecureStore.getItemAsync("LoorInvestorSecure_loginBiometry");
+  async GetLoginBiometry(): Promise<string | null> {
+    try {
+      if (isWeb) {
+        return localStorage.getItem("LoorInvestorSecure_loginBiometry");
+      } else {
+        return await SecureStore.getItemAsync("LoorInvestorSecure_loginBiometry");
+      }
+    } catch (e) {
+      console.warn("Failed to get login biometry:", e);
+      return null;
+    }
   },
 
-  SetInvestBiometry({ checked }: { checked: boolean }) {
-    SecureStore.setItemAsync(
-      "LoorInvestorSecure_investBiometry",
-      checked.toString()
-    );
+  async SetInvestBiometry({ checked }: { checked: boolean }) {
+    try {
+      if (isWeb) {
+        localStorage.setItem(
+          "LoorInvestorSecure_investBiometry",
+          checked.toString()
+        );
+      } else {
+        SecureStore.setItemAsync(
+          "LoorInvestorSecure_investBiometry",
+          checked.toString()
+        );
+      }
+    } catch (e) {
+      console.warn("Failed to set invest biometry:", e);
+    }
   },
 
-  GetInvestBiometry(): Promise<string | null> {
-    return SecureStore.getItemAsync("LoorInvestorSecure_investBiometry");
+  async GetInvestBiometry(): Promise<string | null> {
+    try {
+      if (isWeb) {
+        return localStorage.getItem("LoorInvestorSecure_investBiometry");
+      } else {
+        return await SecureStore.getItemAsync("LoorInvestorSecure_investBiometry");
+      }
+    } catch (e) {
+      console.warn("Failed to get invest biometry:", e);
+      return null;
+    }
   },
 };
 
