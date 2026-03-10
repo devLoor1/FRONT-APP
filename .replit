@@ -36,3 +36,16 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["npm", "run", "web:replit"]
+
+[userenv]
+
+[userenv.development]
+ENV = "DEV"
+API_BASE_URL = "https://backend-homolog-debt.onrender.com"
+BASIC_AUTH = "Basic QUpESEZVUU5WQk5aRDkxODIzR0E6RDRFMVFKRE5WQTZFNzRBNUQyMVk="
+PUBLIC_SCOPES_AUTH = "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api"
+PUBLIC_GRANT_TYPE_AUTH = "client_credentials"
+BASE_URL_VIACEP = "https://viacep.com.br/ws/"
+APP_STORE_URL = "https://apps.apple.com/br/app/?"
+PLAY_STORE_URL = "https://play.google.com/store/apps/?"
+EXPO_APPLE_TEAM_ID = "KNC9427V72"
