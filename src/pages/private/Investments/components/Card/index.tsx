@@ -29,9 +29,16 @@ export default function OpportunityNewCard({
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [showModal, setShowModal] = useState(false);
 
+  // Safe numeric defaults
+  const confirmedPct = investment?.goal?.confirmed_payment_percentage ?? 0;
+  const awaitingPct = investment?.goal?.percentage_awaiting_payment ?? 0;
+  const confirmedPayment = investment?.goal?.confirmed_payment ?? 0;
+  const minInvestment = investment?.monetary?.min_investment_value ?? 0;
+  const participation = investment?.modality_data?.participation ?? 0;
+
   const modalityText = useMemo(() => {
     if (showModal)
-      switch (investment.modality) {
+      switch (investment?.modality) {
         case "Pagamento Único":
           return "Nessa modalidade o investidor recebe um único pagamento, que é composto pelo juros acumulado do perído mais o principal.";
 
@@ -41,7 +48,8 @@ export default function OpportunityNewCard({
         default:
           return "Nessa modalidade o investidor recebe parcelas mensais compostas do principal mais juros. É o formato mais comum, utiliza a tabela Price como base";
       }
-  }, [showModal]);
+    return "";
+  }, [showModal, investment?.modality]);
 
   return (
     <TouchableOpacity
@@ -81,10 +89,7 @@ export default function OpportunityNewCard({
           <Text style={styles.progressTitle}>
             Captado -{" "}
             {CommonMask.percent(
-              (
-                investment.goal.confirmed_payment_percentage +
-                investment.goal.percentage_awaiting_payment
-              )
+              (confirmedPct + awaitingPct)
                 .toFixed(2)
                 .toString()
             )}
@@ -95,16 +100,13 @@ export default function OpportunityNewCard({
               style={{
                 ...styles.progressFill,
                 backgroundColor: theme.customColors.secondary[400],
-                width: `${
-                  investment.goal.confirmed_payment_percentage +
-                  investment.goal.percentage_awaiting_payment
-                }%`,
+                width: `${confirmedPct + awaitingPct}%`,
               }}
             />
             <View
               style={{
                 ...styles.progressFill,
-                width: `${investment.goal.confirmed_payment_percentage}%`,
+                width: `${confirmedPct}%`,
               }}
             />
           </View>
@@ -122,7 +124,7 @@ export default function OpportunityNewCard({
             </View>
             <Text style={styles.itemValue}>
               {CommonMask.currency(
-                investment.goal.confirmed_payment_percentage.toFixed(2)
+                confirmedPct.toFixed(2)
               )}
               %
             </Text>
@@ -139,7 +141,7 @@ export default function OpportunityNewCard({
             </View>
             <Text style={styles.itemValue}>
               {CommonMask.currency(
-                investment.goal.percentage_awaiting_payment.toFixed(2)
+                awaitingPct.toFixed(2)
               )}
               %
             </Text>
@@ -156,11 +158,7 @@ export default function OpportunityNewCard({
             </View>
             <Text style={styles.itemValue}>
               {CommonMask.currency(
-                (
-                  100 -
-                  investment.goal.percentage_awaiting_payment -
-                  investment.goal.confirmed_payment_percentage
-                ).toFixed(2)
+                (100 - awaitingPct - confirmedPct).toFixed(2)
               )}
               %
             </Text>
@@ -171,7 +169,7 @@ export default function OpportunityNewCard({
           <Text style={styles.value}>
             R${" "}
             {CommonMask.currency(
-              (investment.monetary.min_investment_value / 100)
+              (minInvestment / 100)
                 .toFixed(2)
                 .toString()
             )}
@@ -184,7 +182,7 @@ export default function OpportunityNewCard({
               <Text style={styles.itemTitle}>Participação</Text>
             </View>
             <Text style={styles.itemValue}>
-              {investment.modality_data.participation.toFixed(2)}%
+              {participation.toFixed(2)}%
             </Text>
           </View>
           <View style={[styles.item]}>
@@ -192,7 +190,7 @@ export default function OpportunityNewCard({
             <Text style={styles.itemValue}>
               R${" "}
               {CommonMask.currency(
-                (investment.monetary.min_investment_value / 100).toFixed(2)
+                (minInvestment / 100).toFixed(2)
               )}
             </Text>
           </View>
@@ -202,7 +200,7 @@ export default function OpportunityNewCard({
             <Text style={styles.itemValue}>
               R${" "}
               {CommonMask.currency(
-                (investment.goal.confirmed_payment / 100).toFixed(2)
+                (confirmedPayment / 100).toFixed(2)
               )}
             </Text>
           </View>
@@ -210,7 +208,7 @@ export default function OpportunityNewCard({
             <Text style={styles.itemTitle}>Total investido (%)</Text>
             <Text style={styles.itemValue}>
               {CommonMask.currency(
-                investment.goal.confirmed_payment_percentage.toFixed(2)
+                confirmedPct.toFixed(2)
               )}
               %
             </Text>

@@ -30,15 +30,15 @@ export default function OpportunityNewCard({
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [showModal, setShowModal] = useState(false);
 
-  const confirmedPct = Number(opportunity.goal?.confirmed_payment_percentage) || 0;
-  const awaitingPct = Number(opportunity.goal?.percentage_awaiting_payment) || 0;
-  const confirmedPayment = Number(opportunity.goal?.confirmed_payment) || 0;
-  const minInvestment = Number(opportunity.monetary?.min_investment_value) || 0;
-  const participation = Number(opportunity.modality_data?.participation) || 0;
+  const confirmedPct = opportunity.goal?.confirmed_payment_percentage ?? 0;
+  const awaitingPct = opportunity.goal?.percentage_awaiting_payment ?? 0;
+  const confirmedPayment = opportunity.goal?.confirmed_payment ?? 0;
+  const minInvestment = opportunity.monetary?.min_investment_value ?? 0;
+  const participation = opportunity.modality_data?.participation ?? 0;
 
   const modalityText = useMemo(() => {
     if (showModal)
-      switch (opportunity.modality) {
+      switch (opportunity?.modality) {
         case "Pagamento Único":
           return "Nessa modalidade o investidor recebe um único pagamento, que é composto pelo juros acumulado do perído mais o principal.";
 
@@ -48,7 +48,8 @@ export default function OpportunityNewCard({
         default:
           return "Nessa modalidade o investidor recebe parcelas mensais compostas do principal mais juros. É o formato mais comum, utiliza a tabela Price como base";
       }
-  }, [showModal]);
+    return "";
+  }, [showModal, opportunity?.modality]);
 
   return (
     <TouchableOpacity
