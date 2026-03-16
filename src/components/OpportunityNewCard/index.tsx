@@ -30,11 +30,11 @@ export default function OpportunityNewCard({
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [showModal, setShowModal] = useState(false);
 
-  const confirmedPct = opportunity.goal?.confirmed_payment_percentage ?? 0;
-  const awaitingPct = opportunity.goal?.percentage_awaiting_payment ?? 0;
-  const confirmedPayment = opportunity.goal?.confirmed_payment ?? 0;
-  const minInvestment = opportunity.monetary?.min_investment_value ?? 0;
-  const participation = opportunity.modality_data?.participation ?? 0;
+  const confirmedPct = Number(opportunity.goal?.confirmed_payment_percentage) || 0;
+  const awaitingPct = Number(opportunity.goal?.percentage_awaiting_payment) || 0;
+  const confirmedPayment = Number(opportunity.goal?.confirmed_payment) || 0;
+  const minInvestment = Number(opportunity.monetary?.min_investment_value) || 0;
+  const participation = Number(opportunity.modality_data?.participation) || 0;
 
   const modalityText = useMemo(() => {
     if (showModal)
