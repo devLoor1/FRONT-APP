@@ -11,8 +11,8 @@ export async function hasAuth() {
   const enrolled = await isEnrolledAsync();
 
   if (!compatible || !enrolled) {
-    SecureStorage.SetLoginBiometry({ checked: false });
-    SecureStorage.SetInvestBiometry({ checked: false });
+    await SecureStorage.SetLoginBiometry({ checked: false });
+    await SecureStorage.SetInvestBiometry({ checked: false });
     return false;
   }
 

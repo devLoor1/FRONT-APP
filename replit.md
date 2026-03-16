@@ -13,48 +13,49 @@ This is the Loor Investor mobile application built with React Native and Expo. I
 - **UI**: React Native Paper
 - **Animations**: Lottie React Native
 
-## Project Structure
-```
-src/
-  App.tsx           - Root component
-  components/       - Reusable UI components
-  context/          - React context providers (auth, theme, common)
-  environments/     - Environment configs (DEV, PREVIEW, PROD)
-  helpers/          - Utility helpers
-  models/           - TypeScript type definitions
-  pages/            - Screen components
-  redux/            - Redux store, slices, hooks
-  routes/           - Navigation route definitions
-  services/         - API service modules
-  styles/           - Theme and global styles
-  utils/            - Utility functions
-assets/             - Images, icons, fonts, animations
-```
+## Development Setup
 
-## Environment Configuration
-Environment settings are in `src/environments/environment.json` with three profiles:
-- **DEV**: Development environment (boss-equity-api.herokuapp.com)
-- **PREVIEW**: Preview/staging environment
-- **PROD**: Production environment (api.loor.vc)
+### Environment Variables
+The development environment is configured via Replit secrets:
+- `ENV`: Set to `DEV` for development
+- `API_BASE_URL`: `https://backend-homolog-debt.onrender.com` (development backend)
+- `BASIC_AUTH`: Basic authentication token for public endpoints
+- `PUBLIC_SCOPES_AUTH`: Comma-separated list of scopes
+- `PUBLIC_GRANT_TYPE_AUTH`: Authentication grant type (client_credentials)
+- `BASE_URL_VIACEP`: ViaCEP API endpoint for address lookup
+- `APP_STORE_URL`, `PLAY_STORE_URL`: App store links
+- `EXPO_APPLE_TEAM_ID`: Apple team ID (optional for local development)
 
-## Running in Replit
-The app runs via Metro bundler's web support on port 5000:
-```
+### Running in Replit
+The app runs on port 5000:
+```bash
 npm run web:replit
 ```
-This sets `RCT_METRO_PORT=5000` and starts Expo in web mode.
 
-## Key Dependencies for Web
-- `react-native-web@0.20.0` - React Native to web adapter
-- `react-dom@19.0.0` - React DOM for web rendering
-- `@expo/metro-runtime` - Metro runtime for web
-- `@lottiefiles/dotlottie-react` - Lottie animation support for web
+## Web Compatibility Changes
+The app has been adapted for web use with these modifications:
 
-## Changes Made for Replit Compatibility
-1. Added `web:replit` npm script with port 5000 via `RCT_METRO_PORT=5000`
-2. Removed `react-native/Libraries/NewAppScreen` import (replaced `Colors.darker` with `#222`)
-3. Added `assets/favicon.png` (copied from icon)
-4. Installed web-specific packages: `react-native-web`, `react-dom`, `@expo/metro-runtime`, `@lottiefiles/dotlottie-react`, `expo-build-properties`
+1. **Storage Abstraction** (`src/storages/`):
+   - Uses `localStorage` on web
+   - Falls back to `expo-secure-store` on native platforms
+   - Applied to: `SecureStorage`, `CommonStorage`, `AuthStorage`
+
+2. **API Configuration** (`src/services/api.ts`):
+   - Reads `API_BASE_URL` from environment variables on web
+   - Uses Expo config on native platforms
+   - Properly detects web environment
+
+3. **UI Fixes**:
+   - Removed incompatible `react-native/Libraries/NewAppScreen` imports
+   - Fixed theme color references for web compatibility
+
+4. **Dependencies**:
+   - `react-native-web@0.20.0` - React Native to web adapter
+   - `react-dom@19.0.0` - React DOM for web rendering
+   - `@lottiefiles/dotlottie-react` - Lottie animation support for web
 
 ## Deployment
-Configured for autoscale deployment running `npm run web:replit`.
+Configured for autoscale deployment running `npm run web:replit` on port 5000.
+
+## Post-Merge Setup
+Configured in `scripts/post-merge.sh` to run `npm install --legacy-peer-deps` after merges (120s timeout).

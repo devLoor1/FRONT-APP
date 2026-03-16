@@ -34,8 +34,8 @@ export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
   async function setStorage(status: boolean) {
     try {
       // Salvar preferência de biometria
-      SecureStorage.SetLoginBiometry({ checked: status });
-      SecureStorage.SetInvestBiometry({ checked: status });
+      await SecureStorage.SetLoginBiometry({ checked: status });
+      await SecureStorage.SetInvestBiometry({ checked: status });
 
       // Se habilitou biometria, tentar fazer login automático
       if (status) {

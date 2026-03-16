@@ -53,3 +53,7 @@ BASE_URL_VIACEP = "https://viacep.com.br/ws/"
 APP_STORE_URL = "https://apps.apple.com/br/app/?"
 PLAY_STORE_URL = "https://play.google.com/store/apps/?"
 EXPO_APPLE_TEAM_ID = "KNC9427V72"
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 120000
