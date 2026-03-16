@@ -52,16 +52,20 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
   });
 
   useEffect(() => {
-    console.log("useEffect");
     if (!hasMutated.current && !!data && currentTab) {
-      invest(data);
+      // Serialize Date to ISO string for API compatibility
+      const payload = {
+        ...data,
+        user_agreed_at: data.user_agreed_at instanceof Date 
+          ? data.user_agreed_at.toISOString()
+          : typeof data.user_agreed_at === 'string'
+          ? data.user_agreed_at
+          : new Date().toISOString()
+      };
+      invest(payload as any);
       hasMutated.current = true;
     }
-
-    return () => {
-      hasMutated.current = false;
-    };
-  }, [currentTab, data]);
+  }, [currentTab, data, invest]);
 
   useEffect(() => {
     if (isError) setShowSnack(true);
@@ -74,7 +78,11 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
       {isError || isQrError ? (
         <View style={styles.error}>
           <Text style={styles.congrats}>Ops! Algo deu errado...</Text>
-          <Text style={styles.title}>Tente novamente mais tarde.</Text>
+          <Text style={styles.title}>
+            {isError 
+              ? (error as any)?.response?.data?.message || "Erro ao criar investimento. Tente novamente."
+              : "Erro ao carregar QR code."}
+          </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.body}>
