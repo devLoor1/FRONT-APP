@@ -1,5 +1,6 @@
 const CommonMask = {
   cpf(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
       value = value.replace(/(\d)(\d{2})$/, "$1-$2");
@@ -14,6 +15,7 @@ const CommonMask = {
     return value;
   },
   cnpj(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
     value = value.replace(
       /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
@@ -22,11 +24,13 @@ const CommonMask = {
     return value;
   },
   cep(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
     value = value.replace(/^(\d{5})(\d)/, "$1-$2");
     return value;
   },
   phone(value: string) {
+    if (!value) return "";
     const regex = /^\+(\d{2})(\d{2})(\d{5})(\d{4})$/;
     const match = value.match(regex);
 
@@ -43,6 +47,7 @@ const CommonMask = {
     return value;
   },
   currency(value: string) {
+    if (!value) return "0,00";
     if (value === "0") {
       value = "0,00";
     } else {
@@ -53,6 +58,7 @@ const CommonMask = {
     return value;
   },
   currencyUS(value: string) {
+    if (!value) return "0.00";
     if (value === "0") {
       value = "0.00";
     } else {
@@ -95,6 +101,7 @@ const CommonMask = {
     return value;
   },
   percent(value: string) {
+    if (!value) return "0,00";
     if (value === "0") {
       value = "0,00";
     } else {
@@ -104,6 +111,7 @@ const CommonMask = {
     return value;
   },
   date(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
     const day = value.slice(0, 2);
     const month = value.slice(2, 4);
@@ -134,6 +142,7 @@ const CommonMask = {
     return value;
   },
   email(value: string) {
+    if (!value) return "";
     var maskedEmail = value.replace(/([^@\.])/g, "*").split("");
     var previous = "";
     for (let i = 0; i < maskedEmail.length; i++) {
@@ -145,6 +154,7 @@ const CommonMask = {
     return maskedEmail.join("");
   },
   hidePhone(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
     value = value.replace(/(\d)(\d{4})$/, "$1-$2");
@@ -157,6 +167,7 @@ const CommonMask = {
     return maskedEmail.join("");
   },
   hideCpf(value: string) {
+    if (!value) return "";
     value = value.replace(/\D/g, "");
 
     value = value.replace(/(\d)(\d{2})$/, "$1-$2");

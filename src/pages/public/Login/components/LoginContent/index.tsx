@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCustomStyles } from "./style";
@@ -20,6 +20,38 @@ import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/services/api";
 import AuthStorage from "@/storages/auth-storage";
+import { isAxiosError } from "axios";
+import LoadingModal from "@/components/LoadingModal";
+
+function extractErrorMessage(error: unknown): string {
+  if (!error) return "Ocorreu um erro inesperado. Tente novamente.";
+
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { message?: string; errors?: { message?: string }[] } | undefined;
+    if (data) {
+      if (typeof data.message === "string" && data.message) return data.message;
+      if (Array.isArray(data.errors) && data.errors.length > 0) {
+        return data.errors[0].message || "Erro ao tentar entrar.";
+      }
+    }
+
+    const status = error.response?.status;
+    if (status === 401) return "E-mail ou senha incorretos. Verifique e tente novamente.";
+    if (status === 403) return "Acesso negado. Entre em contato com o suporte.";
+    if (status === 429) return "Muitas tentativas. Aguarde um momento e tente novamente.";
+    if (status !== undefined && status >= 500) return "Serviço temporariamente indisponível. Tente novamente em breve.";
+
+    if (error.code === "ERR_NETWORK" || !error.response) {
+      return "Sem conexão com o servidor. Verifique sua internet e tente novamente.";
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message || "Ocorreu um erro inesperado. Tente novamente.";
+  }
+
+  return "Ocorreu um erro inesperado. Tente novamente.";
+}
 
 export default function LoginContent() {
   const { theme } = useTheme();
@@ -36,6 +68,8 @@ export default function LoginContent() {
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
   const [focusPassword, setFocusPassword] = useState(false);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const cancelledRef = useRef(false);
 
   const emailValidator = CommonValidators.isEmailValid(email);
   const passwordValidator = CommonValidators.isPasswordValid(password);
@@ -49,6 +83,7 @@ export default function LoginContent() {
     data,
     error: loginError,
     isPending: loading,
+    reset: resetMutation,
   } = useMutation({
     mutationKey: [postLogin.name],
     mutationFn: postLogin,
@@ -58,9 +93,17 @@ export default function LoginContent() {
     setEmailError(emailValidator.error);
     setPasswordError(passwordValidator.error);
     if (isFormValid) {
+      cancelledRef.current = false;
+      setShowLoadingModal(true);
       const loginData = { email: email.toLowerCase(), password };
-      await loginMutation(loginData);
+      await loginMutation(loginData).catch(() => {});
     }
+  }
+
+  function handleCancelLogin() {
+    cancelledRef.current = true;
+    setShowLoadingModal(false);
+    resetMutation();
   }
 
   function togglePassword() {
@@ -76,19 +119,10 @@ export default function LoginContent() {
 
   useEffect(() => {
     if (loginError) {
-      let errorMessage = '';
-      
-      if (loginError?.response?.data) {
-        const responseData = loginError.response.data;
-        if ('message' in responseData) {
-          errorMessage = responseData.message;
-        } else if ('errors' in responseData && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
-          errorMessage = responseData.errors[0].message;
-        }
-      }
-      
-      if (errorMessage) {
-        setSnackMessage(errorMessage);
+      setShowLoadingModal(false);
+      if (!cancelledRef.current) {
+        const message = extractErrorMessage(loginError);
+        setSnackMessage(message);
         setShowSnack(true);
       }
     }
@@ -101,19 +135,18 @@ export default function LoginContent() {
   }, [showSnack]);
 
   useEffect(() => {
-    if (data) {
-      // Configurar token na API
+    if (data && !cancelledRef.current) {
       const { token } = data.data;
       api.defaults.headers.Authorization = `Bearer ${token}`;
       AuthStorage.SetPrivateToken(token);
-      
-      // Salvar dados no Redux (será persistido automaticamente)
+
       dispatch(setLoginData(data));
-      
-      // Buscar dados do usuário
       dispatch(fetchUserData());
+      setShowLoadingModal(false);
     }
   }, [data, dispatch]);
+
+  const isProcessing = loading || loadingUser;
 
   return (
     <>
@@ -181,8 +214,8 @@ export default function LoginContent() {
           <Text style={styles.forgotTxt}>Esqueci minha senha</Text>
         </TouchableOpacity>
         <BtnDefault
-          label={loading || loadingUser ? "Entrando..." : "Entrar"}
-          disabled={loading || loadingUser || !isFormValid}
+          label="Entrar"
+          disabled={isProcessing || !isFormValid}
           onPress={() => {
             handleAnalyticsUserProfile("signOut", {});
             Analytics({ eventName: "HomeLogin_Entrar" });
@@ -210,6 +243,11 @@ export default function LoginContent() {
         </View>
       </View>
       <Text style={styles.version}>Versão {Version()}</Text>
+      <LoadingModal
+        visible={showLoadingModal}
+        message="Entrando na sua conta"
+        onCancel={handleCancelLogin}
+      />
       <Snack
         visible={showSnack}
         txt={snackMessage}

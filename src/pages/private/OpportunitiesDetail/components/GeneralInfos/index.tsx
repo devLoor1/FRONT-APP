@@ -50,6 +50,15 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const refRBSheet = useRef<any>(null);
 
+  const confirmedPct = opportunity?.goal?.confirmed_payment_percentage ?? 0;
+  const awaitingPct = opportunity?.goal?.percentage_awaiting_payment ?? 0;
+  const confirmedPayment = opportunity?.goal?.confirmed_payment ?? 0;
+  const unconfirmedPayment = opportunity?.goal?.unconfirmed_payment ?? 0;
+  const maxGoal = opportunity?.goal?.max_goal ?? 0;
+  const minGoal = opportunity?.goal?.min_goal ?? 0;
+  const minInvestment = opportunity?.monetary?.min_investment_value ?? 0;
+  const participation = opportunity?.modality_data?.participation ?? 0;
+
   function getTopScroll(e: any) {
     const offset = e.nativeEvent.contentOffset.y;
     if (offset > 350) {
@@ -247,7 +256,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <View style={styles.listItem}>
                 <Text style={styles.listItemTitle}>Colaboradores</Text>
                 <Text style={styles.listItemDesc}>
-                  {opportunity.members.length}
+                  {opportunity?.members?.length ?? 0}
                 </Text>
               </View>
               {/* <View style={styles.listItem}>
@@ -383,7 +392,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                 <Text style={styles.listItemDesc}>
                   R${" "}
                   {CommonMask.currency(
-                    (opportunity.goal.max_goal / 100).toFixed(2).toString()
+                    (maxGoal / 100).toFixed(2).toString()
                   )}
                 </Text>
               </View>
@@ -393,8 +402,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                   R${" "}
                   {CommonMask.currency(
                     (
-                      (opportunity.goal.confirmed_payment +
-                        opportunity.goal.unconfirmed_payment) /
+                      (confirmedPayment + unconfirmedPayment) /
                       100
                     )
                       .toFixed(2)
@@ -421,10 +429,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <Text style={styles.progressTitle}>
                 Captado -{" "}
                 {CommonMask.percent(
-                  (
-                    opportunity.goal.confirmed_payment_percentage +
-                    opportunity.goal.percentage_awaiting_payment
-                  )
+                  (confirmedPct + awaitingPct)
                     .toFixed(2)
                     .toString()
                 )}
@@ -435,17 +440,14 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                   style={{
                     ...styles.progressFill,
                     backgroundColor: theme.customColors.secondary[400],
-                    width: `${
-                      opportunity.goal.confirmed_payment_percentage +
-                      opportunity.goal.percentage_awaiting_payment
-                    }%`,
+                    width: `${confirmedPct + awaitingPct}%`,
                   }}
                 />
                 <View
                   style={{
                     ...styles.progressFill,
                     backgroundColor: theme.colors.primary,
-                    width: `${opportunity.goal.confirmed_payment_percentage}%`,
+                    width: `${confirmedPct}%`,
                   }}
                 />
               </View>
@@ -455,7 +457,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <Text style={styles.value}>
                 R${" "}
                 {CommonMask.currency(
-                  (opportunity.monetary.min_investment_value / 100)
+                  (minInvestment / 100)
                     .toFixed(2)
                     .toString()
                 )}
@@ -466,7 +468,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <Text style={styles.listItemDesc}>
                 R${" "}
                 {CommonMask.currency(
-                  (opportunity.goal.min_goal / 100).toFixed(2).toString()
+                  (minGoal / 100).toFixed(2).toString()
                 )}
               </Text>
             </View>
@@ -475,7 +477,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <Text style={styles.listItemDesc}>
                 R${" "}
                 {CommonMask.currency(
-                  (opportunity.goal.max_goal / 100).toFixed(2).toString()
+                  (maxGoal / 100).toFixed(2).toString()
                 )}
               </Text>
             </View>
@@ -501,14 +503,14 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               <View style={styles.dataItem}>
                 <Text style={styles.dataTitle}>Perfil</Text>
                 <Text style={styles.dataValue}>
-                  {opportunity.investor_profile.title}
+                  {opportunity?.investor_profile?.title ?? ""}
                 </Text>
               </View>
               <View style={styles.dataItem}>
                 <Text style={styles.dataTitle}>Total investido</Text>
                 <Text style={styles.dataValue}>
                   {CommonMask.percent(
-                    opportunity.goal.confirmed_payment_percentage.toString()
+                    confirmedPct.toString()
                   )}
                   %
                 </Text>
@@ -517,7 +519,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                 <Text style={styles.dataTitle}>Participação</Text>
                 <Text style={styles.dataValue}>
                   {CommonMask.percent(
-                    opportunity.modality_data.participation.toString()
+                    participation.toString()
                   )}
                   %
                 </Text>
@@ -534,7 +536,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
             <Text style={styles.cardTitle}>Setor</Text>
             <Text style={styles.cardDesc}>{opportunity.sectorDescription}</Text>
           </View> */}
-          {opportunity.members.length ? (
+          {opportunity?.members?.length ? (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Equipe</Text>
               <FlatList
@@ -579,7 +581,9 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               }
               label="Fórum"
               onPress={() => {
-                Linking.openURL(opportunity.whatsapp_group);
+                if (opportunity?.whatsapp_group) {
+                  Linking.openURL(opportunity.whatsapp_group);
+                }
               }}
             />
           </View>

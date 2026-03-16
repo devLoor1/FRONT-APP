@@ -1,7 +1,6 @@
 import axios from "axios";
 import Constants from "expo-constants";
 import deviceData from "@/helpers/deviceData";
-import AuthStorage from "@/storages/auth-storage";
 import * as Updates from "expo-updates";
 import Debug from "@/helpers/debug";
 
@@ -14,7 +13,14 @@ const getBaseURL = () => {
   return Constants?.expoConfig?.extra?.env?.baseUrl || "https://backend-homolog-debt.onrender.com/";
 };
 
-const api = axios.create({
+const getBasicAuth = () => {
+  if (isWeb && process.env.BASIC_AUTH) {
+    return process.env.BASIC_AUTH;
+  }
+  return Constants?.expoConfig?.extra?.env?.basicAuth || "";
+};
+
+const apiPublic = axios.create({
   baseURL: getBaseURL(),
   headers: {
     "device-info": deviceData,
@@ -26,30 +32,18 @@ const api = axios.create({
           Constants.expoConfig?.extra?.version,
         ].join(" - "),
     "Content-Type": "application/json",
+    Authorization: getBasicAuth(),
   },
 });
 
-api.interceptors.response.use(
+apiPublic.interceptors.response.use(
   (config) => {
     return config;
   },
   (error) => {
     Debug.Capture(error);
-    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    return Promise.reject(error);
   }
 );
 
-api.interceptors.request.use(
-  async (config) => {
-    const token = await AuthStorage.GetPrivateToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
-  }
-);
-
-export default api;
+export default apiPublic;

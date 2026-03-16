@@ -13,14 +13,17 @@ export const getMe = async () => {
 };
 
 export const getPersonalInformation = async () => {
-  const response = await api.get<PersonalInformationResponse>("/investors/profile/personal-information");
-  return response.data;
+  const response = await api.get<PersonalInformationResponse | { data: PersonalInformationResponse }>("/investors/personal-information");
+  const body = response.data;
+  if ("data" in body && typeof body.data === "object" && body.data !== null && "cpf" in body.data) {
+    return body.data as PersonalInformationResponse;
+  }
+  return body as PersonalInformationResponse;
 };
 
 export const postPersonalInformation = async (request: PersonalInformationRequest) => {
-  console.log('request', request);
   const response = await api.post<PersonalInformationResponse>(
-    "/investors/profile/personal-information",
+    "/investors/personal-information",
     request
   );
   return response.data;
