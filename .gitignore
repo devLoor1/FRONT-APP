@@ -37,3 +37,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# API reference (cloned separately, not tracked)
+backend-mcp/
