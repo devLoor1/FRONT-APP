@@ -32,6 +32,56 @@ The app runs on port 5000:
 npm run web:replit
 ```
 
+## Git Workflow — Develop → Main
+
+O projeto usa um fluxo de duas branches para separar homologação de produção:
+
+```
+Replit (main local)
+       │
+       ▼  git push
+origin/develop  ──── homologação / QA
+       │
+       ▼  Pull Request aprovado
+origin/main  ──── produção
+```
+
+### Como funciona
+
+- **Todo trabalho no Replit** é commitado na branch local `main`.
+- **Ao fazer push**, o código vai automaticamente para `origin/develop` no GitHub (configurado via `branch.main.merge`).
+- **Para promover para produção**, abra um Pull Request de `develop` → `main` no GitHub (manualmente ou via GitHub Actions abaixo).
+
+### Promover develop → main (GitHub Actions)
+
+1. Acesse o repositório no GitHub: `https://github.com/devLoor1/FRONT-APP`
+2. Vá em **Actions** → **"Promover develop para main"**
+3. Clique em **"Run workflow"**
+4. Preencha o título do PR (opcional) e clique em **"Run workflow"**
+5. Um Pull Request será criado automaticamente de `develop` → `main`
+6. Revise e faça o merge do PR para publicar em produção
+
+### Configuração inicial — Push para develop
+
+Para habilitar o push automático para `origin/develop`, é necessário autenticar com o GitHub. Adicione um Personal Access Token (PAT) com escopo `repo` como secret no Replit:
+
+1. Crie um PAT em: `https://github.com/settings/tokens` (escopo: `repo`)
+2. No Replit, adicione como secret: `GITHUB_PAT`
+3. Configure a URL autenticada:
+   ```bash
+   git remote set-url origin https://<SEU_PAT>@github.com/devLoor1/FRONT-APP.git
+   git push origin main:develop
+   ```
+
+### Proteger a branch main no GitHub (recomendado)
+
+Para evitar push direto para `main` sem PR:
+1. Acesse: `github.com/devLoor1/FRONT-APP` → **Settings** → **Branches**
+2. Adicione uma **Branch protection rule** para `main`:
+   - ✅ Require a pull request before merging
+   - ✅ Require approvals (opcional)
+   - ✅ Do not allow bypassing the above settings
+
 ## Web Compatibility Changes
 The app has been adapted for web use with these modifications:
 
