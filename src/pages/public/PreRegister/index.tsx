@@ -19,7 +19,7 @@ export default function LeadPages() {
     email: '',
     full_name: '',
     phone: '',
-    type: '',
+    type: 'pessoa_fisica',
   });
 
   function resetAll() {
@@ -28,7 +28,7 @@ export default function LeadPages() {
       email: '',
       full_name: '',
       phone: '',
-      type: '',
+      type: 'pessoa_fisica',
     });
   }
 

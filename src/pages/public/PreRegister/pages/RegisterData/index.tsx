@@ -6,25 +6,11 @@ import CommonValidators from '@/helpers/validators/common.validators';
 import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
 import { RegisterRequest } from '@/models/auth/register.request';
-import Select from '@/components/Select';
 
 type Props = {
   readonly setRegisterPayload: React.Dispatch<React.SetStateAction<RegisterRequest>>;
   readonly registerPayload: RegisterRequest;
   readonly onPress: (data: RegisterRequest) => void;
-};
-
-const type = {
-  list: [
-    {
-      id: 'pessoa_fisica',
-      value: 'Pessoa Física',
-    },
-    {
-      id: 'pessoa_juridica',
-      value: 'Pessoa Jurídica',
-    },
-  ],
 };
 
 export default function RegisterData({ setRegisterPayload, registerPayload, onPress }: Props) {
@@ -33,7 +19,6 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
     email: '',
     full_name: '',
     phone: '',
-    type: '',
   });
 
   useEffect(() => {
@@ -48,21 +33,14 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
     const emailValidator = CommonValidators.isEmailValid(registerPayload.email || '');
     const fullNameValidator = CommonValidators.isNameValid(registerPayload.full_name || '');
     const phoneValidator = CommonValidators.isCellphoneValid(registerPayload.phone || '');
-    const typeValidator = registerPayload.type;
 
     setError({
       email: emailValidator.error,
       full_name: fullNameValidator.error,
       phone: phoneValidator.error,
-      type: !typeValidator ? 'Selecione o tipo de pessoa' : '',
     });
 
-    if (
-      emailValidator.status &&
-      fullNameValidator.status &&
-      phoneValidator.status &&
-      typeValidator
-    ) {
+    if (emailValidator.status && fullNameValidator.status && phoneValidator.status) {
       onPress(registerPayload);
     }
   }
@@ -113,18 +91,6 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
             />
           </View>
         </View>
-        <Select
-          placeholder="Tipo de pessoa"
-          required={true}
-          value={registerPayload.type || ''}
-          setValue={setRegisterPayload}
-          form={registerPayload}
-          arr={type}
-          fieldName="type"
-          error={!!error.type}
-          txtError={'Necessário selecionar o tipo de pessoa'}
-        />
-
       </View>
       <BtnDefault
         style={{ marginBottom: Platform.OS === 'android' ? 20 : 0 }}

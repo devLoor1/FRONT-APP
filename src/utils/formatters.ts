@@ -17,11 +17,13 @@ export const formatPhone = (phone: string): string => {
 
 /**
  * Formata tipo de pessoa para formato da API
- * @param type - Tipo de pessoa (Pessoa Física ou Pessoa Jurídica)
+ * @param type - Tipo de pessoa (aceita 'Pessoa Física', 'pessoa_fisica', etc.)
  * @returns Tipo formatado (pessoa_fisica ou pessoa_juridica)
  */
 export const formatPersonType = (type: string): string => {
-  return type === 'Pessoa Física' ? 'pessoa_fisica' : 'pessoa_juridica';
+  if (type === 'Pessoa Física' || type === 'pessoa_fisica') return 'pessoa_fisica';
+  if (type === 'Pessoa Jurídica' || type === 'pessoa_juridica') return 'pessoa_juridica';
+  return 'pessoa_fisica';
 };
 
 /**
