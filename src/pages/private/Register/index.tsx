@@ -200,7 +200,7 @@ export default function RegisterPage() {
       case 3:
         return <BankData formData={formData} updateFormData={updateFormData} onNext={handleBankDataNext} onPrev={prevPage} isSubmitting={isSubmitting} />;
       case 4:
-        return <Proof onContinue={() => setPage(5)} />;
+        return <Proof onContinue={() => setPage(5)} onPrev={prevPage} />;
       case 5:
         return <SuccessPage />;
       default:
@@ -214,7 +214,7 @@ export default function RegisterPage() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <View style={{ paddingHorizontal: 16 }}>
-          {page !== 5 && <Steps qtd={4} index={page + 1} />}
+          {page !== 5 && <Steps qtd={4} index={page <= 1 ? 1 : page} />}
         </View>
         
         <ScrollView

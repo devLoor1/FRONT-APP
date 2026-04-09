@@ -338,7 +338,7 @@ export default function Address({ formData, updateFormData, onNext, onPrev }: Ad
         <BtnDefault
           label={loadingCep ? "Consultando CEP..." : "Continuar"}
           onPress={onConfirm}
-          disabled={loadingCep}
+          disabled={loadingCep || !confirmedAddress}
           style={{ marginBottom: 15 }}
         />
       </View>

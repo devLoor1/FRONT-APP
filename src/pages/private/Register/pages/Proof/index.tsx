@@ -27,14 +27,14 @@ type Props = {
   onActionAfterSubmit?: (docResponse: any) => void;
   hideRetakeIcon?: boolean;
   onContinue?: () => void;
+  onPrev?: () => void;
 };
 
 type PhotoType = 'document' | 'selfie';
 
 const isWeb = Platform.OS === 'web';
 
-export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onContinue }: Props) {
-  const dispatch = useAppDispatch();
+export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onContinue, onPrev }: Props) {
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const styles = useCustomStyles();
@@ -173,7 +173,13 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.btnBackBlock}>
         <TouchableOpacity
-          onPress={() => nav.navigate('Tabs', { screen: 'HomeTabs' })}
+          onPress={() => {
+            if (onPrev) {
+              onPrev();
+            } else {
+              nav.navigate('Tabs', { screen: 'HomeTabs' });
+            }
+          }}
           style={styles.btnCancel}
         >
           <ArrowBack color={theme.colors.text} width={32} height={32} />
