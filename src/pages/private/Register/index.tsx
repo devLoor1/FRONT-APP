@@ -27,14 +27,16 @@ interface RegisterFormData {
   rg: string;
   issuing_entity: string;
   nationality: string;
-  
   gender: string;
   marital_status: string;
+
+  company: string;
   job: string;
   role: string;
   annual_income: number;
   exposed_politically: number;
-  
+
+  country_id: number;
   zip_code: string;
   city: string;
   state: string;
@@ -42,7 +44,7 @@ interface RegisterFormData {
   street_name: string;
   number: string;
   complement: string;
-  
+
   bank_id: number;
   agency: string;
   account: string;
@@ -69,10 +71,12 @@ export default function RegisterPage() {
     nationality: '',
     gender: '',
     marital_status: '',
+    company: '',
     job: '',
     role: '',
     annual_income: 0,
     exposed_politically: 0,
+    country_id: 29,
     zip_code: '',
     city: '',
     state: '',
@@ -99,13 +103,7 @@ export default function RegisterPage() {
   };
 
   const nextPage = () => {
-    const nextPageIndex = page + 1;
-    
-    if (nextPageIndex >= 6) {
-      submitForm();
-    } else {
-      setPage(nextPageIndex);
-    }
+    setPage(prev => prev + 1);
   };
 
   const handleBankDataNext = async () => {
@@ -116,7 +114,7 @@ export default function RegisterPage() {
     } catch (error: any) {
       if (error.response?.status === 403 && 
           error.response?.data?.message === "Informações pessoais já cadastradas") {
-        setPage(4); // Proof
+        setPage(4);
         return;
       }
       
@@ -124,7 +122,7 @@ export default function RegisterPage() {
         const errorMessages = error.response.data.errors.map((err: any) => err.message).join(', ');
         setMsgError(`Erro na validação: ${errorMessages}`);
       } else {
-        setMsgError('Erro ao enviar dados. Tente novamente.');
+        setMsgError(error.response?.data?.message || 'Erro ao enviar dados. Tente novamente.');
       }
       setShowSnack(true);
     } finally {
@@ -137,93 +135,60 @@ export default function RegisterPage() {
   };
 
   const submitForm = async () => {
-    const requiredFields = {
-      full_name: formData.full_name,
-      cpf: formData.cpf,
-      birth_date: formData.birth_date,
-      rg: formData.rg,
-      issuing_entity: formData.issuing_entity,
-      nationality: formData.nationality,
-      gender: formData.gender,
-      marital_status: formData.marital_status,
-      job: formData.job,
-      role: formData.role,
-      annual_income: formData.annual_income,
-      zip_code: formData.zip_code,
-      city: formData.city,
-      state: formData.state,
-      district: formData.district,
-      street_name: formData.street_name,
-      number: formData.number,
-      bank_id: formData.bank_id,
-      agency: formData.agency,
-      account: formData.account,
-      account_digit: formData.account_digit,
-    };
-
-    const emptyFields = Object.entries(requiredFields)
-      .filter(([key, value]) => !value || value === 0)
-      .map(([key]) => key);
-
     if (!user?.phone) {
       setMsgError('Telefone do usuário não encontrado. Faça login novamente.');
       setShowSnack(true);
-      return;
+      throw new Error('Phone not found');
     }
 
-    if (emptyFields.length > 0) {
-      setMsgError(`Campos obrigatórios não preenchidos: ${emptyFields.join(', ')}`);
-      setShowSnack(true);
-      return;
-    }
+    const nationalityNormalized = 
+      formData.nationality.toLowerCase() === 'brasileiro' || 
+      formData.nationality.toLowerCase() === 'brasileira'
+        ? 'brazilian'
+        : formData.nationality;
 
-    try {
-      const payload = {
-        full_name: formData.full_name,
-        phone: user?.phone || "",
-        investor_personal_information: {
-          nationality: formData.nationality.toLowerCase() === 'brasileiro' || formData.nationality.toLowerCase() === 'brasileira' ? 'brazilian' : formData.nationality,
-          gender: formData.gender,
-          cpf: formData.cpf,
-          birth_date: formData.birth_date,
-          rg: formData.rg,
-          issuing_entity: formData.issuing_entity,
-          marital_status: formData.marital_status,
-          company: "",
-          job: formData.job,
-          role: formData.role,
-          annual_income: formData.annual_income,
-          exposed_politically: formData.exposed_politically
-        },
-        address: {
-          country_id: 29,
-          zip_code: formData.zip_code.replace(/\D/g, ''),
-          street_name: formData.street_name,
-          number: formData.number,
-          district: formData.district,
-          city: formData.city,
-          state: formData.state,
-          complement: formData.complement || null
-        },
-        investor_company_information: {
-          name: "",
-          fantasy_name: "",
-          cnpj: "",
-          type: ""
-        },
-        bank_account: {
-          bank_id: formData.bank_id,
-          agency: formData.agency,
-          account: formData.account,
-          account_digit: formData.account_digit
-        }
-      };
+    const payload = {
+      full_name: formData.full_name,
+      phone: user?.phone || "",
+      investor_personal_information: {
+        nationality: nationalityNormalized,
+        gender: formData.gender,
+        cpf: formData.cpf,
+        birth_date: formData.birth_date,
+        rg: formData.rg,
+        issuing_entity: formData.issuing_entity,
+        marital_status: formData.marital_status,
+        company: formData.company || "",
+        job: formData.job,
+        role: formData.role,
+        annual_income: formData.annual_income,
+        exposed_politically: formData.exposed_politically,
+      },
+      address: {
+        country_id: formData.country_id || 29,
+        zip_code: formData.zip_code.replace(/\D/g, ''),
+        street_name: formData.street_name,
+        number: formData.number,
+        district: formData.district,
+        city: formData.city,
+        state: formData.state,
+        complement: formData.complement || null,
+      },
+      investor_company_information: {
+        name: "",
+        fantasy_name: "",
+        cnpj: "",
+        type: "",
+      },
+      bank_account: {
+        bank_id: formData.bank_id,
+        agency: formData.agency,
+        account: formData.account,
+        account_digit: formData.account_digit,
+      },
+    };
 
-      await submitPersonalInformation(payload);
-      
-    } catch (error: any) {
-      throw error;
-    }
+    await submitPersonalInformation(payload);
   };
 
   function renderContent() {

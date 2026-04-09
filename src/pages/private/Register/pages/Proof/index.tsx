@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import { Camera } from 'expo-camera';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import Snack from '@/components/Snack';
 import CameraComp from './components/Camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,12 +24,14 @@ import { useMutation } from '@tanstack/react-query';
 import LoadingComp from '@/components/Loading';
 
 type Props = {
-  onActionAfterSubmit?: (docResponse: any) => void
-  hideRetakeIcon?: boolean
+  onActionAfterSubmit?: (docResponse: any) => void;
+  hideRetakeIcon?: boolean;
   onContinue?: () => void;
 };
 
 type PhotoType = 'document' | 'selfie';
+
+const isWeb = Platform.OS === 'web';
 
 export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onContinue }: Props) {
   const dispatch = useAppDispatch();
@@ -46,6 +48,10 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
   const [documentPhoto, setDocumentPhoto] = useState<any>(null);
   const [selfiePhoto, setSelfiePhoto] = useState<any>(null);
   const [progress, setProgress] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+
+  const documentInputRef = useRef<HTMLInputElement | null>(null);
+  const selfieInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     mutateAsync: faceMatchMutation,
@@ -57,14 +63,36 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
 
   async function startCamera(photoType: PhotoType) {
     Analytics({ pageName: 'ComprovanteResidencia_TirarFoto' });
-    const { status } = await Camera.requestCameraPermissionsAsync();
 
+    if (isWeb) {
+      if (photoType === 'document') {
+        documentInputRef.current?.click();
+      } else {
+        selfieInputRef.current?.click();
+      }
+      return;
+    }
+
+    const { status } = await Camera.requestCameraPermissionsAsync();
     if (status === 'granted') {
       setCurrentPhotoType(photoType);
       setIsOpenCamera(true);
     } else {
       await Camera.requestCameraPermissionsAsync();
     }
+  }
+
+  function handleWebFileSelect(e: any, photoType: PhotoType) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const uri = URL.createObjectURL(file);
+    const photo = { uri, file, name: file.name, type: file.type };
+    if (photoType === 'document') {
+      setDocumentPhoto(photo);
+    } else {
+      setSelfiePhoto(photo);
+    }
+    e.target.value = '';
   }
 
   function closeCamera() {
@@ -74,7 +102,6 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
   async function takePicture() {
     if (!cameraRef.current) return;
     const photo = await cameraRef.current.takePictureAsync({ base64: false });
-
     if (photo) {
       if (currentPhotoType === 'document') {
         setDocumentPhoto(photo);
@@ -96,20 +123,18 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
 
   async function onSubmitPictures() {
     if (!documentPhoto || !selfiePhoto) {
-      setSnackMessage('É necessário capturar tanto o documento quanto a selfie');
+      setSnackMessage('É necessário enviar tanto o documento quanto a selfie');
       setShowSnack(true);
       return;
     }
 
     try {
       await faceMatchMutation({ document: documentPhoto, selfie: selfiePhoto });
-      
-      // Se chegou até aqui, foi bem-sucedido
+      setSubmitted(true);
       if (onActionAfterSubmit) {
         await onActionAfterSubmit({ success: true });
       }
     } catch (error: any) {
-      console.error('Erro ao enviar fotos:', error);
       const errorMessage = error?.response?.data?.message || 'Erro ao enviar fotos. Tente novamente.';
       setSnackMessage(errorMessage);
       setShowSnack(true);
@@ -120,16 +145,14 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     Analytics({ pageName: 'CadastroComprovante' });
   }, []);
 
-  if (isOpenCamera) {
+  if (!isWeb && isOpenCamera) {
     return (
       <CameraComp
         takePicture={takePicture}
         cameraRef={cameraRef}
         capturedImage={currentPhotoType === 'document' ? documentPhoto : selfiePhoto}
         previewVisible={false}
-        retakePicture={() => {
-          retakePicture(currentPhotoType);
-        }}
+        retakePicture={() => retakePicture(currentPhotoType)}
         onSubmitPicture={async () => {}}
         closeCamera={closeCamera}
         progress={progress}
@@ -139,87 +162,129 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     );
   }
 
-  if (documentPhoto && selfiePhoto && !isSubmitting) {
+  if (submitted || (documentPhoto && selfiePhoto && !isSubmitting && submitted)) {
     return <SuccessPage onContinue={onContinue} />;
   }
 
+  const documentLabel = isWeb ? 'Selecionar foto do documento' : 'Tirar foto do documento';
+  const selfieLabel = isWeb ? 'Selecionar selfie' : 'Tirar selfie';
+
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.background,
-      }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.btnBackBlock}>
-        <TouchableOpacity onPress={() => { nav.navigate('Tabs', { screen: 'HomeTabs' }); }} style={styles.btnCancel}>
+        <TouchableOpacity
+          onPress={() => nav.navigate('Tabs', { screen: 'HomeTabs' })}
+          style={styles.btnCancel}
+        >
           <ArrowBack color={theme.colors.text} width={32} height={32} />
         </TouchableOpacity>
       </View>
+
+      {/* Hidden file inputs for web */}
+      {isWeb && (
+        <>
+          <input
+            ref={documentInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={(e) => handleWebFileSelect(e, 'document')}
+          />
+          <input
+            ref={selfieInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            style={{ display: 'none' }}
+            onChange={(e) => handleWebFileSelect(e, 'selfie')}
+          />
+        </>
+      )}
+
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={[styles.container, styles.containerForm]}>
           <View style={styles.content}>
             <Text style={{ ...styles.title, marginBottom: 24 }}>
-              Comprovante de Residência
+              {isWeb ? 'Envio de documentos' : 'Comprovante de Residência'}
             </Text>
-            <Text style={pageStyles.desc}>O comprovante deve possuir:</Text>
-            <View style={pageStyles.list}>
-              <View style={pageStyles.listItem}>
-                <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
-                <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Nome completo:</Text> de sua
-                  titularidade ou parentesco de primeiro grau (pai, mãe ou cônjuge).
-                </Text>
-              </View>
-              <View style={pageStyles.listItem}>
-                <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
-                <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Data de validade:</Text> até no
-                  máximo 3 meses desde a data de hoje.
-                </Text>
-              </View>
-              <View style={pageStyles.listItem}>
-                <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
-                <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Endereço:</Text> a descrição do
-                  endereço precisa estar visível.
-                </Text>
-              </View>
-            </View>
-            <View style={pageStyles.cardWarn}>
-              <WarningIcon width={48} height={48} color={theme.customColors.hyperlink} />
-              <View style={{ flex: 1 }}>
-                <Text style={pageStyles.warnTitle}>Lembre-se</Text>
-                <Text style={pageStyles.warnDesc}>
-                  É importante que a foto do documento esteja nítida
-                </Text>
-              </View>
-            </View>
+            <Text style={pageStyles.desc}>
+              {isWeb
+                ? 'Envie as imagens necessárias para verificar sua identidade.'
+                : 'O comprovante deve possuir:'}
+            </Text>
+
+            {!isWeb && (
+              <>
+                <View style={pageStyles.list}>
+                  <View style={pageStyles.listItem}>
+                    <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
+                    <Text style={pageStyles.listTxt}>
+                      <Text style={{ fontFamily: theme.fonts.bold }}>Nome completo:</Text> de sua
+                      titularidade ou parentesco de primeiro grau (pai, mãe ou cônjuge).
+                    </Text>
+                  </View>
+                  <View style={pageStyles.listItem}>
+                    <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
+                    <Text style={pageStyles.listTxt}>
+                      <Text style={{ fontFamily: theme.fonts.bold }}>Data de validade:</Text> até no
+                      máximo 3 meses desde a data de hoje.
+                    </Text>
+                  </View>
+                  <View style={pageStyles.listItem}>
+                    <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
+                    <Text style={pageStyles.listTxt}>
+                      <Text style={{ fontFamily: theme.fonts.bold }}>Endereço:</Text> a descrição do
+                      endereço precisa estar visível.
+                    </Text>
+                  </View>
+                </View>
+                <View style={pageStyles.cardWarn}>
+                  <WarningIcon width={48} height={48} color={theme.customColors.hyperlink} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={pageStyles.warnTitle}>Lembre-se</Text>
+                    <Text style={pageStyles.warnDesc}>
+                      É importante que a foto do documento esteja nítida
+                    </Text>
+                  </View>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Documento */}
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Documento de Residência</Text>
+            <Text style={{
+              fontSize: 16,
+              fontFamily: theme.fonts.semiBold,
+              color: theme.colors.text,
+              marginBottom: 8,
+            }}>
+              {isWeb ? 'Documento de Identidade (frente)' : 'Documento de Residência'}
+            </Text>
             {documentPhoto ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <View style={{ 
-                  width: 60, 
-                  height: 60, 
-                  backgroundColor: theme.colors.border, 
+                <View style={{
+                  width: 60, height: 60,
+                  backgroundColor: theme.customColors.secondary[100] || '#e0f2e9',
                   borderRadius: 8,
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}>
-                  <Text style={{ fontSize: 12, color: theme.colors.text }}>✓</Text>
+                  <Text style={{ fontSize: 20 }}>✓</Text>
                 </View>
+                <Text style={{ flex: 1, color: theme.colors.text, fontSize: 13 }}>
+                  {isWeb && documentPhoto.name ? documentPhoto.name : 'Foto capturada'}
+                </Text>
                 <BtnDefault
-                  label="Nova foto"
+                  label="Trocar"
                   white
                   onPress={() => retakePicture('document')}
-                  style={{ flex: 1 }}
+                  style={{ flex: 0 }}
                 />
               </View>
             ) : (
               <BtnDefault
-                label="Tirar foto do documento"
+                label={documentLabel}
                 icon={<CameraIcon color={theme.customColors.baseWhite} width={24} height={24} />}
                 onPress={() => startCamera('document')}
               />
@@ -228,36 +293,44 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
 
           {/* Selfie */}
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Selfie</Text>
+            <Text style={{
+              fontSize: 16,
+              fontFamily: theme.fonts.semiBold,
+              color: theme.colors.text,
+              marginBottom: 8,
+            }}>
+              Selfie
+            </Text>
             {selfiePhoto ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <View style={{ 
-                  width: 60, 
-                  height: 60, 
-                  backgroundColor: theme.colors.border, 
+                <View style={{
+                  width: 60, height: 60,
+                  backgroundColor: theme.customColors.secondary[100] || '#e0f2e9',
                   borderRadius: 8,
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}>
-                  <Text style={{ fontSize: 12, color: theme.colors.text }}>✓</Text>
+                  <Text style={{ fontSize: 20 }}>✓</Text>
                 </View>
+                <Text style={{ flex: 1, color: theme.colors.text, fontSize: 13 }}>
+                  {isWeb && selfiePhoto.name ? selfiePhoto.name : 'Selfie capturada'}
+                </Text>
                 <BtnDefault
-                  label="Nova foto"
+                  label="Trocar"
                   white
                   onPress={() => retakePicture('selfie')}
-                  style={{ flex: 1 }}
+                  style={{ flex: 0 }}
                 />
               </View>
             ) : (
               <BtnDefault
-                label="Tirar selfie"
+                label={selfieLabel}
                 icon={<CameraIcon color={theme.customColors.baseWhite} width={24} height={24} />}
                 onPress={() => startCamera('selfie')}
               />
             )}
           </View>
 
-          {/* Botão de enviar */}
           {documentPhoto && selfiePhoto && (
             <BtnDefault
               label={isSubmitting ? "Enviando..." : "Enviar fotos"}
@@ -266,20 +339,17 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
             />
           )}
         </View>
-        
+
         {isSubmitting && (
           <View style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            top: 0, left: 0, right: 0, bottom: 0,
             zIndex: 1000,
           }}>
             <LoadingComp transparent />
           </View>
         )}
-        
+
         <Snack visible={showSnack} txt={snackMessage} setShowSnack={setShowSnack} />
       </ScrollView>
     </SafeAreaView>

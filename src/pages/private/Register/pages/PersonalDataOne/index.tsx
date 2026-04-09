@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CommonValidators from '@/helpers/validators/common.validators';
 import Input from '@/components/Input';
 import BtnDefault from '@/components/BtnDefault';
+import Select from '@/components/Select';
 import { Text, View } from 'react-native';
 import { useCustomStyles } from '../../style';
 import { Analytics } from '@/helpers/analytics';
@@ -18,6 +19,8 @@ interface PersonalDataOneProps {
     rg: string;
     issuing_entity: string;
     nationality: string;
+    gender: string;
+    marital_status: string;
   };
   updateFormData: (data: Partial<{
     cpf: string;
@@ -26,15 +29,40 @@ interface PersonalDataOneProps {
     rg: string;
     issuing_entity: string;
     nationality: string;
+    gender: string;
+    marital_status: string;
   }>) => void;
   onNext: () => void;
 }
+
+type SelectProps = {
+  list: { id: string; value: string }[];
+};
+
+const genderOptions: SelectProps = {
+  list: [
+    { id: 'male', value: 'Homem' },
+    { id: 'female', value: 'Mulher' },
+    { id: 'other', value: 'Outro' },
+  ],
+};
+
+const civilStatusOptions: SelectProps = {
+  list: [
+    { id: 'single', value: 'Solteiro(a)' },
+    { id: 'married', value: 'Casado(a)' },
+    { id: 'separated', value: 'Separado(a)' },
+    { id: 'divorced', value: 'Divorciado(a)' },
+    { id: 'widowed', value: 'Viúvo(a)' },
+    { id: 'common_law', value: 'União estável' },
+  ],
+};
 
 export default function PersonalDataOne({ formData, updateFormData, onNext }: PersonalDataOneProps) {
   const styles = useCustomStyles();
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
-  
+
   const [error, setError] = useState({
     cpf: '',
     full_name: '',
@@ -42,6 +70,8 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
     rg: '',
     issuing_entity: '',
     nationality: '',
+    gender: '',
+    marital_status: '',
   });
 
   const {
@@ -54,15 +84,13 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
 
   function handleField(value: string, field: string) {
     updateFormData({ [field]: value });
-    
     if (error[field as keyof typeof error]) {
-      setError({ ...error, [field]: '' });
+      setError(prev => ({ ...prev, [field]: '' }));
     }
   }
 
   function formatDateForDisplay(dateString: string): string {
     if (!dateString) return '';
-    
     const parts = dateString.split('-');
     if (parts.length === 3) {
       const [year, month, day] = parts;
@@ -73,7 +101,6 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
 
   function formatDateForAPI(dateString: string): string {
     if (!dateString) return '';
-    
     const parts = dateString.split('/');
     if (parts.length === 3) {
       const [day, month, year] = parts;
@@ -84,20 +111,17 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
 
   async function handleCpfChange(cpf: string) {
     handleField(cpf, 'cpf');
-    
     const cleanCpf = cpf.replace(/\D/g, '');
     if (cleanCpf.length === 11) {
       try {
         const bureauData = await bureauMutation(cleanCpf);
-        
         if (bureauData.data) {
           updateFormData({
             full_name: bureauData.data.name,
             birth_date: formatDateForDisplay(bureauData.data.birth_date),
           });
         }
-      } catch (error: any) {
-        console.error('Erro ao consultar bureau:', error);
+      } catch (err: any) {
         setSnackMessage('Erro ao consultar dados do CPF. Verifique se o CPF está correto.');
         setShowSnack(true);
       }
@@ -107,7 +131,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
   function validateFields() {
     const cpfValidator = CommonValidators.isCPFValid(formData.cpf);
     const nameValidator = CommonValidators.isNameValid(formData.full_name);
-    
+
     const newErrors = {
       cpf: cpfValidator.error,
       full_name: nameValidator.error,
@@ -115,27 +139,19 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
       rg: !formData.rg ? 'RG obrigatório' : '',
       issuing_entity: !formData.issuing_entity ? 'Órgão emissor obrigatório' : '',
       nationality: !formData.nationality ? 'Nacionalidade obrigatória' : '',
+      gender: !formData.gender ? 'Gênero obrigatório' : '',
+      marital_status: !formData.marital_status ? 'Estado civil obrigatório' : '',
     };
 
     setError(newErrors);
-
-    return Object.values(newErrors).every(error => !error);
+    return Object.values(newErrors).every(e => !e);
   }
 
   async function onConfirm() {
     Analytics({ eventName: 'CadastroDadosPessoaisInicio_Continuar' });
-    
     if (validateFields()) {
-      // Converter data para formato da API antes de salvar no estado global
-      const formDataForAPI = {
-        ...formData,
-        birth_date: formatDateForAPI(formData.birth_date),
-      };
-      
-      // Atualizar o estado global com a data no formato correto
-      updateFormData({ birth_date: formDataForAPI.birth_date });
-      
-      onNext(); // Navegar para o próximo step
+      updateFormData({ birth_date: formatDateForAPI(formData.birth_date) });
+      onNext();
     }
   }
 
@@ -149,30 +165,26 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
         {loadingBureau && (
           <View style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            top: 0, left: 0, right: 0, bottom: 0,
             zIndex: 1000,
           }}>
             <LoadingComp transparent />
           </View>
         )}
+
         <Text style={styles.title}>Dados Pessoais</Text>
-        
-        <View style={{ position: 'relative' }}>
-          <Input
-            placeholder="CPF *"
-            value={formData.cpf}
-            setValue={(value) => handleCpfChange(typeof value === 'string' ? value : value(formData.cpf))}
-            mask="cpf"
-            error={!!error.cpf}
-            txtError={error.cpf}
-            keyboardType="numeric"
-            maxLength={14}
-            editable={!loadingBureau}
-          />
-        </View>
+
+        <Input
+          placeholder="CPF *"
+          value={formData.cpf}
+          setValue={(value) => handleCpfChange(typeof value === 'string' ? value : value(formData.cpf))}
+          mask="cpf"
+          error={!!error.cpf}
+          txtError={error.cpf}
+          keyboardType="numeric"
+          maxLength={14}
+          editable={!loadingBureau}
+        />
 
         <Input
           placeholder="Nome Completo *"
@@ -195,7 +207,30 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
           editable={false}
         />
 
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+        <Input
+          placeholder="Nacionalidade *"
+          value={formData.nationality}
+          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.nationality), 'nationality')}
+          error={!!error.nationality}
+          txtError={error.nationality}
+          autoCapitalize="words"
+        />
+        <Text style={{ ...styles.subDesc, marginBottom: 8 }}>Ex.: Brasileira, Americana, etc.</Text>
+
+        <Select
+          label="Gênero *"
+          placeholder="Selecione o gênero *"
+          value={formData.gender || ''}
+          setValue={updateFormData}
+          form={formData}
+          arr={genderOptions}
+          fieldName="gender"
+          error={!!error.gender}
+          txtError={error.gender}
+          marginBottom={8}
+        />
+
+        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
           <View style={{ flex: 1 }}>
             <Input
               placeholder="RG *"
@@ -206,8 +241,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
               keyboardType="numeric"
             />
           </View>
-
-          <View>
+          <View style={{ flex: 1 }}>
             <Input
               placeholder="Órgão Emissor *"
               value={formData.issuing_entity}
@@ -216,28 +250,31 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
               txtError={error.issuing_entity}
               autoCapitalize="characters"
             />
-            <Text style={{ ...styles.subDesc }}>Ex.: SSP, DETRAN, etc.</Text>
           </View>
         </View>
+        <Text style={{ ...styles.subDesc, marginBottom: 8 }}>Ex. emissor: SSP, DETRAN, etc.</Text>
 
-        <Input
-          placeholder="Nacionalidade *"
-          value={formData.nationality}
-          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.nationality), 'nationality')}
-          error={!!error.nationality}
-          txtError={error.nationality}
-          autoCapitalize="words"
+        <Select
+          label="Estado Civil *"
+          placeholder="Selecione o estado civil *"
+          value={formData.marital_status || ''}
+          setValue={updateFormData}
+          form={formData}
+          arr={civilStatusOptions}
+          fieldName="marital_status"
+          error={!!error.marital_status}
+          txtError={error.marital_status}
+          marginBottom={8}
         />
-        <Text style={{ ...styles.subDesc }}>Ex.: Brasileira, Americana, etc.</Text>
       </View>
 
-      <BtnDefault 
-        label={loadingBureau ? "Consultando..." : "Continuar"} 
-        onPress={onConfirm} 
+      <BtnDefault
+        label={loadingBureau ? "Consultando..." : "Continuar"}
+        onPress={onConfirm}
         disabled={loadingBureau}
-        style={{ marginBottom: 15 }} 
+        style={{ marginBottom: 15 }}
       />
-      
+
       <Snack
         visible={showSnack}
         txt={snackMessage}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Select from '@/components/Select';
 import Input from '@/components/Input';
 import RadioButton from '@/components/RadioButton';
 import BtnDefault from '@/components/BtnDefault';
@@ -10,16 +9,14 @@ import CommonMask from '@/helpers/masks';
 
 interface PersonalDataTwoProps {
   formData: {
-    gender: string;
-    marital_status: string;
+    company: string;
     job: string;
     role: string;
     annual_income: number;
     exposed_politically: number;
   };
   updateFormData: (data: Partial<{
-    gender: string;
-    marital_status: string;
+    company: string;
     job: string;
     role: string;
     annual_income: number;
@@ -29,60 +26,9 @@ interface PersonalDataTwoProps {
   onPrev: () => void;
 }
 
-type SelectProps = {
-  list: {
-    id: string;
-    value: string;
-  }[];
-};
-
-const gender: SelectProps = {
-  list: [
-    {
-      id: 'male',
-      value: 'Homem',
-    },
-    {
-      id: 'female',
-      value: 'Mulher',
-    }
-  ],
-};
-
-const civilStatus: SelectProps = {
-  list: [
-    {
-      id: 'single',
-      value: 'Solteiro',
-    },
-    {
-      id: 'married',
-      value: 'Casado',
-    },
-    {
-      id: 'separated',
-      value: 'Separado',
-    },
-    {
-      id: 'divorced',
-      value: 'Divorciado',
-    },
-    {
-      id: 'widowed',
-      value: 'Viúvo',
-    },
-    {
-      id: 'common_law',
-      value: 'União estável',
-    },
-  ],
-};
-
 export default function PersonalDataTwo({ formData, updateFormData, onNext, onPrev }: PersonalDataTwoProps) {
   const styles = useCustomStyles();
   const [error, setError] = useState({
-    gender: '',
-    marital_status: '',
     job: '',
     role: '',
     annual_income: '',
@@ -93,64 +39,50 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
 
   function handleField(value: string, field: string) {
     updateFormData({ [field]: value });
-    
     if (error[field as keyof typeof error]) {
-      setError({ ...error, [field]: '' });
+      setError(prev => ({ ...prev, [field]: '' }));
     }
   }
 
   function formatCurrencyForDisplay(value: string): string {
     if (!value) return '';
-    
     const numericValue = value.replace(/\D/g, '');
-    
-    // Converter para número e formatar
     const numberValue = parseFloat(numericValue) / 100;
-    return CommonMask.currency(numberValue.toFixed(2));
+    return isNaN(numberValue) ? '' : CommonMask.currency(numberValue.toFixed(2));
   }
 
   function formatCurrencyForAPI(value: string): number {
     if (!value) return 0;
-    
     const numericValue = value.replace(/\D/g, '');
-    
-    const numberValue = parseFloat(numericValue) / 100;
-    return numberValue;
+    return parseFloat(numericValue) / 100 || 0;
   }
 
   function handleAnnualIncomeChange(value: string) {
     const formattedValue = formatCurrencyForDisplay(value);
     setDisplayAnnualIncome(formattedValue);
-    
-    const numericValue = formatCurrencyForAPI(value);
-    updateFormData({ annual_income: numericValue });
-    
+    updateFormData({ annual_income: formatCurrencyForAPI(value) });
     if (error.annual_income) {
-      setError({ ...error, annual_income: '' });
+      setError(prev => ({ ...prev, annual_income: '' }));
     }
   }
 
   useEffect(() => {
-    Analytics({ pageName: 'CadastroDadosPessoaisInfos' });
+    Analytics({ pageName: 'CadastroDadosProfissionais' });
   }, []);
 
   function validateFields() {
     const newErrors = {
-      gender: !formData.gender ? 'Gênero obrigatório' : '',
-      marital_status: !formData.marital_status ? 'Estado civil obrigatório' : '',
       job: !formData.job ? 'Profissão obrigatória' : '',
-      role: !formData.role ? 'Função obrigatória' : '',
-      annual_income: !formData.annual_income ? 'Faturamento anual obrigatório' : '',
+      role: !formData.role ? 'Cargo obrigatório' : '',
+      annual_income: !formData.annual_income ? 'Renda anual obrigatória' : '',
       exposed_politically: formData.exposed_politically === undefined ? 'Campo obrigatório' : '',
     };
-
     setError(newErrors);
-    return Object.values(newErrors).every(error => !error);
+    return Object.values(newErrors).every(e => !e);
   }
 
   async function onConfirm() {
-    Analytics({ eventName: 'CadastroDadosPessoaisInfos_Continuar' });
-    
+    Analytics({ eventName: 'CadastroDadosProfissionais_Continuar' });
     if (validateFields()) {
       onNext();
     }
@@ -159,31 +91,13 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.content}>
-        <Text style={styles.title}>Dados Pessoais</Text>
-        
-        <Select
-          label="Qual o seu gênero *"
-          placeholder="Selecione uma opção *"
-          value={formData.gender || ''}
-          setValue={updateFormData}
-          form={formData}
-          arr={gender}
-          fieldName="gender"
-          error={!!error.gender}
-          txtError={error.gender}
-          marginBottom={48}
-        />
+        <Text style={styles.title}>Dados Profissionais</Text>
 
-        <Select
-          label="Estado Civil*"
-          placeholder="Selecione uma opção *"
-          value={formData.marital_status || ''}
-          setValue={updateFormData}
-          form={formData}
-          arr={civilStatus}
-          fieldName="marital_status"
-          error={!!error.marital_status}
-          txtError={error.marital_status}
+        <Input
+          placeholder="Empresa"
+          value={formData.company || ''}
+          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.company), 'company')}
+          autoCapitalize="words"
         />
 
         <Input
@@ -196,7 +110,7 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
         />
 
         <Input
-          placeholder="Função *"
+          placeholder="Cargo *"
           value={formData.role || ''}
           setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.role), 'role')}
           error={!!error.role}
@@ -205,16 +119,16 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
         />
 
         <Input
-          placeholder="Faturamento anual *"
+          placeholder="Renda anual *"
           value={displayAnnualIncome}
           setValue={(value) => handleAnnualIncomeChange(typeof value === 'string' ? value : value(displayAnnualIncome))}
           error={!!error.annual_income}
           txtError={error.annual_income}
           keyboardType="numeric"
         />
-        <Text style={{ ...styles.subDesc }}>Ex.: R$ 50.000,00</Text>
+        <Text style={{ ...styles.subDesc, marginBottom: 16 }}>Ex.: R$ 50.000,00</Text>
 
-        <View style={{ marginTop: 48 }}>
+        <View style={{ marginTop: 32 }}>
           <RadioButton
             onValueChange={value => updateFormData({ exposed_politically: value ? 1 : 0 })}
             value={formData.exposed_politically === 1}
@@ -222,23 +136,17 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
             error={!!error.exposed_politically}
             txtError={error.exposed_politically}
             data={[
-              {
-                label: 'Sim, eu sou uma pessoa politicamente exposta',
-                value: true,
-              },
-              {
-                label: 'Não, eu não sou uma pessoa politicamente exposta',
-                value: false,
-              },
+              { label: 'Sim, sou uma pessoa politicamente exposta', value: true },
+              { label: 'Não, não sou uma pessoa politicamente exposta', value: false },
             ]}
           />
         </View>
       </View>
-      
-      <BtnDefault 
-        label="Continuar" 
-        onPress={onConfirm} 
-        style={{ marginBottom: 15 }} 
+
+      <BtnDefault
+        label="Continuar"
+        onPress={onConfirm}
+        style={{ marginBottom: 15 }}
       />
     </View>
   );
