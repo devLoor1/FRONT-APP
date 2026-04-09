@@ -39,6 +39,13 @@ type SelectProps = {
   list: { id: string; value: string }[];
 };
 
+const nationalityOptions: SelectProps = {
+  list: [
+    { id: 'brazilian', value: 'Brasileiro(a)' },
+    { id: 'foreign', value: 'Estrangeiro(a)' },
+  ],
+};
+
 const genderOptions: SelectProps = {
   list: [
     { id: 'male', value: 'Homem' },
@@ -207,15 +214,18 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
           editable={false}
         />
 
-        <Input
-          placeholder="Nacionalidade *"
-          value={formData.nationality}
-          setValue={(value) => handleField(typeof value === 'string' ? value : value(formData.nationality), 'nationality')}
+        <Select
+          label="Nacionalidade *"
+          placeholder="Selecione a nacionalidade *"
+          value={formData.nationality || ''}
+          setValue={updateFormData}
+          form={formData}
+          arr={nationalityOptions}
+          fieldName="nationality"
           error={!!error.nationality}
           txtError={error.nationality}
-          autoCapitalize="words"
+          marginBottom={8}
         />
-        <Text style={{ ...styles.subDesc, marginBottom: 8 }}>Ex.: Brasileira, Americana, etc.</Text>
 
         <Select
           label="Gênero *"

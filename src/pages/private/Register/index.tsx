@@ -141,17 +141,11 @@ export default function RegisterPage() {
       throw new Error('Phone not found');
     }
 
-    const nationalityNormalized = 
-      formData.nationality.toLowerCase() === 'brasileiro' || 
-      formData.nationality.toLowerCase() === 'brasileira'
-        ? 'brazilian'
-        : formData.nationality;
-
     const payload = {
       full_name: formData.full_name,
       phone: user?.phone || "",
       investor_personal_information: {
-        nationality: nationalityNormalized,
+        nationality: formData.nationality,
         gender: formData.gender,
         cpf: formData.cpf,
         birth_date: formData.birth_date,
