@@ -23,8 +23,8 @@ export const getPersonalInformation = async () => {
 };
 
 export const postPersonalInformation = async (request: PersonalInformationRequest) => {
-  const response = await api.put<PersonalInformationResponse>(
-    "/investors/personal-information",
+  const response = await api.post<PersonalInformationResponse>(
+    "/investors/profile/personal-information",
     request
   );
   return response.data;
