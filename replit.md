@@ -25,6 +25,7 @@ The development environment is configured via Replit secrets:
 - `BASE_URL_VIACEP`: ViaCEP API endpoint for address lookup
 - `APP_STORE_URL`, `PLAY_STORE_URL`: App store links
 - `EXPO_APPLE_TEAM_ID`: Apple team ID (optional for local development)
+- `GITHUB_PAT`: Personal Access Token with `repo` + `workflow` scopes (used in authenticated remote URL for git push)
 
 ### Running in Replit
 The app runs on port 5000:
@@ -34,52 +35,68 @@ npm run web:replit
 
 ## Git Workflow — Develop → Main
 
-O projeto usa um fluxo de duas branches para separar homologação de produção:
+The project uses a two-branch flow to separate staging from production:
 
 ```
-Replit (main local)
+Replit (local branch: main)
        │
-       ▼  git push
-origin/develop  ──── homologação / QA
+       ▼  git push   [refspec: main → develop]
+origin/develop  ──── staging / QA / homologação
        │
-       ▼  Pull Request aprovado
-origin/main  ──── produção
+       ▼  Pull Request approved & merged
+origin/main  ──── production
 ```
 
-### Como funciona
+### How it works
 
-- **Todo trabalho no Replit** é commitado na branch local `main`.
-- **Ao fazer push**, o código vai automaticamente para `origin/develop` no GitHub (configurado via `branch.main.merge`).
-- **Para promover para produção**, abra um Pull Request de `develop` → `main` no GitHub (manualmente ou via GitHub Actions abaixo).
+- **All work in Replit** is committed on the local `main` branch.
+- **Every `git push`** sends code to `origin/develop` on GitHub — never to `origin/main`.
+  This is enforced by a persistent git refspec (not by branch tracking metadata):
+  ```
+  remote.origin.push = refs/heads/main:refs/heads/develop
+  ```
+- **To release to production**, open a Pull Request from `develop` → `main` on GitHub
+  (manually or via the GitHub Actions workflow below).
 
-### Promover develop → main (GitHub Actions)
+### Verify the push config
 
-1. Acesse o repositório no GitHub: `https://github.com/devLoor1/FRONT-APP`
-2. Vá em **Actions** → **"Promover develop para main"**
-3. Clique em **"Run workflow"**
-4. Preencha o título do PR (opcional) e clique em **"Run workflow"**
-5. Um Pull Request será criado automaticamente de `develop` → `main`
-6. Revise e faça o merge do PR para publicar em produção
+```bash
+git config --get-all remote.origin.push
+# Expected output: refs/heads/main:refs/heads/develop
+```
 
-### Configuração inicial — Push para develop
+If this setting is ever lost (e.g. after a fresh clone), restore it with:
 
-Para habilitar o push automático para `origin/develop`, é necessário autenticar com o GitHub. Adicione um Personal Access Token (PAT) com escopo `repo` como secret no Replit:
+```bash
+git remote set-url origin "https://${GITHUB_PAT}@github.com/devLoor1/FRONT-APP.git"
+git config remote.origin.push 'refs/heads/main:refs/heads/develop'
+git config push.default upstream
+```
 
-1. Crie um PAT em: `https://github.com/settings/tokens` (escopo: `repo`)
-2. No Replit, adicione como secret: `GITHUB_PAT`
-3. Configure a URL autenticada:
-   ```bash
-   git remote set-url origin https://<SEU_PAT>@github.com/devLoor1/FRONT-APP.git
-   git push origin main:develop
-   ```
+### Promote develop → main (GitHub Actions)
 
-### Proteger a branch main no GitHub (recomendado)
+A manual workflow is available at:
+`https://github.com/devLoor1/FRONT-APP/actions/workflows/promote-to-main.yml`
 
-Para evitar push direto para `main` sem PR:
-1. Acesse: `github.com/devLoor1/FRONT-APP` → **Settings** → **Branches**
-2. Adicione uma **Branch protection rule** para `main`:
+Steps:
+1. Go to the repository on GitHub: `https://github.com/devLoor1/FRONT-APP`
+2. Navigate to **Actions** → **"Promover develop para main"**
+3. Click **"Run workflow"**
+4. Optionally fill in a PR title and description, then click **"Run workflow"**
+5. A Pull Request will be created automatically from `develop` → `main`
+6. Review and merge the PR to publish to production
+
+The workflow:
+- Checks whether `develop` has any commits ahead of `main` before creating a PR
+- Reuses an existing open PR instead of creating duplicates
+
+### Protect the main branch on GitHub (recommended)
+
+To prevent direct pushes to `main` without a PR:
+1. Go to: `github.com/devLoor1/FRONT-APP` → **Settings** → **Branches**
+2. Add a **Branch protection rule** for `main`:
    - ✅ Require a pull request before merging
-   - ✅ Require approvals (opcional)
+   - ✅ Require approvals (optional)
    - ✅ Do not allow bypassing the above settings
 
 ## Web Compatibility Changes
