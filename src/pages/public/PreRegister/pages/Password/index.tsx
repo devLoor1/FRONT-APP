@@ -1,4 +1,4 @@
-import { View, Text, BackHandler, Platform } from "react-native";
+import { View, Text, BackHandler, Platform, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -6,11 +6,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import PasswordComp from "@/components/Password";
 import BtnDefault from "@/components/BtnDefault";
-import Snack from "@/components/Snack";
 import { Analytics } from "@/helpers/analytics";
 import { postRegister } from "@/services/auth";
 import { RegisterRequest } from "@/models/auth/register.request";
 import { useCustomStyles } from "../../style";
+import { useTheme } from "@/context/MyThemeContext";
 
 type Props = {
   readonly registerPayload: RegisterRequest;
@@ -19,12 +19,12 @@ type Props = {
 
 export default function Password({ registerPayload, onComplete }: Props) {
   const styles = useCustomStyles();
+  const { theme } = useTheme();
 
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isValidPassword, setIsValidPassword] = useState(false);
-  const [showSnack, setShowSnack] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigation = useNavigation();
 
   const { mutateAsync: postPreRegister, isPending } = useMutation({
@@ -51,34 +51,55 @@ export default function Password({ registerPayload, onComplete }: Props) {
   }, []);
 
   async function onSubmit() {
-    if (isValidPassword) {
-      await AsyncStorage.setItem('userPasswordLogin', password);
+    if (!isValidPassword) return;
 
-      try {
-        await postPreRegister({
-          ...registerPayload,
-          password
-        });
+    setErrorMessage("");
+    await AsyncStorage.setItem('userPasswordLogin', password);
 
-        onComplete();
-      } catch (error: any) {
-        let errorMessage = "Erro ao processar o cadastro";
+    try {
+      await postPreRegister({
+        ...registerPayload,
+        password
+      });
 
-        const errorData = error?.response?.data;
+      onComplete();
+    } catch (error: any) {
+      let msg = "Erro ao processar o cadastro. Tente novamente.";
 
-        if (errorData?.errors?.[0]?.message) {
-          errorMessage = errorData.errors[0].message;
-        } else if (errorData?.message) {
-          errorMessage = errorData.message;
-        } else if (error?.message) {
-          errorMessage = error.message;
-        }
+      const errorData = error?.response?.data;
 
-        setSnackMessage(errorMessage);
-        setShowSnack(true);
+      if (errorData?.errors?.[0]?.message) {
+        msg = errorData.errors[0].message;
+      } else if (errorData?.message) {
+        msg = errorData.message;
+      } else if (error?.message) {
+        msg = error.message;
       }
+
+      setErrorMessage(msg);
     }
   }
+
+  const errorColor = theme?.customColors?.error?.[300] || "#E53935";
+
+  const localStyles = StyleSheet.create({
+    errorBox: {
+      backgroundColor: errorColor + "18",
+      borderWidth: 1,
+      borderColor: errorColor,
+      borderRadius: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+    },
+    errorText: {
+      color: errorColor,
+      fontSize: 14,
+      fontFamily: theme?.fonts?.regular || "NunitoSans_400Regular",
+      lineHeight: 20,
+      textAlign: "center",
+    },
+  });
 
   return (
     <>
@@ -97,6 +118,13 @@ export default function Password({ registerPayload, onComplete }: Props) {
           setIsValidPassword={setIsValidPassword}
         />
       </View>
+
+      {!!errorMessage && (
+        <View style={localStyles.errorBox}>
+          <Text style={localStyles.errorText}>⚠ {errorMessage}</Text>
+        </View>
+      )}
+
       <BtnDefault
         style={{ marginBottom: Platform.OS === "android" ? 20 : 0 }}
         label="Continuar"
@@ -105,14 +133,7 @@ export default function Password({ registerPayload, onComplete }: Props) {
           Analytics({ eventName: "CadastroDefinirSenha_Continuar" });
           onSubmit();
         }}
-        disabled={!isValidPassword}
-      />
-      <Snack
-        visible={showSnack}
-        txt={snackMessage}
-        setShowSnack={setShowSnack}
-        type="error"
-        duration={5000}
+        disabled={!isValidPassword || isPending}
       />
     </>
   );

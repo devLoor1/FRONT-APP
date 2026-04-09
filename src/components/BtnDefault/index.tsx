@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   GestureResponderEvent,
   StyleSheet,
   Text,
@@ -104,8 +105,17 @@ export default function BtnDefault({
       style={[styles.btn, style]}
       disabled={loading || disabled}
     >
-      {icon}
-      <Text style={[styles.txt, labelStyle]}>{label}</Text>
+      {loading ? (
+        <ActivityIndicator
+          size="small"
+          color={getTextColor({ white, theme })}
+        />
+      ) : (
+        <>
+          {icon}
+          <Text style={[styles.txt, labelStyle]}>{label}</Text>
+        </>
+      )}
     </TouchableOpacity>
   );
 }
