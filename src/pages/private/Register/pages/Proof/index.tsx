@@ -88,8 +88,10 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     const uri = URL.createObjectURL(file);
     const photo = { uri, file, name: file.name, type: file.type };
     if (photoType === 'document') {
+      if (documentPhoto?.uri && documentPhoto.file) URL.revokeObjectURL(documentPhoto.uri);
       setDocumentPhoto(photo);
     } else {
+      if (selfiePhoto?.uri && selfiePhoto.file) URL.revokeObjectURL(selfiePhoto.uri);
       setSelfiePhoto(photo);
     }
     e.target.value = '';
