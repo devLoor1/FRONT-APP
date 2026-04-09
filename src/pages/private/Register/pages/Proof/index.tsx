@@ -137,7 +137,22 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
         await onActionAfterSubmit({ success: true });
       }
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || 'Erro ao enviar fotos. Tente novamente.';
+      console.error('[Proof] submitFaceMatch error:', {
+        message: error?.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        code: error?.code,
+      });
+      const serverMsg = error?.response?.data?.message;
+      const status = error?.response?.status;
+      let errorMessage = 'Erro ao enviar fotos. Tente novamente.';
+      if (serverMsg) {
+        errorMessage = serverMsg;
+      } else if (error?.message?.includes('Network') || !error?.response) {
+        errorMessage = 'Erro de conexão ao enviar fotos. Verifique sua internet e tente novamente.';
+      } else if (status) {
+        errorMessage = `Erro ${status} ao enviar fotos. Tente novamente.`;
+      }
       setSnackMessage(errorMessage);
       setShowSnack(true);
     }

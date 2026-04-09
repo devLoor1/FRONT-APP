@@ -68,7 +68,9 @@ export const submitFaceMatch = async (document: any, selfie: any) => {
   }
 
   const response = await api.post('/investors/face-match', formData, {
-    headers: Platform.OS === 'web' ? {} : { 'Content-Type': 'multipart/form-data' },
+    headers: Platform.OS === 'web'
+      ? { 'Content-Type': undefined }
+      : { 'Content-Type': 'multipart/form-data' },
   });
 
   return response.data;
