@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Input from '@/components/Input';
 import RadioButton from '@/components/RadioButton';
 import BtnDefault from '@/components/BtnDefault';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useCustomStyles } from '../../style';
 import { Analytics } from '@/helpers/analytics';
 import CommonMask from '@/helpers/masks';
+import { useTheme } from '@/context/MyThemeContext';
+import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 
 interface PersonalDataTwoProps {
   formData: {
@@ -28,6 +30,7 @@ interface PersonalDataTwoProps {
 
 export default function PersonalDataTwo({ formData, updateFormData, onNext, onPrev }: PersonalDataTwoProps) {
   const styles = useCustomStyles();
+  const { theme } = useTheme();
   const [error, setError] = useState({
     job: '',
     role: '',
@@ -37,9 +40,9 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
 
   const [displayAnnualIncome, setDisplayAnnualIncome] = useState('');
 
-  function handleField(value: string, field: string) {
+  function handleField(value: string, field: 'company' | 'job' | 'role') {
     updateFormData({ [field]: value });
-    if (error[field as keyof typeof error]) {
+    if (field !== 'company' && error[field as keyof typeof error]) {
       setError(prev => ({ ...prev, [field]: '' }));
     }
   }
@@ -90,6 +93,12 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
 
   return (
     <View style={{ flex: 1 }}>
+      <View style={styles.btnBackBlock}>
+        <TouchableOpacity onPress={onPrev} style={styles.btnCancel}>
+          <ArrowBack color={theme.colors.text} width={32} height={32} />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.content}>
         <Text style={styles.title}>Dados Profissionais</Text>
 

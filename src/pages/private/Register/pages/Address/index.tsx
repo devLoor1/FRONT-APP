@@ -11,28 +11,24 @@ import { getCepInfo, getCountries } from '@/services/common';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import LoadingComp from '@/components/Loading';
 import { useTheme } from '@/context/MyThemeContext';
+import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
+
+type StringAddressField = 'zip_code' | 'city' | 'state' | 'district' | 'street_name' | 'number' | 'complement';
+
+interface AddressFormData {
+  country_id: number;
+  zip_code: string;
+  city: string;
+  state: string;
+  district: string;
+  street_name: string;
+  number: string;
+  complement: string;
+}
 
 interface AddressProps {
-  formData: {
-    country_id: number;
-    zip_code: string;
-    city: string;
-    state: string;
-    district: string;
-    street_name: string;
-    number: string;
-    complement: string;
-  };
-  updateFormData: (data: Partial<{
-    country_id: number;
-    zip_code: string;
-    city: string;
-    state: string;
-    district: string;
-    street_name: string;
-    number: string;
-    complement: string;
-  }>) => void;
+  formData: AddressFormData;
+  updateFormData: (data: Partial<AddressFormData>) => void;
   onNext: () => void;
   onPrev: () => void;
 }
@@ -95,21 +91,16 @@ export default function Address({ formData, updateFormData, onNext, onPrev }: Ad
     }
   }, [countriesData]);
 
-  function handleCountryChange(option: any) {
-    let idStr: string = '';
-    if (typeof option === 'object' && option.selectedCountry !== undefined) {
-      idStr = option.selectedCountry;
-    } else if (typeof option === 'string') {
-      idStr = option;
-    }
+  function handleCountryChange(option: { selectedCountry: string } | string) {
+    const idStr = typeof option === 'object' ? option.selectedCountry : option;
     setSelectedCountryId(idStr);
     const numericId = parseInt(idStr, 10);
     updateFormData({ country_id: isNaN(numericId) ? 0 : numericId });
     if (error.country_id) setError(prev => ({ ...prev, country_id: '' }));
   }
 
-  function handleField(value: string, field: string) {
-    updateFormData({ [field]: value } as any);
+  function handleField(value: string, field: StringAddressField) {
+    updateFormData({ [field]: value });
     if (error[field as keyof typeof error]) {
       setError(prev => ({ ...prev, [field]: '' }));
     }
@@ -179,6 +170,12 @@ export default function Address({ formData, updateFormData, onNext, onPrev }: Ad
           <LoadingComp transparent />
         </View>
       )}
+
+      <View style={styles.btnBackBlock}>
+        <TouchableOpacity onPress={onPrev} style={styles.btnCancel}>
+          <ArrowBack color={theme.colors.text} width={32} height={32} />
+        </TouchableOpacity>
+      </View>
 
       <View style={[styles.container]}>
         <View style={styles.content}>

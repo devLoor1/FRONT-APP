@@ -162,7 +162,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     );
   }
 
-  if (submitted || (documentPhoto && selfiePhoto && !isSubmitting && submitted)) {
+  if (submitted) {
     return <SuccessPage onContinue={onContinue} />;
   }
 

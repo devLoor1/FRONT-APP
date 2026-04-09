@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import { useCustomStyles } from '../../style';
 import Input from '@/components/Input';
 import Select from '@/components/Select';
@@ -7,6 +7,8 @@ import BtnDefault from '@/components/BtnDefault';
 import { Analytics } from '@/helpers/analytics';
 import { getBanks } from '@/services/common';
 import { useQuery } from '@tanstack/react-query';
+import { useTheme } from '@/context/MyThemeContext';
+import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 
 interface BankDataProps {
   formData: {
@@ -40,6 +42,7 @@ type SelectProps = {
 
 export default function BankData({ formData, updateFormData, onNext, onPrev, isSubmitting = false }: BankDataProps) {
   const styles = useCustomStyles();
+  const { theme } = useTheme();
   
   const [error, setError] = useState({
     bank_id: '',
@@ -137,6 +140,11 @@ export default function BankData({ formData, updateFormData, onNext, onPrev, isS
 
   return (
     <View style={{ flex: 1 }}>
+      <View style={styles.btnBackBlock}>
+        <TouchableOpacity onPress={onPrev} style={styles.btnCancel}>
+          <ArrowBack color={theme.colors.text} width={32} height={32} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.title}>Dados bancários</Text>
