@@ -2,8 +2,15 @@ const { getDefaultConfig } = require("expo/metro-config");
 const {
   wrapWithReanimatedMetroConfig,
 } = require("react-native-reanimated/metro-config");
+const path = require("path");
 
 const config = getDefaultConfig(__dirname);
+
+config.watchFolders = (config.watchFolders || []);
+config.resolver.blockList = [
+  ...(Array.isArray(config.resolver.blockList) ? config.resolver.blockList : []),
+  new RegExp(path.join(__dirname, "\\.local").replace(/\\/g, "\\\\")),
+];
 
 // Configuração para SVGs
 config.transformer.babelTransformerPath = require.resolve(
