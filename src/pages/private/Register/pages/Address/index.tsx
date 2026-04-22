@@ -31,9 +31,10 @@ interface AddressProps {
   updateFormData: (data: Partial<AddressFormData>) => void;
   onNext: () => void;
   onPrev: () => void;
+  isSubmitting?: boolean;
 }
 
-export default function Address({ formData, updateFormData, onNext, onPrev }: AddressProps) {
+export default function Address({ formData, updateFormData, onNext, onPrev, isSubmitting = false }: AddressProps) {
   const styles = useCustomStyles();
   const addressStyles = useAddressStyles();
   const { theme } = useTheme();
@@ -333,9 +334,10 @@ export default function Address({ formData, updateFormData, onNext, onPrev }: Ad
         </View>
 
         <BtnDefault
-          label={loadingCep ? "Consultando CEP..." : "Continuar"}
+          label={isSubmitting ? "Salvando..." : loadingCep ? "Consultando CEP..." : "Continuar"}
           onPress={onConfirm}
-          disabled={loadingCep || !confirmedAddress}
+          disabled={loadingCep || !confirmedAddress || isSubmitting}
+          loading={isSubmitting}
           style={{ marginBottom: 15 }}
         />
       </View>

@@ -23,6 +23,7 @@ import OpportunitiesDetailPage from "@/pages/private/OpportunitiesDetail";
 // import { RootStackParamList } from '~/models/routes/navigation';
 import InvestPage from "@/pages/private/Invest";
 import RegisterPage from "@/pages/private/Register";
+import FaceMatchPage from "@/pages/private/FaceMatch";
 import MenuPage from "@/pages/private/Menu";
 // import ProfilePage from '~/pages/private/Profile';
 // import InvestmentDetailPage from '~/pages/private/InvestmentDetail';
@@ -53,6 +54,11 @@ export default function AppRoutes({
       <MainStack.Screen
         name="Register"
         component={RegisterPage}
+        options={{ gestureEnabled: false }}
+      />
+      <MainStack.Screen
+        name="FaceMatch"
+        component={FaceMatchPage}
         options={{ gestureEnabled: false }}
       />
       <MainStack.Screen name="Menu" component={MenuPage} />

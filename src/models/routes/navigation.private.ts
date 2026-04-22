@@ -13,6 +13,7 @@ export type RootStackParamList = {
   }>;
   Menu: undefined;
   Register: undefined;
+  FaceMatch: undefined;
   OpportunitiesDetail: {
     opportunityId: OpportunitiesResponse["data"][0]["id"];
     analytics?: string;

@@ -1,0 +1,121 @@
+Perfeito — então no app você pode “copiar” o fluxo do web quase 1:1 (mesma API)
+Abaixo está um passo a passo operacional (tipo checklist de implementação) pra você plugar no app logo depois da validação de e-mail, usando os mesmos endpoints do backend.
+
+1) “Gate” do onboarding (depois do e-mail validado)
+Objetivo
+Garantir que todo usuário que ainda não completou dados pessoais mínimos seja forçado a fazer o Quick Profile antes de continuar.
+
+Regra (equivalente ao web)
+Se hasCompletedPersonalInformation === false -> mandar para a tela Quick Profile
+Se já completou:
+Se FaceMatch não existe/negado -> ir para FaceMatch
+Senão -> Home
+No web isso está centralizado em useAccountStatusRedirect.ts e a rota do quick é /quick-profile.
+
+Como portar pro app (forma recomendada)
+Após validar email (ou após login + fetch do me):
+chamar GET /auth/investor/me
+(se necessário) chamar GET /investors/personal-information para confirmar se está completo
+decidir a navegação:
+Quick Profile
+FaceMatch
+Home
+2) Tela Quick Profile (inputs + comportamento)
+Campos mínimos (iguais ao web)
+Dados pessoais
+full_name
+phone
+cpf
+birth_date
+Endereço
+address.zip_code (CEP)
+address.street_name
+address.number
+address.district
+address.city
+address.state
+address.complement (opcional)
+Auto-preenchimento por CEP
+Ao digitar CEP (8 dígitos):
+valida CEP localmente
+chama endpoint de CEP e preenche rua/bairro/cidade/estado
+3) Submit do Quick Profile (o que mandar pro backend)
+Endpoint principal
+POST /investors/profile/personal-information
+Endpoints auxiliares (para UX)
+GET /auth/investor/me (buscar dados atuais e status)
+GET /cep/:id (auto-fill endereço)
+POST /auth/investor/logout (se tiver “Sair”)
+Payload (formato que o web envia)
+Você deve mandar esse shape (principalmente por causa dos defaults):
+
+full_name: string
+phone: string
+cpf: string (sem máscara)
+birth_date: string (no mesmo formato que o backend espera)
+address:
+zip_code: string (sem -)
+street_name: string
+number: string/number (o web manda form.address.number)
+district: string
+city: string
+state: string
+country_id: 27 (Brasil)
+complement: "" se vazio
+investor_personal_information (defaults para não estourar NOT NULL / validações):
+nationality: "brazilian"
+gender: "male" (backend: male/female/other)
+rg: ""
+issuing_entity: ""
+marital_status: "single"
+company: ""
+job: "Não informado"
+role: ""
+annual_income: 0
+exposed_politically: false
+4) Pós-sucesso (igual ao web)
+Após POST /investors/profile/personal-information retornar sucesso:
+
+Atualize o estado do usuário
+GET /auth/investor/me (recomendado)
+opcional: GET /investors/personal-information
+Navegue para FaceMatch
+equivalente ao web: rota /face
+No web tem um setTimeout(1000) antes de navegar; no app eu recomendo:
+
+tentar refetch me
+se o backend demorar para refletir status, aí sim usar um delay curto (mas ideal é depender do me atualizado).
+5) Checklist final para você implementar no app (ordem sugerida)
+[A] Após validar e-mail
+Buscar me
+Determinar:
+hasCompletedPersonalInformation (mesma regra do web)
+[B] Se incompleto
+Abrir tela Quick Profile
+[C] Tela Quick Profile
+Inputs + validações (telefone/CPF/CEP)
+Auto-fill CEP com GET /cep/:id
+[D] Submit
+POST /investors/profile/personal-information com defaults
+[E] Depois
+refetch me
+navegar para FaceMatch (/face)
+[F] Logout (opcional)
+POST /auth/investor/logout + limpar token
+Endpoints (lista “seca” pra você colar onde precisar)
+POST /investors/profile/personal-information (criar quick profile)
+PUT /investors/profile/personal-information (atualizar, se quiser reaproveitar no futuro)
+GET /investors/personal-information (consultar infos pessoais)
+GET /auth/investor/me (status do usuário)
+POST /auth/investor/logout (sair)
+GET /cep/:id (buscar endereço)
+GET /countries (se você quiser países; no quick do web Brasil é fixo)
+Falta só 1 detalhe pra eu fechar 100% alinhado ao app
+Você faz o “gate” do onboarding no app via:
+
+[Opção 1] rota/tela dedicada tipo QuickProfileScreen (stack normal), ou
+[Opção 2] “navigator condicional” (troca o fluxo inicial com base no status)?
+Se você me disser qual das duas, eu te passo a sequência exata de navegação (em termos de stack) igual ao web.
+
+Status
+Concluído: documentação do fluxo Quick Profile do web + endpoints + payload + checklist de portabilidade (considerando que o app usa a mesma API).
