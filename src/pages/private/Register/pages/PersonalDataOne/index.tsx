@@ -31,6 +31,8 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
 
+  const [loadingBureau, setLoadingBureau] = useState(false);
+
   const [error, setError] = useState({
     cpf: '',
     full_name: '',
@@ -40,7 +42,6 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
 
   const {
     mutateAsync: bureauMutation,
-    isPending: loadingBureau,
   } = useMutation({
     mutationKey: ['getBureauByCpf'],
     mutationFn: getBureauByCpf,
@@ -77,17 +78,24 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
     handleField(cpf, 'cpf');
     const cleanCpf = cpf.replace(/\D/g, '');
     if (cleanCpf.length === 11) {
+      setLoadingBureau(true);
+      const timeout = new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 8000)
+      );
       try {
-        const bureauData = await bureauMutation(cleanCpf);
-        if (bureauData.data) {
+        const bureauData = await Promise.race([bureauMutation(cleanCpf), timeout]);
+        if (bureauData && (bureauData as any).data) {
+          const data = (bureauData as any).data;
           updateFormData({
-            full_name: bureauData.data.name || '',
-            birth_date: formatDateForDisplay(bureauData.data.birth_date || ''),
+            full_name: data.name || '',
+            birth_date: formatDateForDisplay(data.birth_date || ''),
           });
         }
       } catch {
-        setSnackMessage('Não foi possível consultar dados do CPF. Preencha manualmente.');
+        setSnackMessage('Preencha nome e data de nascimento manualmente.');
         setShowSnack(true);
+      } finally {
+        setLoadingBureau(false);
       }
     }
   }
