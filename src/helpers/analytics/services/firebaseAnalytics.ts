@@ -1,14 +1,21 @@
 import { firebaseAnalyticsInterface } from '../analyticsInteface';
+import { safeLogger, sanitizeTelemetryRecord } from '@/helpers/observability';
 
 type Props = firebaseAnalyticsInterface;
 
 // Mock implementation for development
 const mockAnalytics = {
-  logEvent: async (eventName: string, params?: any) => {
-    console.log('Firebase Analytics Event:', eventName, params);
+  logEvent: async (eventName: string, params?: unknown) => {
+    safeLogger.info('Firebase Analytics Event', {
+      eventName,
+      params: sanitizeTelemetryRecord(params),
+    });
   },
-  logScreenView: async (params: any) => {
-    console.log('Firebase Analytics Screen View:', params);
+  logScreenView: async (params: unknown) => {
+    safeLogger.info(
+      'Firebase Analytics Screen View',
+      sanitizeTelemetryRecord(params)
+    );
   }
 };
 
@@ -24,7 +31,7 @@ async function handleSendEvent({ eventName, pageName, generalData, exclusiveData
       await mockAnalytics.logScreenView({ screen_name: pageName, screen_class: pageName });
     }
   } catch (error) {
-    console.log('Firebase Analytics Error:', error);
+    safeLogger.error('Firebase Analytics Error', error);
   }
 }
 

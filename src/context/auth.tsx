@@ -15,6 +15,7 @@ import api from "@/services/api";
 import AuthStorage from "@/storages/auth-storage";
 import { handleAnalyticsUserProfile } from "@/helpers/analytics";
 import { Platform } from "react-native";
+import { safeLogger } from "@/helpers/observability";
 
 interface AuthContextData {
   // Device Token (para autenticação biométrica e identificação do dispositivo)
@@ -86,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (error) {
-        console.error("Erro ao verificar autenticação:", error);
+        safeLogger.error("Authentication bootstrap failed", error);
       } finally {
         setIsInitializing(false);
       }
@@ -110,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Chamar o serviço de logout
       await logoutMutation();
     } catch (error) {
-      console.error("Erro no logout:", error);
+      safeLogger.error("Remote logout failed", error);
       // Mesmo se falhar, continuar com o logout local
     } finally {
       // Limpar dados locais
@@ -128,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
       }
       
-      handleAnalyticsUserProfile("signOut", {});
+      handleAnalyticsUserProfile("signOut");
     }
   }
 

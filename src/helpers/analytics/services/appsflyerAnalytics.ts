@@ -1,37 +1,44 @@
 import appsFlyer from 'react-native-appsflyer';
 import { appsflyerAnalyticsInterface } from '../analyticsInteface';
+import {
+  safeLogger,
+  sanitizeTelemetryRecord,
+  sanitizeText,
+} from '@/helpers/observability';
 
 type Props = appsflyerAnalyticsInterface;
 
 async function handleSendEvent({ eventName, pageName, generalData, exclusiveData }: Props) {
   if (eventName) {
+    const safeEventName = sanitizeText(eventName);
     appsFlyer.logEvent(
-      eventName,
-      {
+      safeEventName,
+      sanitizeTelemetryRecord({
         ...generalData,
         ...exclusiveData,
+      }),
+      () => {
+        safeLogger.info('AppsFlyer event sent', { eventName: safeEventName });
       },
-      res => {
-        console.log(res);
-      },
-      err => {
-        console.error('err');
-        console.error(err);
+      (err: unknown) => {
+        safeLogger.error('AppsFlyer event failed', err);
       }
     );
   }
   if (pageName) {
+    const safePageName = sanitizeText(pageName);
     appsFlyer.logEvent(
-      pageName,
+      safePageName,
       {
-        pageName,
+        pageName: safePageName,
       },
-      res => {
-        console.log(res);
+      () => {
+        safeLogger.info('AppsFlyer screen event sent', {
+          pageName: safePageName,
+        });
       },
-      err => {
-        console.error('err 2');
-        console.error(err);
+      (err: unknown) => {
+        safeLogger.error('AppsFlyer screen event failed', err);
       }
     );
   }

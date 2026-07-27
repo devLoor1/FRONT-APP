@@ -1,20 +1,35 @@
 import LogRocket from '@logrocket/react-native';
 import Constants from 'expo-constants';
-
-type User = {
-  name?: string;
-  email: string;
-};
+import { sanitizeEndpoint } from '@/helpers/observability';
 
 const LogRocketHelper = {
   Init() {
     if (Constants.expoConfig?.extra?.env.production) {
-      LogRocket.init('wealth-money/mobile-live');
-    }
-  },
-  SetUser(user: User) {
-    if (Constants.expoConfig?.extra?.env.production) {
-      LogRocket.identify(user.email, user);
+      LogRocket.init('wealth-money/mobile-live', {
+        enableIPCapture: false,
+        textSanitizer: 'excluded',
+        console: {
+          isEnabled: false,
+          shouldAggregateConsoleErrors: false,
+        },
+        network: {
+          isEnabled: true,
+          requestSanitizer: (request) => ({
+            ...request,
+            url: sanitizeEndpoint(request.url) || '',
+            headers: {},
+            body: null,
+            credentials: null,
+            referrer: null,
+          }),
+          responseSanitizer: (response) => ({
+            ...response,
+            url: sanitizeEndpoint(response.url),
+            headers: {},
+            body: null,
+          }),
+        },
+      });
     }
   },
 };

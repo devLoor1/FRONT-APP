@@ -2,11 +2,16 @@ import firebaseAnalytics from './services/firebaseAnalytics';
 // import appsflyerAnalytics from './services/appsflyerAnalytics';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
+import {
+  safeLogger,
+  sanitizeTelemetryRecord,
+  sanitizeText,
+} from '@/helpers/observability';
 
 type Params = {
   eventName?: string;
   pageName?: string;
-  generalData?: {};
+  generalData?: Record<string, unknown>;
   exclusiveData?: {
     firebase?: {
       cod_oportunidade?: string;
@@ -23,12 +28,8 @@ type Params = {
   };
 };
 
-let identityId = ''
-
-async function handleAnalyticsUserProfile(action: string, data: any = null) {
-  if (action === 'sigIn') {
-    identityId = data.Identity
-
+async function handleAnalyticsUserProfile(action: 'signIn' | 'signOut') {
+  if (action === 'signIn') {
     // Configure notifications
     await Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -50,13 +51,12 @@ async function handleAnalyticsUserProfile(action: string, data: any = null) {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Failed to get push token for push notification!');
+      safeLogger.warn('Push notification permission was not granted');
       return;
     }
 
-    // Get push token
-    const token = await Notifications.getExpoPushTokenAsync();
-    console.log('Push token:', token);
+    // Keep notification registration without exposing the generated token.
+    await Notifications.getExpoPushTokenAsync();
 
     // Create notification channel (Android)
     if (Constants.expoConfig?.extra?.env.production) {
@@ -69,34 +69,20 @@ async function handleAnalyticsUserProfile(action: string, data: any = null) {
       });
     }
 
-    return
+    return;
   }
-
-  if (action === 'signOut') {
-    identityId = ''
-  }
-
-  // Store user data for notifications
-  console.log('User profile updated:', { Identity: identityId, ...data });
 }
 
 function Analytics({ eventName, pageName, generalData, exclusiveData }: Params) {
   if (Constants.expoConfig?.extra?.env.production) {
-    // Log analytics event
-    console.log('Analytics Event:', eventName || pageName || '');
-    
     firebaseAnalytics.handleSendEvent({
-      eventName,
-      pageName,
-      generalData,
-      exclusiveData: exclusiveData?.firebase,
-    }).catch(console.error);
-    // appsflyerAnalytics.handleSendEvent({
-    //   eventName,
-    //   pageName,
-    //   generalData,
-    //   exclusiveData: exclusiveData?.firebase,
-    // }).catch(console.error);
+      eventName: eventName ? sanitizeText(eventName) : undefined,
+      pageName: pageName ? sanitizeText(pageName) : undefined,
+      generalData: sanitizeTelemetryRecord(generalData),
+      exclusiveData: sanitizeTelemetryRecord(exclusiveData?.firebase),
+    }).catch((error) => {
+      safeLogger.error('Analytics event failed', error);
+    });
   }
 }
 

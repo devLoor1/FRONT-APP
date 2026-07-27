@@ -18,7 +18,6 @@ export const getPersonalInformation = async () => {
 };
 
 export const postPersonalInformation = async (request: PersonalInformationRequest) => {
-  console.log('request', request);
   const response = await api.post<PersonalInformationResponse>(
     "/investors/profile/personal-information",
     request

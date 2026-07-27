@@ -12,6 +12,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { setLoginData } from '@/redux/reducers/auth';
 import { postLogin } from '@/services/auth';
 import { useMutation } from '@tanstack/react-query';
+import { safeLogger } from '@/helpers/observability';
 
 type Props = {
   readonly refRBSheet: any;
@@ -52,14 +53,14 @@ export default function EnableAuth({ refRBSheet, onClose }: Readonly<Props>) {
             dispatch(setLoginData(loginResponse));
             await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
           } catch (error) {
-            console.error("Erro no login automático:", error);
+            safeLogger.error("Automatic login failed", error);
           }
         }
       }
 
       onClose();
     } catch (error) {
-      console.error("Erro ao configurar autenticação:", error);
+      safeLogger.error("Automatic authentication setup failed", error);
       onClose();
     }
   }

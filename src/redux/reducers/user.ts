@@ -11,18 +11,17 @@ import { AddressRequest } from "@/models/register/address.request";
 import { Me } from "@/models/user/me.response";
 import { PersonalInformationResponse } from "@/models/user";
 import { getMe, getPersonalInformation } from "@/services/user";
+import { safeLogger } from "@/helpers/observability";
 
 // Thunks para buscar dados do usuário
 export const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("fetchUserData thunk - Iniciando busca de dados do usuário");
       const userData = await getMe();
-      console.log("fetchUserData thunk - Dados obtidos com sucesso:", userData);
       return userData;
     } catch (error: any) {
-      console.log("fetchUserData thunk - Erro ao buscar dados:", error);
+      safeLogger.error("Failed to load user data", error);
       return rejectWithValue(error.response?.data?.message || "Erro ao buscar dados do usuário");
     }
   }
@@ -112,12 +111,10 @@ const userSlice = createSlice({
     // fetchUserData
     builder
       .addCase(fetchUserData.pending, (state) => {
-        console.log("fetchUserData.pending - Iniciando busca de dados do usuário");
         state.loadingUserData = true;
         state.requestError = null;
       })
       .addCase(fetchUserData.fulfilled, (state, action) => {
-        console.log("fetchUserData.fulfilled - Dados do usuário carregados:", action.payload);
         state.loadingUserData = false;
         state.userData = action.payload;
         // Marcar usuário como logado quando os dados são carregados com sucesso
@@ -130,14 +127,8 @@ const userSlice = createSlice({
           balanceBonus: 0,
           balanceTot: 0,
         };
-        console.log("Estado do usuário atualizado:", {
-          logged: state.user?.logged,
-          name: state.user?.name,
-          email: state.user?.email
-        });
       })
       .addCase(fetchUserData.rejected, (state, action) => {
-        console.log("fetchUserData.rejected - Erro ao carregar dados do usuário:", action.payload);
         state.loadingUserData = false;
         state.requestError = action.payload as string;
       });

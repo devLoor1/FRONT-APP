@@ -9,6 +9,7 @@ import { useTheme } from "@/context/MyThemeContext";
 import { useAppDispatch } from "@/redux/hooks";
 import { PostAvaliation } from "@/services/avaliation";
 import { Analytics } from "@/helpers/analytics";
+import { safeLogger } from "@/helpers/observability";
 
 type Props = {
   refRBSheet: any;
@@ -38,7 +39,7 @@ export default function AvaliationBottomSheet({ refRBSheet }: Props) {
     const storeUrl = Platform.OS === "ios" ? iosUrl : androidUrl;
 
     Linking.openURL(storeUrl).catch((err) => {
-      console.error("Erro ao abrir a loja:", err);
+      safeLogger.error("App store link failed", err);
     });
   };
 

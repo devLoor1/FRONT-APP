@@ -12,6 +12,7 @@ import { postLogin } from "@/services/auth";
 import { useAppDispatch } from "@/redux/hooks";
 import { setLoginData } from "@/redux/reducers/auth";
 import { useCustomStyles } from "./style";
+import { safeLogger } from "@/helpers/observability";
 
 type Props = {
   resetAll(): void;
@@ -58,7 +59,7 @@ export default function SuccessPage({ resetAll }: Props) {
 
       await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
     } catch (error) {
-      console.error("Erro ao fazer login automático:", error);
+      safeLogger.error("Automatic login after registration failed", error);
       Alert.alert(
         "Erro",
         "Não foi possível fazer login automático. Por favor, faça login manualmente.",

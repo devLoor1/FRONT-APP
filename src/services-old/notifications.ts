@@ -4,6 +4,7 @@ import { ListNotificationsRequest } from '@/models-old/notifications/listNotific
 import { ListNotificationsResponse } from '@/models-old/notifications/listNotifications.response';
 import api from '../services/api';
 import { NotificationsConfigResponse } from '@/models-old/notifications/notificationsConfig.response';
+import { safeLogger } from '@/helpers/observability';
 
 export async function GetNotificationsDirect({ pageNumber, pageSize }: ListNotificationsRequest): Promise<ListNotificationsResponse> {
   const params = `pageNumber=${pageNumber}&pageSize=${pageSize}`;
@@ -11,7 +12,7 @@ export async function GetNotificationsDirect({ pageNumber, pageSize }: ListNotif
     const response = await api.get(`/member/notification?${params}`);
     return response.data as ListNotificationsResponse;
   } catch (error: any) {
-    console.error('Erro ao buscar notificações:', error);
+    safeLogger.error('Notifications request failed', error);
     return error.response?.data ?? [];
   }
 }

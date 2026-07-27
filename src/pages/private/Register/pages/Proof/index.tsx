@@ -14,6 +14,7 @@ import InfoIcon from '@/../assets/newSvgs/icons/info.svg';
 import WarningIcon from '@/../assets/newSvgs/icons/warning.svg';
 import CameraIcon from '@/../assets/newSvgs/icons/photo_camera.svg';
 import { Analytics } from '@/helpers/analytics';
+import { safeLogger } from '@/helpers/observability';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import ArrowBack from '@/../assets/newSvgs/icons/arrow_back.svg';
 import { useNavigation } from '@react-navigation/native';
@@ -109,7 +110,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
         await onActionAfterSubmit({ success: true });
       }
     } catch (error: any) {
-      console.error('Erro ao enviar fotos:', error);
+      safeLogger.error('Face match upload failed', error);
       const errorMessage = error?.response?.data?.message || 'Erro ao enviar fotos. Tente novamente.';
       setSnackMessage(errorMessage);
       setShowSnack(true);

@@ -184,7 +184,7 @@ export default function LoginContent() {
           label={loading || loadingUser ? "Entrando..." : "Entrar"}
           disabled={loading || loadingUser || !isFormValid}
           onPress={() => {
-            handleAnalyticsUserProfile("signOut", {});
+            handleAnalyticsUserProfile("signOut");
             Analytics({ eventName: "HomeLogin_Entrar" });
             handleSingIn();
           }}
@@ -193,7 +193,7 @@ export default function LoginContent() {
           <Text style={styles.registerTxt}>Não tem uma conta? </Text>
           <TouchableOpacity
             onPress={() => {
-              handleAnalyticsUserProfile("signOut", {});
+              handleAnalyticsUserProfile("signOut");
               Analytics({ eventName: "HomeLogin_CriarConta" });
               nav.navigate("PreRegister" as never);
             }}

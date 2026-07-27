@@ -1,7 +1,5 @@
 import { handleAnalyticsUserProfile } from "@/helpers/analytics";
 import api from "./api";
-import Debug from "@/helpers/debug";
-import LogRocketHelper from "@/helpers/logRocket";
 import {
   AuthRequest,
   AuthResponse,
@@ -23,9 +21,6 @@ export const postRecover = async (request: RecoverRequest) => {
 };
 
 export const postLogin = async (request: AuthRequest) => {
-  Debug.SetUser({ email: request.email });
-  LogRocketHelper.SetUser({ email: request.email });
-
   const response = await api.post<AuthResponse>(
     `/auth/investor/login`,
     request
@@ -35,7 +30,7 @@ export const postLogin = async (request: AuthRequest) => {
   api.defaults.headers.Authorization = `Bearer ${token}`;
   await AuthStorage.SetPrivateToken(token);
 
-  handleAnalyticsUserProfile("sigIn", { Identity: token });
+  handleAnalyticsUserProfile("signIn");
 
   return response.data;
 };
@@ -52,17 +47,6 @@ export const postRegister = async (request: RegisterRequest) => {
     phone: formatPhone(request.phone || ""),
     type: formatPersonType(request.type || ""),
   };
-
-  if (request.full_name && request.email) {
-    Debug.SetUser({
-      email: request.email,
-      name: request.full_name,
-    });
-    LogRocketHelper.SetUser({
-      email: request.email,
-      name: request.full_name,
-    });
-  }
 
   const response = await api.post<AuthResponse>(
     `/auth/investor/register`,

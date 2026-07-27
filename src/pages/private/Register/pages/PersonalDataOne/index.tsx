@@ -9,6 +9,7 @@ import { getBureauByCpf } from '@/services/common';
 import { useMutation } from '@tanstack/react-query';
 import Snack from '@/components/Snack';
 import LoadingComp from '@/components/Loading';
+import { safeLogger } from '@/helpers/observability';
 
 interface PersonalDataOneProps {
   formData: {
@@ -97,7 +98,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
           });
         }
       } catch (error: any) {
-        console.error('Erro ao consultar bureau:', error);
+        safeLogger.error('Bureau lookup failed', error);
         setSnackMessage('Erro ao consultar dados do CPF. Verifique se o CPF está correto.');
         setShowSnack(true);
       }
