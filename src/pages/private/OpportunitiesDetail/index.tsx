@@ -22,10 +22,16 @@ import handleInvest from "@/helpers/handleInvest";
 import { Analytics } from "@/helpers/analytics";
 import { getOpportunity } from "@/services/opportunities";
 import { useQuery } from "@tanstack/react-query";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OpportunitiesDetail">;
 
 export default function OpportunitiesDetailPage({ route }: Props) {
+  const { resolveTerminology } = usePlatformTerminology();
+  const opportunitiesLabel = resolveTerminology(
+    "investmentOffering.label.plural",
+    "Oportunidades",
+  );
   const dispatch = useAppDispatch();
   const { opportunityId } = route.params;
   const [showSnack, setShowSnack] = useState(false);
@@ -45,7 +51,7 @@ export default function OpportunitiesDetailPage({ route }: Props) {
   return (
     <>
       <HeaderDefault
-        title="Oportunidades"
+        title={opportunitiesLabel}
         back
         help
         contact

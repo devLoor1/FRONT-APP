@@ -26,8 +26,14 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import OpportunityNewCard from "@/components/OpportunityNewCard";
 import { getSegments } from "@/services/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 export default function OpportunitiesPage() {
+  const { resolveTerminology } = usePlatformTerminology();
+  const opportunitiesLabel = resolveTerminology(
+    "investmentOffering.label.plural",
+    "Oportunidades",
+  );
   const dispatch = useAppDispatch();
   const styles = useCustomStyles();
   const { theme } = useTheme();
@@ -234,7 +240,7 @@ export default function OpportunitiesPage() {
         ref={refPage}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>Oportunidades</Text>
+            <Text style={styles.title}>{opportunitiesLabel}</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}

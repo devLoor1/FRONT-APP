@@ -11,6 +11,7 @@ import { Analytics } from "@/helpers/analytics";
 import { postRegister } from "@/services/auth";
 import { RegisterRequest } from "@/models/auth/register.request";
 import { useCustomStyles } from "../../style";
+import { usePlatformAppEntryContent } from "@/features/platform-app/usePlatformAppEntryContent";
 
 type Props = {
   readonly registerPayload: RegisterRequest;
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default function Password({ registerPayload, onComplete }: Props) {
+  const content = usePlatformAppEntryContent().registration;
   const styles = useCustomStyles();
 
   const [password, setPassword] = useState("");
@@ -83,9 +85,9 @@ export default function Password({ registerPayload, onComplete }: Props) {
   return (
     <>
       <View style={{ flexGrow: 1 }}>
-        <Text style={{ ...styles.title, marginBottom: 48 }}>Escolha sua senha</Text>
+        <Text style={{ ...styles.title, marginBottom: 48 }}>{content.passwordTitle}</Text>
         <Text style={styles.desc}>
-          Defina uma senha de acesso à plataforma. Atente-se para os requisitos de uma senha segura.
+          {content.passwordDescription}
         </Text>
         <PasswordComp
           labelPassword="Digite sua senha *"
@@ -99,7 +101,7 @@ export default function Password({ registerPayload, onComplete }: Props) {
       </View>
       <BtnDefault
         style={{ marginBottom: Platform.OS === "android" ? 20 : 0 }}
-        label="Continuar"
+        label={content.passwordContinueLabel}
         loading={isPending}
         onPress={() => {
           Analytics({ eventName: "CadastroDefinirSenha_Continuar" });

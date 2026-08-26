@@ -33,6 +33,7 @@ import {
   OpportunityDetails,
   ResourceUtilization,
 } from "@/models/opportunities/opportunityDetails.response";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 type GeneralType = {
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -40,6 +41,11 @@ type GeneralType = {
 };
 
 export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
+  const { resolveTerminology } = usePlatformTerminology();
+  const investorsLabel = resolveTerminology(
+    "investorRole.label.plural",
+    "Investidores",
+  );
   const styles = useCustomStyles();
   const { theme } = useTheme();
   const [showToUp, setShowToUp] = useState(false);
@@ -480,7 +486,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               </Text>
             </View>
             <View style={styles.listItem}>
-              <Text style={styles.listItemTitle}>Investidores</Text>
+              <Text style={styles.listItemTitle}>{investorsLabel}</Text>
               <Text style={styles.listItemDesc}>
                 {opportunity.total_investors}
               </Text>

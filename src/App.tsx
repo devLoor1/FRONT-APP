@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CommonProvider } from "./context/CommonContext";
 import LoadingScreen from "./components/LoadingScreen";
+import { PlatformSettingsProvider } from "./features/platform-app/PlatformSettingsProvider";
 
 const queryClient = new QueryClient();
 
@@ -45,11 +46,13 @@ export default function App() {
         <Provider store={store}>
           <PersistGate loading={<LoadingScreen />} persistor={persistor}>
             <MyThemeProvider>
-              <AuthProvider>
-                <CommonProvider>
-                  <Routes />
-                </CommonProvider>
-              </AuthProvider>
+              <PlatformSettingsProvider>
+                <AuthProvider>
+                  <CommonProvider>
+                    <Routes />
+                  </CommonProvider>
+                </AuthProvider>
+              </PlatformSettingsProvider>
             </MyThemeProvider>
           </PersistGate>
         </Provider>

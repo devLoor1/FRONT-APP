@@ -17,6 +17,7 @@ import CommonMask from "@/helpers/masks";
 import moment from "moment";
 import { InvestmentStatus } from "@/models/investments/investment.response";
 import Snack from "@/components/Snack";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 type FinishTabProps = {
   data: InvestmentRequest;
@@ -24,6 +25,11 @@ type FinishTabProps = {
 } & SceneRendererProps;
 
 const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
+  const { resolveTerminology } = usePlatformTerminology();
+  const opportunityLabel = resolveTerminology(
+    "investmentOffering.label.singular",
+    "Oportunidade",
+  );
   const [showSnack, setShowSnack] = useState(false);
   const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
   const styles = useCustomStyles();
@@ -109,7 +115,7 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
             </View>
             <Divider />
             <View style={styles.row}>
-              <Text style={styles.rowTitle}>Oportunidade</Text>
+              <Text style={styles.rowTitle}>{opportunityLabel}</Text>
               <Text style={styles.rowValue}>
                 {investmentInfo?.investment.opportunity.name}
               </Text>

@@ -28,10 +28,16 @@ import CrowdfundingTab from "./tabs/Crowdfunding";
 import { InvestmentRequest } from "@/models/investments/investment.request";
 import Summary from "./tabs/Summary";
 import FinishTab from "./tabs/FinishTab";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Invest">;
 
 export default function InvestPage({ route }: Props) {
+  const { resolveTerminology } = usePlatformTerminology();
+  const opportunitiesLabel = resolveTerminology(
+    "investmentOffering.label.plural",
+    "Oportunidades",
+  );
   const dispatch = useAppDispatch();
   // const refRBSheetCoupon = useRef<any>();
   const refRBSheetInvestorProfile = useRef<RBSheetRef>(null);
@@ -139,7 +145,7 @@ export default function InvestPage({ route }: Props) {
         back
         contact
         help
-        title="Oportunidades"
+        title={opportunitiesLabel}
         onPressBack={index === 0 || index === 4 ? undefined : gotToPreviousTab}
       />
 

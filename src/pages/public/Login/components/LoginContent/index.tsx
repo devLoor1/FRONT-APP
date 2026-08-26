@@ -20,8 +20,10 @@ import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/services/api";
 import AuthStorage from "@/storages/auth-storage";
+import { usePlatformAppEntryContent } from "@/features/platform-app/usePlatformAppEntryContent";
 
 export default function LoginContent() {
+  const content = usePlatformAppEntryContent().login;
   const { theme } = useTheme();
   const { loadingUser } = useAppSelector((state) => state.auth);
 
@@ -178,10 +180,10 @@ export default function LoginContent() {
           }}
           style={styles.forgot}
         >
-          <Text style={styles.forgotTxt}>Esqueci minha senha</Text>
+          <Text style={styles.forgotTxt}>{content.recoverPasswordLabel}</Text>
         </TouchableOpacity>
         <BtnDefault
-          label={loading || loadingUser ? "Entrando..." : "Entrar"}
+          label={loading || loadingUser ? "Entrando..." : content.submitLabel}
           disabled={loading || loadingUser || !isFormValid}
           onPress={() => {
             handleAnalyticsUserProfile("signOut");
@@ -190,7 +192,7 @@ export default function LoginContent() {
           }}
         />
         <View style={styles.register}>
-          <Text style={styles.registerTxt}>Não tem uma conta? </Text>
+          <Text style={styles.registerTxt}>{content.registrationPrompt} </Text>
           <TouchableOpacity
             onPress={() => {
               handleAnalyticsUserProfile("signOut");
@@ -204,7 +206,7 @@ export default function LoginContent() {
                 fontFamily: theme?.fonts?.bold || "NunitoSans_700Bold",
               }}
             >
-              Criar conta
+              {content.registrationActionLabel}
             </Text>
           </TouchableOpacity>
         </View>

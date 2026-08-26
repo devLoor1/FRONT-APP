@@ -7,6 +7,7 @@ import { Analytics } from '@/helpers/analytics';
 import { useCustomStyles } from '../../style';
 import { RegisterRequest } from '@/models/auth/register.request';
 import Select from '@/components/Select';
+import { usePlatformAppEntryContent } from '@/features/platform-app/usePlatformAppEntryContent';
 
 type Props = {
   readonly setRegisterPayload: React.Dispatch<React.SetStateAction<RegisterRequest>>;
@@ -28,6 +29,7 @@ const type = {
 };
 
 export default function RegisterData({ setRegisterPayload, registerPayload, onPress }: Props) {
+  const content = usePlatformAppEntryContent().registration;
   const styles = useCustomStyles();
   const [error, setError] = useState({
     email: '',
@@ -70,7 +72,7 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
   return (
     <>
       <View style={{ flexGrow: 1 }}>
-        <Text style={{ ...styles.title, marginBottom: 48 }}>Seus dados</Text>
+        <Text style={{ ...styles.title, marginBottom: 48 }}>{content.detailsTitle}</Text>
         <Input
           value={registerPayload.full_name || ''}
           setValue={value => handleField(value, 'full_name')}
@@ -78,7 +80,7 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
           error={!!error.full_name}
           txtError={error.full_name}
         />
-        <Text style={{ ...styles.subDesc, marginBottom: 24 }}>Ex.: Daniel, não "Dani"</Text>
+        <Text style={{ ...styles.subDesc, marginBottom: 24 }}>{content.fullNameHelper}</Text>
         <Input
           placeholder="E-mail *"
           value={registerPayload.email?.toLocaleLowerCase() || ''}
@@ -128,7 +130,7 @@ export default function RegisterData({ setRegisterPayload, registerPayload, onPr
       </View>
       <BtnDefault
         style={{ marginBottom: Platform.OS === 'android' ? 20 : 0 }}
-        label="Continuar"
+        label={content.detailsContinueLabel}
         onPress={() => {
           Analytics({ eventName: 'Cadastro_Continuar' });
           onClickRegisterData();

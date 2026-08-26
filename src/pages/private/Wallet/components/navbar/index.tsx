@@ -22,6 +22,7 @@ import { Analytics } from "@/helpers/analytics";
 import CommonMask from "@/helpers/masks";
 import NavIcon from "@/components/NavIcon";
 import { WalletResponse } from "@/models-old/investiment/wallet.response";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
 
 type Props = {
   refRBSheet: any;
@@ -29,6 +30,11 @@ type Props = {
 };
 
 export default function Navbar({ refRBSheet, resume }: Props) {
+  const { resolveTerminology } = usePlatformTerminology();
+  const opportunitiesLabel = resolveTerminology(
+    "investmentOffering.label.plural",
+    "Oportunidades",
+  );
   const styles = useCustomStyles();
   const { theme } = useTheme();
   const { showBalance, toogleBalance } = useCommon();
@@ -172,7 +178,7 @@ export default function Navbar({ refRBSheet, resume }: Props) {
             nav.navigate("InvestTabs" as never);
           }}
           Icon={OpportunityIcon}
-          label="Oportunidades"
+          label={opportunitiesLabel}
         />
         <NavIcon
           onPress={() => {

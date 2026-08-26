@@ -10,12 +10,14 @@ import { useNavigation } from "@react-navigation/native";
 import { postRecover } from "@/services/auth";
 import { useMutation } from "@tanstack/react-query";
 import Snack from "@/components/Snack";
+import { usePlatformAppEntryContent } from "@/features/platform-app/usePlatformAppEntryContent";
 
 type GeneralProps = {
   readonly onSuccess: () => void;
 };
 
 export default function GeneralPage({ onSuccess }: GeneralProps) {
+  const content = usePlatformAppEntryContent().passwordRecovery;
   const nav = useNavigation();
   const [error, setError] = useState({
     email: "",
@@ -67,9 +69,9 @@ export default function GeneralPage({ onSuccess }: GeneralProps) {
   return (
     <>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
-        <Text style={styles.title}>Recuperar senha</Text>
+        <Text style={styles.title}>{content.title}</Text>
         <Text style={styles.desc}>
-          Esqueceu a sua senha? Não se preocupe, vamos recuperá-la.
+          {content.description}
         </Text>
         <Input
           placeholder="Insira o seu endereço de e-mail *"
@@ -85,7 +87,7 @@ export default function GeneralPage({ onSuccess }: GeneralProps) {
       </ScrollView>
       <View style={styles.footer}>
         <BtnDefault
-          label="Continuar"
+          label={content.continueLabel}
           onPress={() => {
             Analytics({ eventName: "EsqueciSenha_Continuar" });
             onClickRecover();
@@ -94,7 +96,7 @@ export default function GeneralPage({ onSuccess }: GeneralProps) {
           disabled={loading}
         />
         <BtnDefault
-          label="Ir para a Home"
+          label={content.backToLoginLabel}
           white
           onPress={() => {
             Analytics({ eventName: "EsqueciSenha_Home" });
