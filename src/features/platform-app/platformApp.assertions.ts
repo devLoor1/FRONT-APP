@@ -32,6 +32,7 @@ const response = {
             login: { submitLabel: "Acessar" },
             registration: { detailsTitle: "Comece por aqui" },
             passwordRecovery: { title: "Redefina seu acesso" },
+            completeRegistration: { personalDataTitle: "Complete seus dados" },
           },
         },
       },
@@ -57,8 +58,17 @@ assert(content.login.submitLabel === "Acessar", "aplica conteúdo persistido de 
 assert(content.registration.detailsTitle === "Comece por aqui", "aplica conteúdo de Cadastro");
 assert(content.passwordRecovery.title === "Redefina seu acesso", "aplica conteúdo de Recuperação");
 assert(
+  content.completeRegistration.personalDataTitle === "Complete seus dados",
+  "aplica conteúdo de Completar cadastro",
+);
+assert(
   content.login.registrationPrompt === PLATFORM_APP_ENTRY_DEFAULTS.login.registrationPrompt,
   "payload parcial completa defaults por campo",
+);
+assert(
+  content.completeRegistration.addressTitle ===
+    PLATFORM_APP_ENTRY_DEFAULTS.completeRegistration.addressTitle,
+  "Completar cadastro parcial usa fallback por campo",
 );
 
 for (const invalid of [
@@ -81,12 +91,18 @@ const invalidFields = parsePlatformAppEntryContent({
     login: { submitLabel: "<b>Acessar</b>", recoverPasswordLabel: "Recuperar\nsenha" },
     registration: { detailsTitle: "Cadastro válido" },
     passwordRecovery: { title: "{{token}}" },
+    completeRegistration: { annualIncomeHelper: "<b>Renda</b>" },
   },
 });
 assert(invalidFields.login.submitLabel === "Entrar", "HTML usa fallback por campo");
 assert(invalidFields.login.recoverPasswordLabel === "Esqueci minha senha", "quebra de linha usa fallback");
 assert(invalidFields.passwordRecovery.title === "Recuperar senha", "placeholder usa fallback");
 assert(invalidFields.registration.detailsTitle === "Cadastro válido", "texto válido é preservado");
+assert(
+  invalidFields.completeRegistration.annualIncomeHelper ===
+    PLATFORM_APP_ENTRY_DEFAULTS.completeRegistration.annualIncomeHelper,
+  "campo inválido de Completar cadastro usa fallback",
+);
 
 const authenticated = parsePlatformAppAuthenticatedContent(
   getInvestorPlatformValue(response, "app_authenticated", "content"),
@@ -197,6 +213,22 @@ const operationalCompletionFiles = await Promise.all(
     "../../pages/public/Forget/components/Confirmation/index.tsx",
   ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
 );
+const completeRegistrationConsumerFiles = await Promise.all(
+  [
+    "../../pages/private/Register/pages/PersonalDataOne/index.tsx",
+    "../../pages/private/Register/pages/PersonalDataTwo/index.tsx",
+    "../../pages/private/Register/pages/Address/index.tsx",
+    "../../pages/private/Register/pages/BankData/index.tsx",
+  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+);
+const protectedCompleteRegistrationFiles = await Promise.all(
+  [
+    "../../pages/private/Register/pages/Proof/index.tsx",
+    "../../pages/private/Register/pages/Proof/components/Success/index.tsx",
+    "../../pages/private/Register/pages/Success/index.tsx",
+  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+);
+const routesSource = await readFile(new URL("../../routes/index.tsx", import.meta.url), "utf8");
 assert(appSource.includes("PlatformSettingsProvider"), "App usa provider compartilhado");
 assert(featureSource.includes('"/investor/platform"'), "usa endpoint genérico existente");
 assert(!/AsyncStorage|SecureStore|redux-persist/u.test(featureSource), "configuração não cria storage paralelo");
@@ -209,6 +241,20 @@ assert(!consumerSource.includes("investmentPortfolio.label.plural"), "Carteira p
 assert(!consumerSource.includes("investorRole.label.singular"), "Investidor singular permanece sem consumer no App");
 assert(authConsumerFiles.every((source) => source.includes("usePlatformAppEntryContent")), "quatro superfícies editoriais consomem a família de entrada");
 assert(operationalCompletionFiles.every((source) => !source.includes("usePlatformAppEntryContent")), "mensagens operacionais de conclusão permanecem fora da configuração");
+assert(
+  completeRegistrationConsumerFiles.every((source) => source.includes("usePlatformAppEntryContent")),
+  "quatro etapas editoriais de Completar cadastro consomem a família de entrada",
+);
+assert(
+  protectedCompleteRegistrationFiles.every((source) => !source.includes("usePlatformAppEntryContent")),
+  "prova, Face Match e sucesso permanecem operacionais",
+);
+assert(routesSource.includes('firstPage="Register"'), "conta waiting entra na rota privada Register");
+assert(
+  completeRegistrationConsumerFiles[2].includes("Declaro para fins de comprovação de residência"),
+  "declaração legal permanece fixa no consumer",
+);
+assert(!featureSource.includes("addressDeclaration"), "declaração legal não entra no contrato");
 assert(consumerSource.includes("usePlatformAppAuthenticatedContent"), "superfícies autenticadas consomem o resolver compartilhado");
 
 const opportunitiesSource = consumerFiles[0];

@@ -9,6 +9,7 @@ import { useAddressStyles } from './style';
 import { getCepInfo } from '@/services/common';
 import { useMutation } from '@tanstack/react-query';
 import LoadingComp from '@/components/Loading';
+import { usePlatformAppEntryContent } from '@/features/platform-app/usePlatformAppEntryContent';
 
 interface AddressProps {
   formData: {
@@ -34,6 +35,7 @@ interface AddressProps {
 }
 
 export default function Address({ formData, updateFormData, onNext, onPrev }: AddressProps) {
+  const content = usePlatformAppEntryContent().completeRegistration;
   const styles = useCustomStyles();
   const addressStyles = useAddressStyles();
   
@@ -146,7 +148,7 @@ export default function Address({ formData, updateFormData, onNext, onPrev }: Ad
       
       <View style={[styles.container]}>
         <View style={styles.content}>
-          <Text style={styles.title}>Endereço</Text>
+          <Text style={styles.title}>{content.addressTitle}</Text>
           
           <View>
             <Input

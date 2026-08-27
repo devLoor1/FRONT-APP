@@ -25,6 +25,14 @@ export type PlatformAppEntryContent = {
     continueLabel: string;
     backToLoginLabel: string;
   };
+  completeRegistration: {
+    personalDataTitle: string;
+    issuingEntityHelper: string;
+    nationalityHelper: string;
+    annualIncomeHelper: string;
+    addressTitle: string;
+    bankDataTitle: string;
+  };
 };
 
 export type PlatformAppEntryPayloadV1 = {
@@ -56,6 +64,14 @@ export const PLATFORM_APP_ENTRY_DEFAULTS: PlatformAppEntryContent = {
     continueLabel: "Continuar",
     backToLoginLabel: "Ir para a Home",
   },
+  completeRegistration: {
+    personalDataTitle: "Dados Pessoais",
+    issuingEntityHelper: "Ex.: SSP, DETRAN, etc.",
+    nationalityHelper: "Ex.: Brasileira, Americana, etc.",
+    annualIncomeHelper: "Ex.: R$ 50.000,00",
+    addressTitle: "Endereço",
+    bankDataTitle: "Dados bancários",
+  },
 };
 
 const FIELD_LIMITS = {
@@ -73,6 +89,12 @@ const FIELD_LIMITS = {
   description: 320,
   continueLabel: 60,
   backToLoginLabel: 80,
+  personalDataTitle: 80,
+  issuingEntityHelper: 120,
+  nationalityHelper: 120,
+  annualIncomeHelper: 100,
+  addressTitle: 80,
+  bankDataTitle: 80,
 } as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -114,6 +136,7 @@ export function createDefaultPlatformAppEntryContent(): PlatformAppEntryContent 
     login: { ...PLATFORM_APP_ENTRY_DEFAULTS.login },
     registration: { ...PLATFORM_APP_ENTRY_DEFAULTS.registration },
     passwordRecovery: { ...PLATFORM_APP_ENTRY_DEFAULTS.passwordRecovery },
+    completeRegistration: { ...PLATFORM_APP_ENTRY_DEFAULTS.completeRegistration },
   };
 }
 
@@ -137,6 +160,10 @@ export function parsePlatformAppEntryContent(input: unknown): PlatformAppEntryCo
     passwordRecovery: normalizeScreen(
       input.screens.passwordRecovery,
       PLATFORM_APP_ENTRY_DEFAULTS.passwordRecovery,
+    ),
+    completeRegistration: normalizeScreen(
+      input.screens.completeRegistration,
+      PLATFORM_APP_ENTRY_DEFAULTS.completeRegistration,
     ),
   };
 }

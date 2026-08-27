@@ -7,6 +7,7 @@ import { Text, View } from 'react-native';
 import { useCustomStyles } from '../../style';
 import { Analytics } from '@/helpers/analytics';
 import CommonMask from '@/helpers/masks';
+import { usePlatformAppEntryContent } from '@/features/platform-app/usePlatformAppEntryContent';
 
 interface PersonalDataTwoProps {
   formData: {
@@ -79,6 +80,7 @@ const civilStatus: SelectProps = {
 };
 
 export default function PersonalDataTwo({ formData, updateFormData, onNext, onPrev }: PersonalDataTwoProps) {
+  const content = usePlatformAppEntryContent().completeRegistration;
   const styles = useCustomStyles();
   const [error, setError] = useState({
     gender: '',
@@ -159,7 +161,7 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.content}>
-        <Text style={styles.title}>Dados Pessoais</Text>
+        <Text style={styles.title}>{content.personalDataTitle}</Text>
         
         <Select
           label="Qual o seu gênero *"
@@ -212,7 +214,7 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
           txtError={error.annual_income}
           keyboardType="numeric"
         />
-        <Text style={{ ...styles.subDesc }}>Ex.: R$ 50.000,00</Text>
+        <Text style={{ ...styles.subDesc }}>{content.annualIncomeHelper}</Text>
 
         <View style={{ marginTop: 48 }}>
           <RadioButton

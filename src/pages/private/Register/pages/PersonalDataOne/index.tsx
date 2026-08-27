@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import Snack from '@/components/Snack';
 import LoadingComp from '@/components/Loading';
 import { safeLogger } from '@/helpers/observability';
+import { usePlatformAppEntryContent } from '@/features/platform-app/usePlatformAppEntryContent';
 
 interface PersonalDataOneProps {
   formData: {
@@ -32,6 +33,7 @@ interface PersonalDataOneProps {
 }
 
 export default function PersonalDataOne({ formData, updateFormData, onNext }: PersonalDataOneProps) {
+  const content = usePlatformAppEntryContent().completeRegistration;
   const styles = useCustomStyles();
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
@@ -159,7 +161,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
             <LoadingComp transparent />
           </View>
         )}
-        <Text style={styles.title}>Dados Pessoais</Text>
+        <Text style={styles.title}>{content.personalDataTitle}</Text>
         
         <View style={{ position: 'relative' }}>
           <Input
@@ -217,7 +219,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
               txtError={error.issuing_entity}
               autoCapitalize="characters"
             />
-            <Text style={{ ...styles.subDesc }}>Ex.: SSP, DETRAN, etc.</Text>
+            <Text style={{ ...styles.subDesc }}>{content.issuingEntityHelper}</Text>
           </View>
         </View>
 
@@ -229,7 +231,7 @@ export default function PersonalDataOne({ formData, updateFormData, onNext }: Pe
           txtError={error.nationality}
           autoCapitalize="words"
         />
-        <Text style={{ ...styles.subDesc }}>Ex.: Brasileira, Americana, etc.</Text>
+        <Text style={{ ...styles.subDesc }}>{content.nationalityHelper}</Text>
       </View>
 
       <BtnDefault 

@@ -7,6 +7,7 @@ import BtnDefault from '@/components/BtnDefault';
 import { Analytics } from '@/helpers/analytics';
 import { getBanks } from '@/services/common';
 import { useQuery } from '@tanstack/react-query';
+import { usePlatformAppEntryContent } from '@/features/platform-app/usePlatformAppEntryContent';
 
 interface BankDataProps {
   formData: {
@@ -39,6 +40,7 @@ type SelectProps = {
 };
 
 export default function BankData({ formData, updateFormData, onNext, onPrev, isSubmitting = false }: BankDataProps) {
+  const content = usePlatformAppEntryContent().completeRegistration;
   const styles = useCustomStyles();
   
   const [error, setError] = useState({
@@ -139,7 +141,7 @@ export default function BankData({ formData, updateFormData, onNext, onPrev, isS
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.title}>Dados bancários</Text>
+          <Text style={styles.title}>{content.bankDataTitle}</Text>
           
           {loadingBanks ? (
             <View style={{ padding: 20, alignItems: 'center' }}>
