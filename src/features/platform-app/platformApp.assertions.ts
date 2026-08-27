@@ -8,6 +8,10 @@ import {
   PLATFORM_TERMINOLOGY_DEFAULTS,
   parsePlatformTerminology,
 } from "./terminology";
+import {
+  PLATFORM_APP_AUTHENTICATED_DEFAULTS,
+  parsePlatformAppAuthenticatedContent,
+} from "./authenticatedContentContract";
 
 let assertionCount = 0;
 
@@ -28,6 +32,18 @@ const response = {
             login: { submitLabel: "Acessar" },
             registration: { detailsTitle: "Comece por aqui" },
             passwordRecovery: { title: "Redefina seu acesso" },
+          },
+        },
+      },
+      app_authenticated: {
+        content: {
+          capabilityId: "platform.app.authenticated-content",
+          version: 1,
+          locale: "pt-BR",
+          screens: {
+            wallet: { availableOpportunitiesTitle: "Seleção em destaque" },
+            opportunities: { searchPlaceholder: "Buscar ofertas" },
+            investments: { emptyStateHelper: "Revise sua busca." },
           },
         },
       },
@@ -72,6 +88,46 @@ assert(invalidFields.login.recoverPasswordLabel === "Esqueci minha senha", "queb
 assert(invalidFields.passwordRecovery.title === "Recuperar senha", "placeholder usa fallback");
 assert(invalidFields.registration.detailsTitle === "Cadastro válido", "texto válido é preservado");
 
+const authenticated = parsePlatformAppAuthenticatedContent(
+  getInvestorPlatformValue(response, "app_authenticated", "content"),
+);
+assert(
+  authenticated.wallet.availableOpportunitiesTitle === "Seleção em destaque",
+  "aplica conteúdo persistido da Carteira",
+);
+assert(
+  authenticated.opportunities.searchPlaceholder === "Buscar ofertas",
+  "aplica conteúdo persistido de Oportunidades",
+);
+assert(
+  authenticated.investments.emptyStateHelper === "Revise sua busca.",
+  "aplica conteúdo persistido de Investimentos",
+);
+assert(
+  authenticated.wallet.investedOpportunitiesTitle ===
+    PLATFORM_APP_AUTHENTICATED_DEFAULTS.wallet.investedOpportunitiesTitle,
+  "payload autenticado parcial completa defaults por campo",
+);
+assert(
+  parsePlatformAppAuthenticatedContent({
+    capabilityId: "platform.app.authenticated-content",
+    version: 2,
+    locale: "pt-BR",
+    screens: {},
+  }).opportunities.searchPlaceholder === "Pesquisar",
+  "envelope autenticado incompatível usa fallback",
+);
+assert(
+  parsePlatformAppAuthenticatedContent({
+    capabilityId: "platform.app.authenticated-content",
+    version: 1,
+    locale: "pt-BR",
+    screens: { investments: { emptyStateHelper: "<b>Sem itens</b>" } },
+  }).investments.emptyStateHelper ===
+    PLATFORM_APP_AUTHENTICATED_DEFAULTS.investments.emptyStateHelper,
+  "campo autenticado inválido usa fallback",
+);
+
 const terminology = parsePlatformTerminology({
   capabilityId: "platform.terminology",
   version: 1,
@@ -107,6 +163,8 @@ const featureFiles = await Promise.all(
     "./PlatformSettingsProvider.tsx",
     "./entryContentContract.ts",
     "./usePlatformAppEntryContent.ts",
+    "./authenticatedContentContract.ts",
+    "./usePlatformAppAuthenticatedContent.ts",
     "./terminology.ts",
     "./usePlatformTerminology.ts",
   ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
@@ -117,6 +175,8 @@ const consumerFiles = await Promise.all(
     "../../pages/private/Opportunities/index.tsx",
     "../../pages/private/OpportunitiesDetail/index.tsx",
     "../../pages/private/Wallet/components/navbar/index.tsx",
+    "../../pages/private/Wallet/index.tsx",
+    "../../pages/private/Investments/index.tsx",
     "../../pages/private/Invest/index.tsx",
     "../../pages/private/Invest/tabs/FinishTab/index.tsx",
     "../../pages/private/OpportunitiesDetail/components/GeneralInfos/index.tsx",
@@ -144,10 +204,35 @@ assert(!/image|upload|assetId|backgroundImage/iu.test(featureSource), "contrato 
 assert(consumerSource.includes("investmentOffering.label.singular"), "singular de Oportunidade possui consumer isolado");
 assert(consumerSource.includes("investmentOffering.label.plural"), "plural de Oportunidade possui consumers isolados");
 assert(consumerSource.includes("investorRole.label.plural"), "plural de Investidor possui consumer isolado");
-assert(!consumerSource.includes("investmentPortfolio.label.singular"), "Carteira singular não recebe interpolação artificial");
+assert(consumerSource.includes("investmentPortfolio.label.singular"), "Carteira singular possui consumer natural na lista de investimentos");
 assert(!consumerSource.includes("investmentPortfolio.label.plural"), "Carteira plural permanece sem consumer no App");
 assert(!consumerSource.includes("investorRole.label.singular"), "Investidor singular permanece sem consumer no App");
 assert(authConsumerFiles.every((source) => source.includes("usePlatformAppEntryContent")), "quatro superfícies editoriais consomem a família de entrada");
 assert(operationalCompletionFiles.every((source) => !source.includes("usePlatformAppEntryContent")), "mensagens operacionais de conclusão permanecem fora da configuração");
+assert(consumerSource.includes("usePlatformAppAuthenticatedContent"), "superfícies autenticadas consomem o resolver compartilhado");
+
+const opportunitiesSource = consumerFiles[0];
+const investmentsSource = consumerFiles[4];
+const opportunityDetailsSource = consumerFiles[7];
+assert(opportunitiesSource.includes("Nenhuma oportunidade encontrada"), "estado operacional vazio de Oportunidades permanece fixo");
+assert(investmentsSource.includes("Nenhum investimento encontrado"), "estado operacional vazio de Investimentos permanece fixo");
+assert(opportunityDetailsSource.includes("content.detailResourcesLabel"), "label de recursos possui consumer ativo");
+assert(opportunityDetailsSource.includes("content.detailProfileLabel"), "label de perfil possui consumer ativo");
+assert(!featureSource.includes("detailFundingReasonTitle"), "seção comentada de captação não entra no contrato");
+assert(!featureSource.includes("detailSectorTitle"), "seção comentada de setor não entra no contrato");
+
+const protectedInvestmentFlow = await Promise.all(
+  [
+    "../../pages/private/Invest/tabs/InvestmentTab/index.tsx",
+    "../../pages/private/Invest/tabs/PersonalDataTab/index.tsx",
+    "../../pages/private/Invest/tabs/Summary/index.tsx",
+    "../../pages/private/Invest/tabs/Crowdfunding/index.tsx",
+    "../../pages/private/Invest/components/Success/index.tsx",
+  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+);
+assert(
+  protectedInvestmentFlow.every((source) => !source.includes("usePlatformAppAuthenticatedContent")),
+  "Pix, dados pessoais, declaração, resumo e sucesso permanecem operacionais",
+);
 
 console.log(`platformApp: ${assertionCount} assertions passed`);

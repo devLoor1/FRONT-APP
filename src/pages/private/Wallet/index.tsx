@@ -21,8 +21,10 @@ import InterestChart from "./components/InterestChart";
 import LoadingComp from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePlatformAppAuthenticatedContent } from "@/features/platform-app/usePlatformAppAuthenticatedContent";
 
 export default function WalletPage() {
+  const content = usePlatformAppAuthenticatedContent().wallet;
   const { theme } = useTheme();
   const styles = useCustomStyles();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -101,7 +103,7 @@ export default function WalletPage() {
             {
               personalInformationFilled && (
                 <>
-                  <CardValues resume={resume} />
+                  <CardValues resume={resume} title={content.investedOpportunitiesTitle} />
                   <InterestChart />
                   <FlatList
                     scrollEnabled={false}
@@ -111,7 +113,7 @@ export default function WalletPage() {
                     ListHeaderComponent={
                       <View style={[styles.titleContainer, { marginBottom: 0 }]}>
                         <Text style={styles.titleOpportunity}>
-                          Oportunidades disponíveis
+                          {content.availableOpportunitiesTitle}
                         </Text>
                         <TouchableOpacity onPress={() => setShowModal(true)}>
                           <InfoIcon
@@ -133,7 +135,7 @@ export default function WalletPage() {
                           nav.navigate("Tabs", { screen: "InvestTabs" });
                         }}
                       >
-                        <Text style={styles.moreTxt}>veja mais</Text>
+                        <Text style={styles.moreTxt}>{content.availableOpportunitiesMoreLabel}</Text>
                       </TouchableOpacity>
                     }
                   />
@@ -150,8 +152,8 @@ export default function WalletPage() {
       <ModalDefault
         setVisible={setShowModal}
         visible={showModal}
-        title="Novas oportunidades"
-        desc="Apresenta o valor total investido, detalhando todos os custos envolvidos."
+        title={content.availableOpportunitiesInfoTitle}
+        desc={content.availableOpportunitiesInfoDescription}
       />
     </View>
   );

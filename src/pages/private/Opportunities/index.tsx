@@ -27,8 +27,10 @@ import OpportunityNewCard from "@/components/OpportunityNewCard";
 import { getSegments } from "@/services/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
+import { usePlatformAppAuthenticatedContent } from "@/features/platform-app/usePlatformAppAuthenticatedContent";
 
 export default function OpportunitiesPage() {
+  const content = usePlatformAppAuthenticatedContent().opportunities;
   const { resolveTerminology } = usePlatformTerminology();
   const opportunitiesLabel = resolveTerminology(
     "investmentOffering.label.plural",
@@ -267,7 +269,7 @@ export default function OpportunitiesPage() {
               <TextInput
                 onChangeText={debounce(onChangeSearch, 1000)}
                 style={styles.searchInput}
-                placeholder="Pesquisar"
+                placeholder={content.searchPlaceholder}
                 mode="flat"
                 placeholderTextColor={theme.colors.text}
                 activeOutlineColor={theme.colors.text}
@@ -309,6 +311,9 @@ export default function OpportunitiesPage() {
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
                 Nenhuma oportunidade encontrada
+              </Text>
+              <Text style={[styles.emptyText, { marginTop: 8, opacity: 0.72 }]}>
+                {content.emptyStateHelper}
               </Text>
             </View>
           ) : null

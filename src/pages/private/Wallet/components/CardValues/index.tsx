@@ -12,8 +12,10 @@ import EyeOffIcon from "@/../assets/newSvgs/icons/visibility_off.svg";
 
 export default function CardValues({
   resume,
+  title,
 }: {
   resume?: WalletResponse["data"];
+  title: string;
 }) {
   const styles = useCustomStyles();
   const { theme } = useTheme();
@@ -24,7 +26,7 @@ export default function CardValues({
       <View style={styles.head}>
         <View>
           <View style={[styles.row, styles.spaceBetween]}>
-            <Text style={styles.title}>Oportunidades investidas</Text>
+            <Text style={styles.title}>{title}</Text>
             <TouchableOpacity onPress={toogleBalance}>
               {showBalance ? (
                 <EyeIcon

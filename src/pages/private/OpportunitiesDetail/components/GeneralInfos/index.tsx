@@ -34,6 +34,7 @@ import {
   ResourceUtilization,
 } from "@/models/opportunities/opportunityDetails.response";
 import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
+import { usePlatformAppAuthenticatedContent } from "@/features/platform-app/usePlatformAppAuthenticatedContent";
 
 type GeneralType = {
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -41,6 +42,7 @@ type GeneralType = {
 };
 
 export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
+  const content = usePlatformAppAuthenticatedContent().opportunities;
   const { resolveTerminology } = usePlatformTerminology();
   const investorsLabel = resolveTerminology(
     "investorRole.label.plural",
@@ -382,7 +384,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
             </View> */}
           </View>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Progresso</Text>
+            <Text style={styles.cardTitle}>{content.detailProgressTitle}</Text>
             <View style={styles.cardList}>
               <View style={styles.listItem}>
                 <Text style={styles.listItemTitle}>Valor total</Text>
@@ -498,14 +500,14 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               </Text>
             </View>
             <View style={styles.listItem}>
-              <Text style={styles.listItemTitle}>Aplicação dos recursos</Text>
+              <Text style={styles.listItemTitle}>{content.detailResourcesLabel}</Text>
               <Text style={styles.listItemDesc}>
                 {getResourceUtilization(opportunity.resource_utilization)}
               </Text>
             </View>
             <View style={styles.dataRow}>
               <View style={styles.dataItem}>
-                <Text style={styles.dataTitle}>Perfil</Text>
+                <Text style={styles.dataTitle}>{content.detailProfileLabel}</Text>
                 <Text style={styles.dataValue}>
                   {opportunity.investor_profile.title}
                 </Text>
@@ -542,7 +544,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
           </View> */}
           {opportunity.members.length ? (
             <View style={styles.card}>
-              <Text style={styles.cardTitle}>Equipe</Text>
+              <Text style={styles.cardTitle}>{content.detailTeamTitle}</Text>
               <FlatList
                 horizontal
                 style={{ marginHorizontal: -16 }}

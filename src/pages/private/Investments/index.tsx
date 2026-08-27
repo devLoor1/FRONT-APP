@@ -25,8 +25,16 @@ import { getSegments } from "@/services/common";
 import { getInvestments } from "@/services/investments";
 import { InvestmentsResponse } from "@/models/investments/investments.response";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePlatformTerminology } from "@/features/platform-app/usePlatformTerminology";
+import { usePlatformAppAuthenticatedContent } from "@/features/platform-app/usePlatformAppAuthenticatedContent";
 
 export default function InvestmentPage() {
+  const content = usePlatformAppAuthenticatedContent().investments;
+  const { resolveTerminology } = usePlatformTerminology();
+  const portfolioLabel = resolveTerminology(
+    "investmentPortfolio.label.singular",
+    "Carteira",
+  );
   const dispatch = useAppDispatch();
   const styles = useCustomStyles();
   const { theme } = useTheme();
@@ -219,7 +227,7 @@ export default function InvestmentPage() {
         ref={refPage}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>Carteira</Text>
+            <Text style={styles.title}>{portfolioLabel}</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -246,7 +254,7 @@ export default function InvestmentPage() {
               <TextInput
                 onChangeText={debounce(onChangeSearch, 1000)}
                 style={styles.searchInput}
-                placeholder="Pesquisar"
+                placeholder={content.searchPlaceholder}
                 mode="flat"
                 placeholderTextColor={theme.colors.text}
                 activeOutlineColor={theme.colors.text}
@@ -288,6 +296,9 @@ export default function InvestmentPage() {
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
                 Nenhum investimento encontrado
+              </Text>
+              <Text style={[styles.emptyText, { marginTop: 8, opacity: 0.72 }]}>
+                {content.emptyStateHelper}
               </Text>
             </View>
           ) : null
