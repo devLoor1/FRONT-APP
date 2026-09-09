@@ -1,6 +1,5 @@
 import { View, Text, BackHandler, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 
@@ -54,8 +53,6 @@ export default function Password({ registerPayload, onComplete }: Props) {
 
   async function onSubmit() {
     if (isValidPassword) {
-      await AsyncStorage.setItem('userPasswordLogin', password);
-
       try {
         await postPreRegister({
           ...registerPayload,

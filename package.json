@@ -7,6 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "test:functional-parity": "node --experimental-strip-types src/features/investor-access/investorAccess.assertions.ts",
     "build-development": "cross-env ENV=DEV EXPO_APPLE_TEAM_ID=KNC9427V72 eas build --profile development",
     "build-preview": "cross-env ENV=PREVIEW EXPO_APPLE_TEAM_ID=KNC9427V72 eas build --profile preview",
     "build-production": "cross-env ENV=PROD EXPO_APPLE_TEAM_ID=KNC9427V72 eas build --profile production",

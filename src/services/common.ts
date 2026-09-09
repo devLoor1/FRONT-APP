@@ -18,7 +18,7 @@ export const getCountries = async () => {
 };
 
 export const getBanks = async () => {
-  const response = await api.get<BanksResponse>("/investors/banks");
+  const response = await api.get<BanksResponse>("/app/investors/banks");
 
   return response.data;
 };
@@ -29,6 +29,6 @@ export const getCepInfo = async (cep: string) => {
 };
 
 export const getBureauByCpf = async (cpf: string) => {
-  const response = await api.post<BureauResponse>(`/investors/bureau/${cpf}`);
+  const response = await api.post<BureauResponse>(`/app/investors/bureau/${cpf}`);
   return response.data;
 };

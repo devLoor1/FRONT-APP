@@ -100,19 +100,23 @@ const defaultValues: PersonalDataForm = {
   },
 
   // Me
+  avatar: null,
   email: "",
   type: "",
-  account_validation_status: "",
+  account_validation_status: "waiting",
   reason_for_deny: null,
+  has_bureau: false,
+  has_address: false,
+  has_completed_basic_profile: false,
   has_completed_personal_information: false,
   investor_profile: {
-    id: 0,
-    title: "",
-    description: "",
-    created_at: new Date(), // or new Date(0)
+    id: null,
+    title: null,
+    description: null,
+    created_at: null,
   },
   face_match: {
-    status: "",
+    status: null,
   },
 
   // OpportunityPix

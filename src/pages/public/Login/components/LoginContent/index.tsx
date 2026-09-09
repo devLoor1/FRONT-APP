@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import CommonValidators from "@/helpers/validators/common.validators";
 import { postLogin } from "@/services/auth";
 import { PublicNavigation } from "@/models/routes/navigation.public";
-import { setLoginData, fetchUserData } from "@/redux/reducers/auth";
+import { setLoginData, fetchUserData, logout } from "@/redux/reducers/auth";
 import { Analytics, handleAnalyticsUserProfile } from "@/helpers/analytics";
 import Version from "@/helpers/version/version";
 import { useTheme } from "@/context/MyThemeContext";
@@ -103,18 +103,31 @@ export default function LoginContent() {
   }, [showSnack]);
 
   useEffect(() => {
-    if (data) {
-      // Configurar token na API
-      const { token } = data.data;
-      api.defaults.headers.Authorization = `Bearer ${token}`;
-      AuthStorage.SetPrivateToken(token);
-      
-      // Salvar dados no Redux (será persistido automaticamente)
-      dispatch(setLoginData(data));
-      
-      // Buscar dados do usuário
-      dispatch(fetchUserData());
+    if (!data) return;
+    const loginResponse = data;
+
+    async function completeLogin() {
+      try {
+        const { token } = loginResponse.data;
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+        await AuthStorage.SetPrivateToken(token);
+        dispatch(setLoginData(loginResponse));
+
+        await dispatch(fetchUserData()).unwrap();
+      } catch (error) {
+        await AuthStorage.ClearPrivateToken();
+        delete api.defaults.headers.Authorization;
+        dispatch(logout());
+        setSnackMessage(
+          typeof error === "string"
+            ? error
+            : "Não foi possível validar sua sessão. Tente novamente.",
+        );
+        setShowSnack(true);
+      }
     }
+
+    void completeLogin();
   }, [data, dispatch]);
 
   return (

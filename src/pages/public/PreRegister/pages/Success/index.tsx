@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, Alert, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect } from "react";
+import { View, Text, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import LottieView from "lottie-react-native";
@@ -8,11 +7,7 @@ import BtnDefault from "@/components/BtnDefault";
 import { useTheme } from "@/context/MyThemeContext";
 import ShieldIcon from "@/../assets/newSvgs/icons/verified_user.svg";
 import { Analytics } from "@/helpers/analytics";
-import { postLogin } from "@/services/auth";
-import { useAppDispatch } from "@/redux/hooks";
-import { setLoginData } from "@/redux/reducers/auth";
 import { useCustomStyles } from "./style";
-import { safeLogger } from "@/helpers/observability";
 
 type Props = {
   resetAll(): void;
@@ -23,58 +18,15 @@ export default function SuccessPage({ resetAll }: Props) {
   const nav = useNavigation();
   const { theme } = useTheme();
   const animation = require("@/../assets/animations/Confetti.json");
-  const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     Analytics({ pageName: "CadastroValidacao" });
   }, []);
 
-  async function handleSingIn() {
-    try {
-      setIsLoading(true);
-      
-      const email = await AsyncStorage.getItem("userEmailLogin");
-      const password = await AsyncStorage.getItem("userPasswordLogin");
-
-      if (!email || !password) {
-        Alert.alert(
-          "Erro",
-          "Não foi possível recuperar as credenciais de login. Por favor, faça login manualmente.",
-          [{ 
-            text: "OK",
-            onPress: () => nav.navigate('Login' as never)
-          }]
-        );
-        return;
-      }
-
-      const loginData = {
-        email: email,
-        password: password,
-      };      
-      const loginResponse = await postLogin(loginData);
-
-      dispatch(setLoginData(loginResponse));
-
-      await AsyncStorage.multiRemove(["userEmailLogin", "userPasswordLogin"]);
-    } catch (error) {
-      safeLogger.error("Automatic login after registration failed", error);
-      Alert.alert(
-        "Erro",
-        "Não foi possível fazer login automático. Por favor, faça login manualmente.",
-        [{ text: "OK" }]
-      );
-      nav.navigate('Login' as never);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  const handleLoginPress = async () => {
+  const handleLoginPress = () => {
     Analytics({ eventName: "CadastroValidacao_HomeLogin" });
     resetAll();
-    await handleSingIn();
+    nav.navigate("Login" as never);
   };
 
   return (
@@ -128,17 +80,10 @@ export default function SuccessPage({ resetAll }: Props) {
 
           <View style={styles.footer}>
             <BtnDefault
-              label={isLoading ? "Entrando..." : "Entrar"}
+              label="Ir para o login"
               white
-              disabled={isLoading}
               onPress={handleLoginPress}
             />
-            
-            {isLoading && (
-              <View style={{ marginTop: 16, alignItems: "center" }}>
-                <ActivityIndicator color={theme.customColors.baseWhite} size="small" />
-              </View>
-            )}
           </View>
         </View>
       </SafeAreaView>

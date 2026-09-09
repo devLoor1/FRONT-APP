@@ -4,6 +4,7 @@ import deviceData from "@/helpers/deviceData";
 import AuthStorage from "@/storages/auth-storage";
 import * as Updates from "expo-updates";
 import Debug from "@/helpers/debug";
+import { Platform } from "react-native";
 
 const api = axios.create({
   baseURL:
@@ -16,6 +17,7 @@ const api = axios.create({
       Constants.expoConfig?.extra?.version,
     ].join(" - "),
     "Content-Type": "application/json",
+    "X-Client-Platform": Platform.OS === "ios" ? "ios" : "android",
   },
 });
 

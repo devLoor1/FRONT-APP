@@ -4,6 +4,7 @@ import { useAppSelector } from "@/redux/hooks";
 import AppRoutes from "./app.routes";
 import { useAuth } from "@/context/auth";
 import LoadingScreen from "@/components/LoadingScreen";
+import { getInvestorAccessStage } from "@/features/investor-access/investorAccess";
 
 export default function Routes() {
   const { isAuthenticated, loadingUser, user } = useAppSelector((state) => state.auth);
@@ -14,7 +15,11 @@ export default function Routes() {
   }
 
   if (isAuthenticated) {
-    if (user && user.account_validation_status === "waiting") {
+    if (!user) {
+      return <LoadingScreen />;
+    }
+
+    if (getInvestorAccessStage(user) !== "ready") {
       return <AppRoutes firstPage="Register" />;
     }
     

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useAppSelector } from '@/redux/hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
-import { useAuth } from '@/context/auth';
 import Steps from '@/components/Steps';
 import PersonalDataOne from './pages/PersonalDataOne';
 import { useCustomStyles } from './style';
@@ -13,12 +12,10 @@ import Address from './pages/Address';
 import Proof from './pages/Proof'; 
 import SuccessPage from './pages/Success';
 import { useTheme } from '@/context/MyThemeContext';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/models/routes/navigation.private';
 import BankData from './pages/BankData';
 import { postPersonalInformation } from '@/services/user';
 import { useMutation } from '@tanstack/react-query';
+import { getRegistrationInitialPage } from '@/features/investor-access/investorAccess';
 
 interface RegisterFormData {
   cpf: string;
@@ -50,15 +47,13 @@ interface RegisterFormData {
 }
 
 export default function RegisterPage() {
-  const dispatch = useAppDispatch();
   const styles = useCustomStyles();
   const { user } = useAppSelector((state) => state.auth);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => getRegistrationInitialPage(user));
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { theme } = useTheme();
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [formData, setFormData] = useState<RegisterFormData>({
     cpf: '',
@@ -111,8 +106,8 @@ export default function RegisterPage() {
   const handleBankDataNext = async () => {
     setIsSubmitting(true);
     try {
-      await submitForm();
-      setPage(4);
+      const submitted = await submitForm();
+      if (submitted) setPage(4);
     } catch (error: any) {
       if (error.response?.status === 403 && 
           error.response?.data?.message === "Informações pessoais já cadastradas") {
@@ -136,7 +131,7 @@ export default function RegisterPage() {
     setPage(prev => Math.max(0, prev - 1));
   };
 
-  const submitForm = async () => {
+  const submitForm = async (): Promise<boolean> => {
     const requiredFields = {
       full_name: formData.full_name,
       cpf: formData.cpf,
@@ -168,13 +163,13 @@ export default function RegisterPage() {
     if (!user?.phone) {
       setMsgError('Telefone do usuário não encontrado. Faça login novamente.');
       setShowSnack(true);
-      return;
+      return false;
     }
 
     if (emptyFields.length > 0) {
       setMsgError(`Campos obrigatórios não preenchidos: ${emptyFields.join(', ')}`);
       setShowSnack(true);
-      return;
+      return false;
     }
 
     try {
@@ -220,7 +215,7 @@ export default function RegisterPage() {
       };
 
       await submitPersonalInformation(payload);
-      
+      return true;
     } catch (error: any) {
       throw error;
     }

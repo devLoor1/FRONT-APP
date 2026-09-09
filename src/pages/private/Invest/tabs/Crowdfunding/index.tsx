@@ -102,8 +102,8 @@ const CrowdfundingTab: React.FC<CrowdfundingTabProps> = (props) => {
             });
             props.jumpTo("summary");
             props.onNext({
-              other_crowdfunding_platforms:
-                +investmentOther.replace(",", ".") * 100,
+              // The currency input stores raw digits in centavos already.
+              other_crowdfunding_platforms: Number(investmentOther),
               declaration: value as InvestmentRequest["declaration"],
             });
           }}

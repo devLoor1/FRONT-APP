@@ -22,7 +22,7 @@ export const postRecover = async (request: RecoverRequest) => {
 
 export const postLogin = async (request: AuthRequest) => {
   const response = await api.post<AuthResponse>(
-    `/auth/investor/login`,
+    `/app/onboarding/login`,
     request
   );
 
@@ -36,7 +36,7 @@ export const postLogin = async (request: AuthRequest) => {
 };
 
 export const postLogout = async () => {
-  const response = await api.post<LogoutResponse>(`/auth/investor/logout`);
+  const response = await api.post<LogoutResponse>(`/app/onboarding/logout`);
 
   return response.data;
 };
@@ -49,7 +49,7 @@ export const postRegister = async (request: RegisterRequest) => {
   };
 
   const response = await api.post<AuthResponse>(
-    `/auth/investor/register`,
+    `/app/onboarding/register`,
     body
   );
 
@@ -57,7 +57,7 @@ export const postRegister = async (request: RegisterRequest) => {
 };
 
 export const deleteInvestor = async () => {
-  const response = await api.delete(`/investors`);
+  const response = await api.delete(`/app/investors`);
 
   return response.data;
 };

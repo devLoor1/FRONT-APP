@@ -1,4 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+
+const PRIVATE_TOKEN_KEY = '@WiseInvestor:private_token';
 
 const AuthStorage = {
   // async SetPublicToken(token: string) {
@@ -10,11 +12,15 @@ const AuthStorage = {
   // },
 
   async SetPrivateToken(token: string) {
-    AsyncStorage.setItem('@WiseInvestor:private_token', token);
+    await SecureStore.setItemAsync(PRIVATE_TOKEN_KEY, token);
   },
 
   GetPrivateToken() {
-    return AsyncStorage.getItem('@WiseInvestor:private_token');
+    return SecureStore.getItemAsync(PRIVATE_TOKEN_KEY);
+  },
+
+  ClearPrivateToken() {
+    return SecureStore.deleteItemAsync(PRIVATE_TOKEN_KEY);
   },
 
   // async SetExpire(val: string) {

@@ -12,7 +12,7 @@
     "basicAuth": "Basic QUpESEZVUU5WQk5aRDkxODIzR0E6RDRFMVFKRE5WQTZFNzRBNUQyMVk=",
     "publicScopesAuth": "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
     "publicGrantTypeAuth": "client_credentials",
-    "baseUrl": "https://boss-equity-api.herokuapp.com/"
+    "baseUrl": "https://back.loor.vc/"
   },
   "PREVIEW": {
     "name": "Loor Preview",
@@ -22,7 +22,7 @@
     "basicAuth": "Basic QUpESEZVUU5WQk5aRDkxODIzR0E6RDRFMVFKRE5WQTZFNzRBNUQyMVk=",
     "publicScopesAuth": "signup.api, mfa.api, member.api, agreements.api, loan.api, kyc.api, investment.api, payment.api",
     "publicGrantTypeAuth": "client_credentials",
-    "baseUrl": "https://boss-equity-api.herokuapp.com/"
+    "baseUrl": "https://back.loor.vc/"
   },
   "PROD": {
     "name": "Loor",

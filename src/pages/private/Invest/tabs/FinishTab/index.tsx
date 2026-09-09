@@ -58,15 +58,10 @@ const FinishTab: React.FC<FinishTabProps> = ({ data, currentTab }) => {
   });
 
   useEffect(() => {
-    console.log("useEffect");
     if (!hasMutated.current && !!data && currentTab) {
-      invest(data);
       hasMutated.current = true;
+      invest(data);
     }
-
-    return () => {
-      hasMutated.current = false;
-    };
   }, [currentTab, data]);
 
   useEffect(() => {

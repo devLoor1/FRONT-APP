@@ -6,7 +6,7 @@ export type OpportunityDetails = {
   id: number;
   about: string;
   business_name: string;
-  whatsapp_group: string;
+  whatsapp_group?: string | null;
   description: string;
   due_at: string;
   end_at: string;
@@ -16,13 +16,18 @@ export type OpportunityDetails = {
   segment: string;
   status: string;
   resource_utilization: ResourceUtilization;
-  total_investors: number;
-  entrepreneur: Entrepreneur;
+  total_investors?: number;
+  entrepreneur?: Entrepreneur;
   goal: Goal;
-  investor_profile: InvestorProfile;
+  investor_profile?: InvestorProfile;
   members: Member[];
   modality_data: ModalityData;
   monetary: Monetary;
+  promotional_video_url: string | null;
+  extra_images: Array<{ url: string }>;
+  content_blocks: string[];
+  token_contract_address: string | null;
+  gnosis_scan_url: string | null;
 };
 
 export enum ResourceUtilization {
@@ -56,10 +61,16 @@ export type Member = {
 };
 
 export type ModalityData = {
-  participation: number;
+  type?: "equity" | "debt";
+  participation: number | string;
+  percentage_profitability?: string | null;
+  payment_frequency?: string;
+  grace_period?: number;
+  total_installments?: number;
+  single_installment?: boolean;
 };
 
 export type Monetary = {
   min_investment_value: number;
-  warranty_amount: number;
+  warranty_amount?: number;
 };

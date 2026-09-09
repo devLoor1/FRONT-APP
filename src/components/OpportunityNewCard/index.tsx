@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { Alert, View, Text, TouchableOpacity, Image } from "react-native";
 import { useCustomStyles } from "./style";
 import BtnDefault from "../BtnDefault";
 import { useNavigation } from "@react-navigation/native";
@@ -13,6 +13,9 @@ import CaretRightIcon from "@/../assets/newSvgs/icons/keyboard_arrow_right.svg";
 import { Divider } from "react-native-paper";
 import ModalDefault from "../ModalDefault";
 import ApartmentIcon from "@/../assets/newSvgs/icons/apartment.svg";
+import { useAppSelector } from "@/redux/hooks";
+import { usePlatformFeatureFlag } from "@/features/platform-app/usePlatformFeatureFlag";
+import { getInvestmentAccessDecision } from "@/features/investor-access/investorAccess";
 
 type OpportunityCardProps = {
   white?: boolean;
@@ -29,6 +32,25 @@ export default function OpportunityNewCard({
   const refRBSheetSimulation = useRef<any>(null);
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [showModal, setShowModal] = useState(false);
+  const user = useAppSelector((state) => state.auth.user);
+  const investorProfileRequired = usePlatformFeatureFlag(
+    "investor_profile_enabled",
+  );
+
+  const openInvestment = () => {
+    const access = getInvestmentAccessDecision(user, investorProfileRequired);
+    if (!access.allowed) {
+      Alert.alert("Investimento indisponível", access.message);
+      return;
+    }
+
+    nav.navigate("Invest", { opportunityId: opportunity.id });
+  };
+
+  const participation =
+    typeof opportunity.modality_data.participation === "number"
+      ? `${opportunity.modality_data.participation.toFixed(2)}%`
+      : opportunity.modality_data.participation;
 
   const modalityText = useMemo(() => {
     if (showModal)
@@ -185,7 +207,7 @@ export default function OpportunityNewCard({
               <Text style={styles.itemTitle}>Participação</Text>
             </View>
             <Text style={styles.itemValue}>
-              {opportunity.modality_data.participation.toFixed(2)}%
+              {participation}
             </Text>
           </View>
           <View style={[styles.item]}>
@@ -225,7 +247,7 @@ export default function OpportunityNewCard({
           style={styles.buttonLeft}
           onPress={() => {
             Analytics({ eventName: "HomeApp_OportunidadeSimular" });
-            nav.navigate("Invest", { opportunityId: opportunity.id });
+            openInvestment();
           }}
         />
         <BtnDefault

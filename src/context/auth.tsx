@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { logout, fetchUserData } from "@/redux/reducers/auth";
+import { logout, fetchUserData, restoreSession } from "@/redux/reducers/auth";
 import { fetchPersonalInformation } from "@/redux/reducers/user";
 import { postLogout } from "@/services/auth";
 import { useMutation } from "@tanstack/react-query";
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [deviceToken, setDeviceTokenState] = useState<string>("");
   const [enableAuth, setEnableAuthState] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-  const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+  const { token } = useAppSelector((state) => state.auth);
 
   const {
     mutateAsync: logoutMutation,
@@ -74,20 +74,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setEnableAuthState(storedEnableAuth === "true");
         }
 
-        // Se há token no Redux (persistido), configurar na API
-        if (token) {
-          api.defaults.headers.Authorization = `Bearer ${token}`;
-          await AuthStorage.SetPrivateToken(token);
+        // SecureStore é a fonte da sessão; o token Redux antigo é aceito uma vez
+        // apenas para migração de instalações existentes.
+        const storedPrivateToken = await AuthStorage.GetPrivateToken();
+        const sessionToken = storedPrivateToken || token;
+
+        if (sessionToken) {
+          api.defaults.headers.Authorization = `Bearer ${sessionToken}`;
+          await AuthStorage.SetPrivateToken(sessionToken);
+          dispatch(restoreSession(sessionToken));
           
-          // Buscar dados do usuário se não estiver autenticado
-          if (!isAuthenticated) {
-            await dispatch(fetchUserData());
-            // Também buscar dados pessoais
+          // Sempre revalidar a sessão e os estados operacionais no Backend.
+          const currentUser = await dispatch(fetchUserData()).unwrap();
+          if (currentUser.has_completed_personal_information) {
             await dispatch(fetchPersonalInformation());
           }
+        } else {
+          dispatch(logout());
         }
       } catch (error) {
         safeLogger.error("Authentication bootstrap failed", error);
+        await AuthStorage.ClearPrivateToken();
+        delete api.defaults.headers.Authorization;
+        dispatch(logout());
       } finally {
         setIsInitializing(false);
       }
@@ -116,6 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       // Limpar dados locais
       await AsyncStorage.clear();
+      await AuthStorage.ClearPrivateToken();
       dispatch(logout());
       
       // Limpar headers da API

@@ -6,7 +6,7 @@ export type OpportunitiesResponse = {
 export type Opportunity = {
   id: number;
   description: string;
-  due_at: Date;
+  due_at: string;
   end_at: string;
   image: string;
   modality: string;
@@ -14,7 +14,7 @@ export type Opportunity = {
   segment: string;
   status: string;
   goal: Goal;
-  investor_profile: InvestorProfile;
+  investor_profile?: InvestorProfile;
   modality_data: ModalityData;
   monetary: Monetary;
 };
@@ -35,12 +35,18 @@ export type InvestorProfile = {
 };
 
 export type ModalityData = {
-  participation: number;
+  type?: "equity" | "debt";
+  participation: number | string;
+  percentage_profitability?: string | null;
+  payment_frequency?: string;
+  grace_period?: number;
+  total_installments?: number;
+  single_installment?: boolean;
 };
 
 export type Monetary = {
   min_investment_value: number;
-  warranty_amount: number;
+  warranty_amount?: number;
 };
 
 export type Meta = {

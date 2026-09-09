@@ -29,7 +29,7 @@ export const GetSummary = createAsyncThunk("wallet/summary", async () => {
 });
 
 export const getWalletResume = async () => {
-  const response = await api.get<WalletResponse>("/investors/home");
+  const response = await api.get<WalletResponse>("/app/investors/home");
 
   return response.data.data;
 };

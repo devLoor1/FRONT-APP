@@ -24,6 +24,10 @@ import { SceneRendererProps } from "react-native-tab-view";
 import { getOpportunity } from "@/services/opportunities";
 import { useQuery } from "@tanstack/react-query";
 import { InvestmentRequest } from "@/models/investments/investment.request";
+import Snack from "@/components/Snack";
+import { usePlatformFeatureFlag } from "@/features/platform-app/usePlatformFeatureFlag";
+import { getInvestmentAccessDecision } from "@/features/investor-access/investorAccess";
+import LoadingComp from "@/components/Loading";
 
 const InvestmentTab: React.FC<
   {
@@ -37,22 +41,32 @@ const InvestmentTab: React.FC<
   const [quotas, setQuotas] = useState(1);
   const [page, setPage] = useState(1);
   const [tot, setTot] = useState(0);
-  const [addDisabled, setAddDisabled] = useState(false);
-  const [anonymous, setAnonymous] = useState(false);
-  const [subtractDisabled, setSubtractDisabled] = useState(false);
+  const [anonymousOverride, setAnonymousOverride] = useState<boolean>();
   // const maxQuota = opportunity.qtdTotalCotas / 2;
-  const { user, personalInformationFilled } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
+  const investorProfileRequired = usePlatformFeatureFlag(
+    "investor_profile_enabled",
+  );
+  const anonymousDefault = usePlatformFeatureFlag(
+    "anonymous_invest_default",
+    true,
+  );
+  const anonymous = anonymousOverride ?? anonymousDefault;
   const refRBSheet = useRef<RBSheetRef>(null);
   const [showSnack, setShowSnack] = useState(false);
   const [msgError, setMsgError] = useState("");
   const [finishedAnimation, setFinishedAnimation] = useState(false);
   const [timeToPay, setTimeToPay] = useState(0);
 
-  const { data: opportunity, isLoading: loading } = useQuery({
+  const { data: opportunity, isLoading: loading, isError } = useQuery({
     queryKey: [getOpportunity.name, opportunityId],
     queryFn: () => getOpportunity(opportunityId),
     enabled: !!opportunityId,
   });
+
+  const remainingQuota = Math.max(0, opportunity?.goal.remaining_quota || 0);
+  const addDisabled = loading || isError || quotas >= remainingQuota;
+  const subtractDisabled = quotas <= 1;
 
   useEffect(() => {
     Analytics({ pageName: "OportInvestirAgora" });
@@ -65,6 +79,7 @@ const InvestmentTab: React.FC<
   }, []);
 
   function sum() {
+    if (addDisabled) return;
     Analytics({ eventName: "OportInvestirAgora_MaisCota" });
     setQuotas(quotas + 1);
   }
@@ -82,25 +97,16 @@ const InvestmentTab: React.FC<
       anonymous,
       user_agreed_at: new Date(),
       user_agreed_to_continue: true,
-      opportunity_id: opportunityId.toString(),
+      opportunity_id: opportunityId,
     });
     jumpTo("personal_data");
   }
 
   useEffect(() => {
     if (opportunity) {
-      if (+quotas <= 0) {
-        setQuotas(1);
-        setSubtractDisabled(false);
-        setAddDisabled(true);
+      if (remainingQuota <= 0) {
+        setTot(0);
         return;
-      }
-
-      if (+quotas > 1) {
-        setSubtractDisabled(false);
-        setAddDisabled(false);
-      } else {
-        setSubtractDisabled(true);
       }
 
       /* if (
@@ -131,7 +137,8 @@ const InvestmentTab: React.FC<
         return;
       } */
 
-      if (+quotas >= (opportunity?.goal.remaining_quota || 0)) {
+      if (+quotas > remainingQuota) {
+        setQuotas(remainingQuota);
         setMsgError(`Você atingiu o limite de cotas disponíveis!`);
         setShowSnack(true);
         return;
@@ -149,7 +156,19 @@ const InvestmentTab: React.FC<
 
       setTot((opportunity.monetary.min_investment_value / 100) * +quotas);
     }
-  }, [quotas]);
+  }, [opportunity, quotas, remainingQuota]);
+
+  if (loading) return <LoadingComp />;
+
+  if (isError || !opportunity) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <Text style={{ textAlign: "center", color: theme.colors.text }}>
+          Não foi possível carregar os dados desta oportunidade.
+        </Text>
+      </View>
+    );
+  }
   return (
     <>
       <ScrollView contentContainerStyle={styles.container}>
@@ -196,7 +215,10 @@ const InvestmentTab: React.FC<
                 value={quotas.toString()}
                 onChangeText={(txt) => {
                   const onlyNumbers = txt.replace(/[^0-9]/g, "");
-                  const value = Math.max(1, parseInt(onlyNumbers || "1"));
+                  const typedValue = Math.max(1, parseInt(onlyNumbers || "1"));
+                  const value = remainingQuota
+                    ? Math.min(typedValue, remainingQuota)
+                    : typedValue;
                   setQuotas(value);
                 }}
                 style={styles.input}
@@ -235,7 +257,7 @@ const InvestmentTab: React.FC<
           <Checkbox.Item
             mode="android"
             rippleColor="transparent"
-            onPress={() => setAnonymous(!anonymous)}
+            onPress={() => setAnonymousOverride(!anonymous)}
             status={anonymous ? "checked" : "unchecked"}
             label="Investir de forma anônima"
             style={styles.checkbox}
@@ -305,16 +327,31 @@ const InvestmentTab: React.FC<
       </ScrollView>
 
       <View style={styles.footer}>
-        {!!personalInformationFilled && (
-          <BtnDefault
-            label="Salvar e avançar"
-            onPress={() => {
-              if (
-                user?.investor_profile.title !==
-                opportunity?.investor_profile.title
-              ) {
-                refRBSheetInvestorProfile.current?.open();
-              } else {
+        <BtnDefault
+          label="Salvar e avançar"
+          disabled={remainingQuota < 1}
+          onPress={() => {
+            const access = getInvestmentAccessDecision(
+              user,
+              investorProfileRequired,
+            );
+
+            if (!access.allowed) {
+              setMsgError(access.message || "Sua conta não está liberada para investir.");
+              setShowSnack(true);
+              return;
+            }
+
+            const userProfile = user?.investor_profile?.title;
+            const opportunityProfile = opportunity.investor_profile?.title;
+
+            if (
+              userProfile &&
+              opportunityProfile &&
+              userProfile !== opportunityProfile
+            ) {
+              refRBSheetInvestorProfile.current?.open();
+            } else {
                 Analytics({
                   eventName: "OportInvestirAgora_ConfirmaInvestimento",
                   /* exclusiveData: {
@@ -333,15 +370,20 @@ const InvestmentTab: React.FC<
           }, */
                 });
                 handleOnNext();
-              }
-            }}
-          />
-        )}
+            }
+          }}
+        />
       </View>
       <InvestorProfileBottom
         investorProfile={user?.investor_profile}
         refRBSheet={refRBSheetInvestorProfile}
         handleContinue={handleOnNext}
+      />
+      <Snack
+        visible={showSnack}
+        txt={msgError}
+        setShowSnack={setShowSnack}
+        type="error"
       />
     </>
   );

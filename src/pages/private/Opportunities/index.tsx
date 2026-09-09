@@ -7,19 +7,16 @@ import {
   Text,
   View,
 } from "react-native";
-import { useAppDispatch } from "@/redux/hooks";
 import { getOpportunities } from "@/services/opportunities";
 import BackToTop from "@/components/BackToTop";
 import { OpportunitiesResponse } from "@/models/opportunities/opportunities.response";
 import { Analytics } from "@/helpers/analytics";
-import { useAuth } from "@/context/auth";
 import { useTheme } from "@/context/MyThemeContext";
 import { useCustomStyles } from "./style";
 import HeaderPhoto from "@/components/HeaderPhoto";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Chip, TextInput } from "react-native-paper";
 import SearchIcon from "@/../assets/newSvgs/icons/search.svg";
-import { getWalletResume } from "@/services-old/wallet";
 import { debounce } from "lodash";
 import { OpportunitiesRequest } from "@/models/opportunities/opportunities.request";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -36,7 +33,6 @@ export default function OpportunitiesPage() {
     "investmentOffering.label.plural",
     "Oportunidades",
   );
-  const dispatch = useAppDispatch();
   const styles = useCustomStyles();
   const { theme } = useTheme();
   const bottomTabBarHeight = useBottomTabBarHeight();
@@ -49,7 +45,6 @@ export default function OpportunitiesPage() {
   const [data, setData] = useState<OpportunitiesResponse["data"]>([]);
   const [showToUp, setShowToUp] = useState(false);
   // const [refreshing, setRefreshing] = React.useState(false);
-  const { deviceToken } = useAuth();
   const refPage = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
 
@@ -60,16 +55,6 @@ export default function OpportunitiesPage() {
     useState<OpportunitiesRequest["searchQuery"]>("");
 
   const filterSheetRef = useRef<any>(null);
-
-  const {
-    data: resume,
-    isLoading: loadingResume,
-    isRefetching: isRefetchingResume,
-    refetch: refetchResume,
-  } = useQuery({
-    queryKey: [getWalletResume.name],
-    queryFn: getWalletResume,
-  });
 
   const {
     data: segments,
@@ -86,6 +71,7 @@ export default function OpportunitiesPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isError: listError,
   } = useInfiniteQuery({
     queryKey: [getOpportunities.name + "Infinite", segmentsFilter, searchQuery],
     initialPageParam: 1,
@@ -106,8 +92,7 @@ export default function OpportunitiesPage() {
 
   const refreshing =
     (!loadingSegments && isRefetchingSegments) ||
-    (!loadingList && isRefetchingList) ||
-    (!loadingResume && isRefetchingResume);
+    (!loadingList && isRefetchingList);
 
   const handleFilter = (filter: any) => {
     setFilter(filter);
@@ -206,11 +191,10 @@ export default function OpportunitiesPage() {
 
   const onRefresh = React.useCallback(async () => {
     setData([]);
-    refetchResume();
     refetchSegments();
     if (pageNumber === 1) refetchList();
     else setPageNumber(1);
-  }, [pageNumber, refetchList, refetchResume]);
+  }, [pageNumber, refetchList, refetchSegments]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -310,10 +294,14 @@ export default function OpportunitiesPage() {
           !loadingList && !isRefetchingList && data.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
-                Nenhuma oportunidade encontrada
+                {listError
+                  ? "Não foi possível carregar as oportunidades"
+                  : "Nenhuma oportunidade encontrada"}
               </Text>
               <Text style={[styles.emptyText, { marginTop: 8, opacity: 0.72 }]}>
-                {content.emptyStateHelper}
+                {listError
+                  ? "Puxe a tela para baixo para tentar novamente."
+                  : content.emptyStateHelper}
               </Text>
             </View>
           ) : null

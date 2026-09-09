@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { URL as NodeURL } from "node:url";
 import {
   PLATFORM_APP_ENTRY_DEFAULTS,
   parsePlatformAppEntryContent,
@@ -13,6 +14,7 @@ import {
   parsePlatformAppAuthenticatedContent,
 } from "./authenticatedContentContract";
 
+async function run() {
 let assertionCount = 0;
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -171,7 +173,7 @@ assert(
   "termo inválido usa fallback canônico",
 );
 
-const appSource = await readFile(new URL("../../App.tsx", import.meta.url), "utf8");
+const appSource = await readFile(new NodeURL("../../App.tsx", import.meta.url), "utf8");
 const featureFiles = await Promise.all(
   [
     "./platformSettings.ts",
@@ -183,7 +185,7 @@ const featureFiles = await Promise.all(
     "./usePlatformAppAuthenticatedContent.ts",
     "./terminology.ts",
     "./usePlatformTerminology.ts",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 const featureSource = featureFiles.join("\n");
 const consumerFiles = await Promise.all(
@@ -196,7 +198,7 @@ const consumerFiles = await Promise.all(
     "../../pages/private/Invest/index.tsx",
     "../../pages/private/Invest/tabs/FinishTab/index.tsx",
     "../../pages/private/OpportunitiesDetail/components/GeneralInfos/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 const consumerSource = consumerFiles.join("\n");
 const authConsumerFiles = await Promise.all(
@@ -205,13 +207,13 @@ const authConsumerFiles = await Promise.all(
     "../../pages/public/PreRegister/pages/RegisterData/index.tsx",
     "../../pages/public/PreRegister/pages/Password/index.tsx",
     "../../pages/public/Forget/components/GeneralPage/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 const operationalCompletionFiles = await Promise.all(
   [
     "../../pages/public/PreRegister/pages/Success/index.tsx",
     "../../pages/public/Forget/components/Confirmation/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 const completeRegistrationConsumerFiles = await Promise.all(
   [
@@ -219,16 +221,16 @@ const completeRegistrationConsumerFiles = await Promise.all(
     "../../pages/private/Register/pages/PersonalDataTwo/index.tsx",
     "../../pages/private/Register/pages/Address/index.tsx",
     "../../pages/private/Register/pages/BankData/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 const protectedCompleteRegistrationFiles = await Promise.all(
   [
     "../../pages/private/Register/pages/Proof/index.tsx",
     "../../pages/private/Register/pages/Proof/components/Success/index.tsx",
     "../../pages/private/Register/pages/Success/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
-const routesSource = await readFile(new URL("../../routes/index.tsx", import.meta.url), "utf8");
+const routesSource = await readFile(new NodeURL("../../routes/index.tsx", import.meta.url), "utf8");
 assert(appSource.includes("PlatformSettingsProvider"), "App usa provider compartilhado");
 assert(featureSource.includes('"/investor/platform"'), "usa endpoint genérico existente");
 assert(!/AsyncStorage|SecureStore|redux-persist/u.test(featureSource), "configuração não cria storage paralelo");
@@ -274,7 +276,7 @@ const protectedInvestmentFlow = await Promise.all(
     "../../pages/private/Invest/tabs/Summary/index.tsx",
     "../../pages/private/Invest/tabs/Crowdfunding/index.tsx",
     "../../pages/private/Invest/components/Success/index.tsx",
-  ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
+  ].map((path) => readFile(new NodeURL(path, import.meta.url), "utf8")),
 );
 assert(
   protectedInvestmentFlow.every((source) => !source.includes("usePlatformAppAuthenticatedContent")),
@@ -282,3 +284,9 @@ assert(
 );
 
 console.log(`platformApp: ${assertionCount} assertions passed`);
+}
+
+void run().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

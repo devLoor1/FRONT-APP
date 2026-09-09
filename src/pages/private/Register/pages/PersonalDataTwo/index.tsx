@@ -111,21 +111,14 @@ export default function PersonalDataTwo({ formData, updateFormData, onNext, onPr
     return CommonMask.currency(numberValue.toFixed(2));
   }
 
-  function formatCurrencyForAPI(value: string): number {
-    if (!value) return 0;
-    
-    const numericValue = value.replace(/\D/g, '');
-    
-    const numberValue = parseFloat(numericValue) / 100;
-    return numberValue;
-  }
-
   function handleAnnualIncomeChange(value: string) {
     const formattedValue = formatCurrencyForDisplay(value);
     setDisplayAnnualIncome(formattedValue);
-    
-    const numericValue = formatCurrencyForAPI(value);
-    updateFormData({ annual_income: numericValue });
+
+    // Backend monetary values are integers in centavos. The input's raw digits
+    // already represent centavos (for example, 100000 = R$ 1.000,00).
+    const valueInCents = Number(value.replace(/\D/g, ''));
+    updateFormData({ annual_income: valueInCents });
     
     if (error.annual_income) {
       setError({ ...error, annual_income: '' });

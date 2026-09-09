@@ -2,7 +2,6 @@ import { getWalletResume } from "@/services-old/wallet";
 import { Analytics } from "@/helpers/analytics";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useAppSelector } from "@/redux/hooks";
 import HeaderPhoto from "@/components/HeaderPhoto";
 import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
@@ -31,7 +30,6 @@ export default function WalletPage() {
   const refPage = useRef<ScrollView>(null);
   const [showToUp, setShowToUp] = useState(false);
   const bottomTabBarHeight = useBottomTabBarHeight();
-  const { personalInformationFilled } = useAppSelector((state) => state.auth);
   const [showModal, setShowModal] = useState(false);
   const insets = useSafeAreaInsets();
   const {
@@ -39,6 +37,7 @@ export default function WalletPage() {
     isLoading: loadingResume,
     isRefetching: isRefetchingResume,
     refetch: refetchResume,
+    isError: isResumeError,
   } = useQuery({
     queryKey: [getWalletResume.name],
     queryFn: getWalletResume,
@@ -49,6 +48,7 @@ export default function WalletPage() {
     isLoading: loadingList,
     isRefetching: isRefetchingList,
     refetch: refetchList,
+    isError: isListError,
   } = useQuery({
     queryKey: [getOpportunities.name],
     queryFn: () => getOpportunities({ page: 1, limit: 1 }),
@@ -82,6 +82,25 @@ export default function WalletPage() {
       <HeaderPhoto analytics="HomeApp" />
       {loadingList || loadingResume ? (
         <LoadingComp transparent />
+      ) : isResumeError || isListError ? (
+        <View
+          style={{
+            flex: 1,
+            padding: 24,
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: theme.colors.text }}>
+            Não foi possível carregar sua carteira agora.
+          </Text>
+          <TouchableOpacity onPress={getAll}>
+            <Text style={{ color: theme.colors.primary, fontFamily: theme.fonts.bold }}>
+              Tentar novamente
+            </Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <ScrollView
           contentContainerStyle={{
@@ -100,9 +119,7 @@ export default function WalletPage() {
           }
         >
           <View style={styles.container}>
-            {
-              personalInformationFilled && (
-                <>
+            <>
                   <CardValues resume={resume} title={content.investedOpportunitiesTitle} />
                   <InterestChart />
                   <FlatList
@@ -139,9 +156,7 @@ export default function WalletPage() {
                       </TouchableOpacity>
                     }
                   />
-                </>
-              )
-            }
+            </>
           </View>
         </ScrollView>
       )}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Platform, ScrollView, Text, View } from "react-native";
+import { Alert, Platform, ScrollView, Text, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { Checkbox, List } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,7 +24,7 @@ import { getCountries } from "@/services/common";
 import BtnDefault from "@/components/BtnDefault";
 import { getOpportunity } from "@/services/opportunities";
 import LoadingComp from "@/components/Loading";
-import { getInvestmentContract } from "@/services/investments";
+import { getInvestmentContract, getTotalInvestments } from "@/services/investments";
 import { getPersonalInformation } from "@/services/user";
 import ModalDefault from "@/components/ModalDefault";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
@@ -69,6 +69,10 @@ const Summary: React.FC<SumamryProps> = ({
   const { data: personalInfo, isLoading } = useQuery({
     queryKey: [getPersonalInformation.name],
     queryFn: getPersonalInformation,
+  });
+  const { data: totalInvested, isLoading: isLoadingTotalInvested } = useQuery({
+    queryKey: [getTotalInvestments.name],
+    queryFn: getTotalInvestments,
   });
 
   const saveReportFile = async (base64pdf: any) => {
@@ -135,23 +139,31 @@ const Summary: React.FC<SumamryProps> = ({
   useFocusEffect(
     useCallback(() => {
       if (personalInfo && opportunity) {
-        const value =
-          ((summary.quota_quantity || 0) *
-            opportunity.monetary.min_investment_value) /
-          100;
-        const income = personalInfo.annual_income / 100;
-        const insufficient = value / income > 0.1;
+        const investmentValue =
+          (summary.quota_quantity || 0) *
+          opportunity.monetary.min_investment_value;
+        const income = personalInfo.annual_income;
+        const otherPlatforms = summary.other_crowdfunding_platforms || 0;
+        const investedThisYear = totalInvested?.total_invested || 0;
+        const newTotal = investmentValue + otherPlatforms + investedThisYear;
+        const investmentLimit =
+          income <= 20_000_000
+            ? 2_000_000
+            : income < 100_000_000
+              ? income / 10
+              : Number.POSITIVE_INFINITY;
+        const insufficient = newTotal > investmentLimit;
 
         let consistentDeclaration = false;
         switch (summary.declaration) {
           case "less_than_or_equal_200_thousand":
-            consistentDeclaration = income <= 200000;
+            consistentDeclaration = income <= 20_000_000;
             break;
           case "greater_than_200_thousand_less_than_1_million":
-            consistentDeclaration = income > 200000 && income < 1000000;
+            consistentDeclaration = income > 20_000_000 && income < 100_000_000;
             break;
           case "greater_than_or_equal_1_million":
-            consistentDeclaration = income >= 1000000;
+            consistentDeclaration = income >= 100_000_000;
             break;
           default:
             break;
@@ -166,10 +178,12 @@ const Summary: React.FC<SumamryProps> = ({
       return () => {
         setShowInvalidIncome(false);
       };
-    }, [currentTab, opportunity, personalInfo, summary])
+    }, [currentTab, opportunity, personalInfo, summary, totalInvested])
   );
 
-  if (loading || isLoadingCountries || isLoading) return <LoadingComp />;
+  if (loading || isLoadingCountries || isLoading || isLoadingTotalInvested) {
+    return <LoadingComp />;
+  }
 
   return (
     <View style={{ flex: 1, gap: 8, paddingBottom: 16 }}>
@@ -569,12 +583,24 @@ const Summary: React.FC<SumamryProps> = ({
         </View>
       </ScrollView>
       <BtnDefault
-        label="Avançar"
+        label="Confirmar investimento"
         disabled={!checked || invalidIncome}
         style={{ marginHorizontal: 16 }}
         onPress={() => {
-          jumpTo("finish");
-          onNext({ user_agreed_at: new Date() });
+          Alert.alert(
+            "Confirmar investimento",
+            "Ao confirmar, a solicitação de investimento será criada e o Pix será gerado.",
+            [
+              { text: "Cancelar", style: "cancel" },
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  onNext({ user_agreed_at: new Date() });
+                  jumpTo("finish");
+                },
+              },
+            ],
+          );
         }}
       />
 
@@ -582,7 +608,7 @@ const Summary: React.FC<SumamryProps> = ({
         visible={showInvalidIncome}
         setVisible={setShowInvalidIncome}
         title="Declaração não compatível"
-        desc="Segundo as normas da Resolução CVM nº 88, o investidor só poderá investir até 10% de sua renda bruta anual, considerando os investimentos feitos nesta plataforma somados aos investimentos feitos em outras plataformas. Reconsidere o seu valor de investimento"
+        desc="A declaração ou o total anual informado ultrapassa o limite regulatório aplicável, considerando esta plataforma e outras plataformas de crowdfunding. Reconsidere os valores antes de continuar."
       />
     </View>
   );

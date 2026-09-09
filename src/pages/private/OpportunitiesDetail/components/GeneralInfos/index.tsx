@@ -52,6 +52,12 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
   const { theme } = useTheme();
   const [showToUp, setShowToUp] = useState(false);
   const refPage = useRef<ScrollView>(null);
+  const participationLabel =
+    typeof opportunity.modality_data.participation === "number"
+      ? `${CommonMask.percent(
+          opportunity.modality_data.participation.toString(),
+        )}%`
+      : opportunity.modality_data.participation;
 
   const [foundation, setFoundation] = useState("");
   const [thumbs, setThumbs] = useState<ThumbsProps>([]);
@@ -383,6 +389,12 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               />
             </View> */}
           </View>
+          {!!opportunity.about && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Sobre a oportunidade</Text>
+              <Text style={styles.cardDesc}>{opportunity.about}</Text>
+            </View>
+          )}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{content.detailProgressTitle}</Text>
             <View style={styles.cardList}>
@@ -487,14 +499,16 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
                 )}
               </Text>
             </View>
+            {typeof opportunity.total_investors === "number" && (
+              <View style={styles.listItem}>
+                <Text style={styles.listItemTitle}>{investorsLabel}</Text>
+                <Text style={styles.listItemDesc}>
+                  {opportunity.total_investors}
+                </Text>
+              </View>
+            )}
             <View style={styles.listItem}>
-              <Text style={styles.listItemTitle}>{investorsLabel}</Text>
-              <Text style={styles.listItemDesc}>
-                {opportunity.total_investors}
-              </Text>
-            </View>
-            <View style={styles.listItem}>
-              <Text style={styles.listItemTitle}>Data de criação</Text>
+              <Text style={styles.listItemTitle}>Encerramento</Text>
               <Text style={styles.listItemDesc}>
                 {moment(opportunity.due_at).format("DD/MM/YYYY")}
               </Text>
@@ -506,12 +520,14 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               </Text>
             </View>
             <View style={styles.dataRow}>
-              <View style={styles.dataItem}>
-                <Text style={styles.dataTitle}>{content.detailProfileLabel}</Text>
-                <Text style={styles.dataValue}>
-                  {opportunity.investor_profile.title}
-                </Text>
-              </View>
+              {opportunity.investor_profile?.title && (
+                <View style={styles.dataItem}>
+                  <Text style={styles.dataTitle}>{content.detailProfileLabel}</Text>
+                  <Text style={styles.dataValue}>
+                    {opportunity.investor_profile.title}
+                  </Text>
+                </View>
+              )}
               <View style={styles.dataItem}>
                 <Text style={styles.dataTitle}>Total investido</Text>
                 <Text style={styles.dataValue}>
@@ -523,12 +539,7 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
               </View>
               <View style={styles.dataItem}>
                 <Text style={styles.dataTitle}>Participação</Text>
-                <Text style={styles.dataValue}>
-                  {CommonMask.percent(
-                    opportunity.modality_data.participation.toString()
-                  )}
-                  %
-                </Text>
+                <Text style={styles.dataValue}>{participationLabel}</Text>
               </View>
             </View>
           </View>
@@ -578,19 +589,30 @@ export default function GeneralInfos({ setPage, opportunity }: GeneralType) {
           ) : (
             <></>
           )}
-          <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
-            <BtnDefault
-              white
-              style={{ borderRadius: 8 }}
-              icon={
-                <HelpIcon color={theme.colors.primary} width={24} height={24} />
-              }
-              label="Fórum"
-              onPress={() => {
-                Linking.openURL(opportunity.whatsapp_group);
-              }}
-            />
-          </View>
+          {!!opportunity.promotional_video_url && (
+            <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+              <BtnDefault
+                white
+                style={{ borderRadius: 8 }}
+                icon={<PlayIcon color={theme.colors.primary} width={24} height={24} />}
+                label="Vídeo da oportunidade"
+                onPress={() => Linking.openURL(opportunity.promotional_video_url!)}
+              />
+            </View>
+          )}
+          {!!opportunity.whatsapp_group && (
+            <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+              <BtnDefault
+                white
+                style={{ borderRadius: 8 }}
+                icon={
+                  <HelpIcon color={theme.colors.primary} width={24} height={24} />
+                }
+                label="Grupo do WhatsApp"
+                onPress={() => Linking.openURL(opportunity.whatsapp_group!)}
+              />
+            </View>
+          )}
         </ScrollView>
       )}
       {showToUp && <BackToTop scrollRef={refPage} />}

@@ -143,8 +143,6 @@ export default function InvestPage({ route }: Props) {
     <>
       <HeaderDefault
         back
-        contact
-        help
         title={opportunitiesLabel}
         onPressBack={index === 0 || index === 4 ? undefined : gotToPreviousTab}
       />

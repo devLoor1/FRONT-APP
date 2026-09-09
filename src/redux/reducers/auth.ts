@@ -49,7 +49,15 @@ const authSlice = createSlice({
     setLoginData: (state, action: PayloadAction<any>) => {
       const { token, personal_information_filled } = action.payload.data;
       state.token = token;
-      state.personalInformationFilled = personal_information_filled === 1;
+      state.personalInformationFilled =
+        personal_information_filled === true ||
+        personal_information_filled === 1 ||
+        personal_information_filled === "1";
+      state.isAuthenticated = true;
+      state.error = null;
+    },
+    restoreSession: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
       state.isAuthenticated = true;
       state.error = null;
     },
@@ -97,6 +105,7 @@ const authSlice = createSlice({
 
 export const { 
   setLoginData, 
+  restoreSession,
   setUserData, 
   setLoading, 
   setLoadingUser, 

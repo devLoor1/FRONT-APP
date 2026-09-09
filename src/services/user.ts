@@ -8,18 +8,18 @@ import {
 
 
 export const getMe = async () => {
-  const response = await api.get<MeResponse>("/auth/investor/me");
+  const response = await api.get<MeResponse>("/app/onboarding/me");
   return response.data.data;
 };
 
 export const getPersonalInformation = async () => {
-  const response = await api.get<PersonalInformationResponse>("/investors/profile/personal-information");
+  const response = await api.get<PersonalInformationResponse>("/app/investors/personal-information");
   return response.data;
 };
 
 export const postPersonalInformation = async (request: PersonalInformationRequest) => {
   const response = await api.post<PersonalInformationResponse>(
-    "/investors/profile/personal-information",
+    "/app/investors/profile/personal-information",
     request
   );
   return response.data;
@@ -44,7 +44,7 @@ export const submitFaceMatch = async (document: any, selfie: any) => {
     name: selfieFileName,
   } as any);
 
-  const response = await api.post('/investors/face-match', formData, {
+  const response = await api.post<{ data: { status: string } }>('/app/onboarding/face-match', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

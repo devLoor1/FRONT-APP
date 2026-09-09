@@ -10,7 +10,8 @@ import error from "./reducers/errorState";
 const authPersistConfig = {
   key: 'auth',
   storage: AsyncStorage,
-  whitelist: ['isAuthenticated', 'token', 'personalInformationFilled', 'user'], // Persiste apenas estes campos
+  // O token fica exclusivamente no SecureStore; Redux persiste somente estado não sensível.
+  whitelist: ['isAuthenticated', 'personalInformationFilled', 'user'],
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, auth);

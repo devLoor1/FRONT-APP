@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import Snack from '@/components/Snack';
 import CameraComp from './components/Camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,6 +22,7 @@ import { RootStackParamList } from '@/models/routes/navigation.private';
 import { submitFaceMatch } from '@/services/user';
 import { useMutation } from '@tanstack/react-query';
 import LoadingComp from '@/components/Loading';
+import type { FaceMatchStatus } from '@/models/user/me.response';
 
 type Props = {
   onActionAfterSubmit?: (docResponse: any) => void
@@ -33,7 +33,6 @@ type Props = {
 type PhotoType = 'document' | 'selfie';
 
 export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onContinue }: Props) {
-  const dispatch = useAppDispatch();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const styles = useCustomStyles();
@@ -47,6 +46,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
   const [documentPhoto, setDocumentPhoto] = useState<any>(null);
   const [selfiePhoto, setSelfiePhoto] = useState<any>(null);
   const [progress, setProgress] = useState(0);
+  const [submittedStatus, setSubmittedStatus] = useState<FaceMatchStatus | null>(null);
 
   const {
     mutateAsync: faceMatchMutation,
@@ -103,11 +103,19 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     }
 
     try {
-      await faceMatchMutation({ document: documentPhoto, selfie: selfiePhoto });
-      
-      // Se chegou até aqui, foi bem-sucedido
+      const response = await faceMatchMutation({ document: documentPhoto, selfie: selfiePhoto });
+      const status = response.data.status as FaceMatchStatus;
+
+      if (status === 'refused_by_api') {
+        setSnackMessage('Não foi possível validar as imagens. Tire novas fotos e tente novamente.');
+        setShowSnack(true);
+        return;
+      }
+
+      setSubmittedStatus(status);
+
       if (onActionAfterSubmit) {
-        await onActionAfterSubmit({ success: true });
+        await onActionAfterSubmit({ success: true, status });
       }
     } catch (error: any) {
       safeLogger.error('Face match upload failed', error);
@@ -140,8 +148,8 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
     );
   }
 
-  if (documentPhoto && selfiePhoto && !isSubmitting) {
-    return <SuccessPage onContinue={onContinue} />;
+  if (submittedStatus) {
+    return <SuccessPage status={submittedStatus} onContinue={onContinue} />;
   }
 
   return (
@@ -159,29 +167,31 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
         <View style={[styles.container, styles.containerForm]}>
           <View style={styles.content}>
             <Text style={{ ...styles.title, marginBottom: 24 }}>
-              Comprovante de Residência
+              Validação de identidade
             </Text>
-            <Text style={pageStyles.desc}>O comprovante deve possuir:</Text>
+            <Text style={pageStyles.desc}>
+              Envie uma foto nítida do seu documento de identificação e uma selfie.
+            </Text>
             <View style={pageStyles.list}>
               <View style={pageStyles.listItem}>
                 <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
                 <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Nome completo:</Text> de sua
-                  titularidade ou parentesco de primeiro grau (pai, mãe ou cônjuge).
+                  <Text style={{ fontFamily: theme.fonts.bold }}>Nome completo:</Text> deve estar
+                  legível no documento.
                 </Text>
               </View>
               <View style={pageStyles.listItem}>
                 <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
                 <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Data de validade:</Text> até no
-                  máximo 3 meses desde a data de hoje.
+                  <Text style={{ fontFamily: theme.fonts.bold }}>CPF e data de nascimento:</Text>{' '}
+                  precisam estar visíveis para a conferência de identidade.
                 </Text>
               </View>
               <View style={pageStyles.listItem}>
                 <InfoIcon width={24} height={24} color={theme.customColors.hyperlink} />
                 <Text style={pageStyles.listTxt}>
-                  <Text style={{ fontFamily: theme.fonts.bold }}>Endereço:</Text> a descrição do
-                  endereço precisa estar visível.
+                  <Text style={{ fontFamily: theme.fonts.bold }}>Imagem completa:</Text> não corte
+                  bordas nem cubra informações do documento.
                 </Text>
               </View>
             </View>
@@ -198,7 +208,7 @@ export default function Proof({ onActionAfterSubmit, hideRetakeIcon = false, onC
 
           {/* Documento */}
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Documento de Residência</Text>
+            <Text style={{ fontSize: 16, fontFamily: theme.fonts.semiBold, color: theme.colors.text, marginBottom: 8 }}>Documento de identificação</Text>
             {documentPhoto ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <View style={{ 

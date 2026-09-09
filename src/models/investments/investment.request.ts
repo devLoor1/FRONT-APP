@@ -1,5 +1,5 @@
 export type InvestmentRequest = {
-  opportunity_id: string;
+  opportunity_id: number;
   quota_quantity: number;
   declaration:
     | "less_than_or_equal_200_thousand"

@@ -9,7 +9,7 @@ import { InvestmentsResponse } from "@/models/investments/investments.response";
 
 export const getTotalInvestments = async () => {
   const response = await api.get<{ data: { total_invested: number } }>(
-    "/investors/investments/current-year/total-invested"
+    "/app/investors/investments/current-year/total-invested"
   );
 
   return response.data.data;
@@ -17,7 +17,7 @@ export const getTotalInvestments = async () => {
 
 export const getInvestments = async (params: OpportunitiesRequest) => {
   const response = await api.get<InvestmentsResponse>(
-    `/investors/investments`,
+    `/app/investors/investments`,
     {
       params,
       paramsSerializer: (params) => qs.stringify(params),
@@ -29,16 +29,22 @@ export const getInvestments = async (params: OpportunitiesRequest) => {
 
 export const postInvestments = async (data: InvestmentRequest) => {
   const response = await api.post<InvestmentResponse>(
-    "/investors/investments",
-    data
+    "/app/investors/investments",
+    {
+      opportunity_id: data.opportunity_id,
+      quota_quantity: data.quota_quantity,
+      declaration: data.declaration,
+      other_crowdfunding_platforms: data.other_crowdfunding_platforms,
+      anonymous: data.anonymous,
+      pix: data.pix,
+    }
   );
   return response.data.data;
 };
 
 export const getInvestmentQrCode = async (investmentId: number) => {
-  console.log("qr");
   const response = await api.get<InvestmentQrCodeResponse>(
-    `/investors/qr-codes/${investmentId}`
+    `/app/investors/qr-codes/${investmentId}`
   );
   return response.data.data;
 };
@@ -48,7 +54,7 @@ export const getInvestmentContract = async (data: {
   quota_quantity: number;
 }) => {
   const response = await api.post<Blob>(
-    "/investors/investments/contract/",
+    "/app/investors/investments/contract",
     data,
     { responseType: "blob" }
   );

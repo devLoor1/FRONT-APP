@@ -65,7 +65,7 @@ export default function CardValues({
               R${" "}
               {showBalance
                 ? CommonMask.currency(
-                    resume?.estimated_patrimony?.toFixed(2) || "0"
+                    ((resume?.estimated_patrimony || 0) / 100).toFixed(2)
                   )
                 : "-"}
             </Text>
@@ -90,7 +90,9 @@ export default function CardValues({
             <Text style={styles.itemValue}>
               R${" "}
               {showBalance
-                ? CommonMask.currency(resume?.total_invested.toFixed(2) || "0")
+                ? CommonMask.currency(
+                    ((resume?.total_invested || 0) / 100).toFixed(2)
+                  )
                 : "-"}
             </Text>
             <ArrowUp
@@ -112,12 +114,12 @@ export default function CardValues({
               { color: theme.customColors.neutrals[500] },
             ]}
           >
+            R${" "}
             {showBalance
-              ? CommonMask.percent(
-                  resume?.total_received?.toFixed(2).toString() || "0"
+              ? CommonMask.currency(
+                  ((resume?.total_received || 0) / 100).toFixed(2)
                 )
               : "-"}
-            %
           </Text>
         </View>
       </View>

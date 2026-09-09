@@ -1,19 +1,14 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View } from "react-native";
 import React, { RefObject, useState } from "react";
 import { useCustomStyles } from "./style";
 import BottomSheet from "../../../../../components/BottomSheet";
 import BtnIcon from "../../../../../components/BtnIcon";
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BtnDefault from "../../../../../components/BtnDefault";
-import { Checkbox } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@/context/MyThemeContext";
 import CloseIcon from "@/../assets/newSvgs/icons/close_small.svg";
-import { useAppSelector } from "@/redux/hooks";
 import WarningIcon from "@/../assets/newSvgs/icons/warning-fill.svg";
 import InfoIcon from "@/../assets/newSvgs/icons/info-fill.svg";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/models/routes/navigation.private";
 import { Analytics } from "@/helpers/analytics";
 import RBSheetRef from "@/helpers/types/rawBottomSheetRef";
 import { InvestorProfile } from "@/models/user/me.response";
@@ -30,9 +25,7 @@ export default function InvestorProfileBottom({
   investorProfile,
 }: Props) {
   const { theme } = useTheme();
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useCustomStyles();
-  const [checked, setChecked] = useState(false);
   // const { profileStatus } = useAppSelector((state) => state.investor);
   const [openInvest, setOpenInvest] = useState(false);
 
@@ -64,7 +57,6 @@ export default function InvestorProfileBottom({
         } else if (openInvest && checked) {
           handleContinue();
         } */
-        setChecked(false);
         setOpenInvest(false);
       }}
     >
@@ -126,63 +118,13 @@ export default function InvestorProfileBottom({
                   Você não tem seu perfil de investimento definido.
                 </Text>
                 <Text style={styles.warnTxt}>
-                  Deseja prosseguir assim mesmo?
+                  Quando essa etapa for exigida pela plataforma, conclua o perfil antes de investir.
                 </Text>
               </View>
             </View>
           )}
-          {!investorProfile?.title && (
-            <TouchableOpacity
-              style={styles.checkBlock}
-              onPress={() => {
-                if (checked) {
-                  Analytics({ eventName: "ProsseguirInvestimento_Cancelar" });
-                } else {
-                  Analytics({ eventName: "ProsseguirInvestimento_Continuar" });
-                }
-                setChecked(!checked);
-              }}
-            >
-              <Checkbox.Item
-                label=""
-                status={checked ? "checked" : "unchecked"}
-                mode="android"
-                onPress={() => setChecked(!checked)}
-                color={
-                  theme.dark
-                    ? theme.customColors.baseWhite
-                    : theme.customColors.secondary.default
-                }
-                uncheckedColor={
-                  theme.dark
-                    ? theme.customColors.baseWhite
-                    : theme.customColors.secondary.default
-                }
-                rippleColor="transparent"
-                style={{ marginLeft: -16, marginRight: -8 }}
-              />
-              <Text style={styles.checkDesc}>
-                Declaro que aceito Prosseguir com investimento, antes de
-                conhecer meu perfil de investidor Wealth Money.
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
         <View style={styles.footer}>
-          {!investorProfile?.title && (
-            <View style={{ flex: 1 }}>
-              <BtnDefault
-                label="Definir Perfil Investidor"
-                white
-                onPress={() => {
-                  Analytics({
-                    eventName: "PerfilInvestValid_DefinirPerfilInvest",
-                  });
-                  nav.navigate("InvestorProfile");
-                }}
-              />
-            </View>
-          )}
           <View style={{ flex: 1 }}>
             <BtnDefault
               label="Prosseguir"
@@ -195,7 +137,7 @@ export default function InvestorProfileBottom({
                 handleContinue();
                 refRBSheet.current?.close();
               }}
-              disabled={!investorProfile?.title && !checked}
+              disabled={!investorProfile?.title}
             />
           </View>
         </View>
